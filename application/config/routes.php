@@ -1,0 +1,75 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+$route['default_controller'] = 'home';
+$route['404_override'] = '';
+$route['translate_uri_dashes'] = FALSE;
+
+# ROUTES >>>>> ADMIN
+$route['murad'] = 'user/admin/kelola_user';
+$route['butterfly'] = 'user/admin';
+$route['wonder'] = 'user/admin/add_user_page';
+$route['kahli'] = 'user/admin/add_user';
+$route['thane'] = 'user/admin/edit_user_page';
+$route['violet'] = 'user/admin/edit_user';
+$route['yorn'] = 'user/admin/delete_user';
+$route['thane'] = 'user/admin/edit_user_page';
+$route['paine'] = 'user/admin/reset_password_page';
+$route['quillen'] = 'user/admin/reset_password';
+$route['kenu'] = 'user/admin/kelola_menu';
+$route['miya'] = 'user/admin/add_menu_page';
+$route['freya'] = 'user/admin/add_menu';
+$route['angela'] = 'user/admin/kelola_department';
+$route['kesi'] = 'user/admin/kelola_otorisasi';
+$route['kesi/(:num)'] = 'user/admin/kelola_otorisasi/$1';
+$route['upsi/(:num)'] = 'user/admin/update_otorisasi/$1';
+$route['grakk'] = 'user/admin/backup_database';
+$route['toro'] = 'user/admin/add_department_page';
+$route['flash'] = 'user/admin/add_department';
+$route['joker'] = 'user/admin/add_subdepartment';
+$route['max'] = 'user/admin/edit_department_page';
+$route['ryoma'] = 'user/admin/edit_department';
+$route['shinra'] = 'user/admin/edit_sub_department_page';
+$route['denji'] = 'user/admin/edit_sub_department';
+$route['luru'] = 'user/admin/ajax_search';
+$route['rourke'] = 'user/admin/kelola_akses_report';
+$route['slimz/(:num)'] = 'user/admin/edit_akses_report_page/$1';
+$route['dextra'] = 'user/admin/monitoring_report';
+
+
+
+
+# ROUTES >>>>> KARYAWAN
+$route['zephys'] = 'user/karyawan';
+$route['mino'] = 'user/karyawan/kelola_kolom';
+$route['seizu'] = 'user/karyawan/add_column_page';
+$route['kirito'] = 'user/karyawan/add_column';
+$route['hayate'] = 'user/karyawan/laporan_data';
+$route['tulen'] = 'user/karyawan/add_laporan_page';
+$route['zata'] = 'user/karyawan/add_laporan';
+$route['edit_column/(:num)'] = 'user/karyawan/edit_column_page/$1';
+$route['aang'] = 'user/karyawan/update_column'; 
+$route['shin'] = 'user/karyawan/delete_column'; 
+$route['lauriel'] = 'user/karyawan/ganti_password_page';
+$route['ignis'] = 'user/karyawan/ganti_password';
+$route['raz'] = 'user/karyawan/get_satuan';
+$route['aleister'] = 'user/karyawan/edit_laporan_page';
+$route['azzenka'] = 'user/karyawan/tambah_satuan';
+$route['ilumia'] = 'user/karyawan/edit_laporan';
+$route['fennik'] = 'user/karyawan/check_laporanid';
+$route['omen'] = 'user/karyawan/kelola_satuan';
+$route['taara'] = 'user/karyawan/tambah_satuan_page';
+$route['arum/(:num)'] = 'user/karyawan/edit_satuan_page/$1';
+$route['valhein'] = 'user/karyawan/edit_satuan';
+$route['laville'] = 'user/karyawan/delete_satuan';
+$route['ronaldo'] = 'user/karyawan/search_reports';
+$route['pessi'] = 'user/karyawan/get_existing_reports';
+$route['kepot'] = 'user/karyawan/search_kolom';
+
+
+# ROUTES >>>>> MANAGER
+$route['maloch'] = 'user/manager';
+
+
+# ROUTES >>>>> FACTORY MANAGER
+$route['gon'] = 'user/admin_department';
