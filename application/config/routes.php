@@ -5,6 +5,13 @@ $route['default_controller'] = 'home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
+# MODUL
+
+$route['monthly_report'] = 'home/direct_monthly_report';
+$route['inventori'] = 'home/direct_inventori';
+
+# MONTHLY REPORT
+
 # ROUTES >>>>> ADMIN
 $route['murad'] = 'user/admin/kelola_user';
 $route['butterfly'] = 'user/admin';
@@ -73,3 +80,13 @@ $route['maloch'] = 'user/manager';
 
 # ROUTES >>>>> FACTORY MANAGER
 $route['gon'] = 'user/admin_department';
+
+# INVENTORI
+$route['dsb'] = 'inventori/proses';
+$route['dem'] = 'inventori/proses/detail_item';
+$route['tbi'] = 'inventori/proses/tambah_item';
+$route['deus'] = 'inventori/proses/detail_users';
+$route['decs'] = 'inventori/proses/detail_clusters';
+$route['tbc'] = 'inventori/proses/tambah_clusters';
+$route['act'] = 'inventori/proses/aksi_clusters';
+$route['akm'] = 'inventori/proses/aksi_item';

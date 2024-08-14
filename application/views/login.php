@@ -19,7 +19,7 @@
       width: 100px; /* adjust as needed */
     }
     body{
-      background-image: url('<?=base_url('assets/gambar/bglogin.jpg')?>');
+      background-image: url('<?=base_url('assets/gambar/bglogin-3.jpg')?>');
       /* Full height */
       height: 100%; 
 

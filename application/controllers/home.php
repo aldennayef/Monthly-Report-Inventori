@@ -7,6 +7,8 @@ class Home extends CI_Controller {
         parent::__construct();
         $this->load->library('form_validation');
         $this->load->model('Webmodel');
+        $this->db_inv = $this->load->database('inventori', TRUE);
+        $this->load->model('Inventori');
 	}
 
     public function index(){
@@ -23,6 +25,7 @@ class Home extends CI_Controller {
                 $data = [
                     'id' => $user['id'],
                     'username' => $user['username'],
+                    'nik' => $user['nik'],
                     'role_id' => $user['role_id']
                 ];
                 $this->session->set_userdata($data);
@@ -48,25 +51,7 @@ class Home extends CI_Controller {
                     $this->db->where('periode <=', $last_day_of_last_month);
                     $this->db->update('kolom_values');
                 }
-
-                // after success login
-                if ($user['role_id'] == 1) {
-                    // redirect('user/admin');
-                    // routing
-                    redirect('butterfly');
-                } 
-                elseif ($user['role_id'] == 2) {
-                //    redirect('/user/manager');
-                    redirect('maloch');
-                }
-                elseif ($user['role_id'] == 3) {
-                //    redirect('/user/karyawan');
-                    redirect('zephys');
-                }
-                else {
-                    // redirect('user/administrator');
-                    redirect('gon');
-                }
+                redirect('modul');
             }else{
                 $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Password Salah !</div>');
                 redirect('home');
@@ -77,6 +62,59 @@ class Home extends CI_Controller {
         }
         // $hashPassword = password_verify();
         // $this->load->view('admin/dashboard');
+    }
+
+    public function direct_monthly_report(){
+        $role_id = $this->session->userdata('role_id');
+        if($role_id){
+            // after success login
+            if ($role_id == 1) {
+                // redirect('user/admin');
+                // routing
+                redirect('butterfly');
+            } 
+            elseif ($role_id == 2) {
+            //    redirect('/user/manager');
+                redirect('maloch');
+            }
+            elseif ($role_id == 3) {
+            //    redirect('/user/karyawan');
+                redirect('zephys');
+            }
+            else {
+                // redirect('user/administrator');
+                redirect('gon');
+            }
+        }else{
+            redirect('home');
+        }
+    }
+
+    public function direct_inventori(){
+        $role_id = $this->session->userdata('role_id');
+        $username = $this->session->userdata('username');
+        if($role_id){
+            $user = $this->db->get_where('user',['username'=>$this->session->userdata('username')]) -> row_array();
+            // insert to log data
+            $data = [
+                'id_user' => $user['id'],
+                'username' => $user['username'],
+                'act_note' => 'Login ke SIMI'
+            ];
+            $this->db_inv->set('act_date', 'NOW()', FALSE);
+            $this->db_inv->insert('log_data',$data);
+            // after success login
+            if ($role_id == 1) {
+                redirect('dsb');
+            } 
+            elseif ($role_id == 2) {
+                
+            }else {
+                    redirect('dsb');
+            }
+        }else{
+            redirect('home');
+        }
     }
 
     
