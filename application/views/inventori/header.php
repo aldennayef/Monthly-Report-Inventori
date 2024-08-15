@@ -68,6 +68,17 @@
                 margin-right: 5px; /* Menambahkan jarak antara nomor urut dan teks "Kode Item" */
                 font-size: 14px; /* Menyesuaikan ukuran font nomor urut agar sesuai dengan teks */
             }
+            .autocompletes-items {
+                position: absolute;
+                border-bottom: none;
+                border-top: none;
+                z-index: 99;
+                /* Position the autocomplete items to be the same width as the container: */
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: #b1d4e0;
+            }
 
 
         </style>

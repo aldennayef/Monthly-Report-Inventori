@@ -28,12 +28,12 @@ class Inventori extends CI_Model{
         return $this->db->get()->row_array();
     }
 
-    public function get_items_by_nik($nik) {
+    public function get_items_by_id_cluster($id_cluster) {
         
         // Query dengan menggunakan dblink untuk join antar database
         $query = $this->db_inv->query("
             SELECT * from items
-            WHERE nik = ?", array($nik));
+            WHERE id_cluster = ?", array($id_cluster));
         
         return $query->result_array();
     }
@@ -46,6 +46,14 @@ class Inventori extends CI_Model{
         return $this->db_inv->get()->result_array();
     }
     
+    public function get_suggested_jenis() {
+        $this->db_inv->select('jenis');
+        $this->db_inv->from('items');
+        $this->db_inv->group_by('jenis');
+        $query = $this->db_inv->get();
+        return $query->result_array();
+    }
+
     public function get_all_user() {
         // Pastikan koneksi database utama sudah di-load
         $this->load->database();
@@ -107,6 +115,18 @@ class Inventori extends CI_Model{
     public function insert_batch_item($data) {
         // Insert banyak data ke dalam tabel item sekaligus
         return $this->db_inv->insert_batch('items', $data);
+    }
+
+    public function delete_item($id_cluster, $kode_item){
+        return $this->db_inv->delete('items',['id_cluster'=>$id_cluster,'kode_item'=>$kode_item]);
+    }
+
+    public function update_item($data, $where){
+        return $this->db_inv->update('items', $data, $where);
+    }
+
+    public function get_pembelian_by_id_cluster($id_cluster){
+        return $this->db_inv->get_where('pembelian', ['id_cluster'=>$id_cluster])->result_array();
     }
     
 }
