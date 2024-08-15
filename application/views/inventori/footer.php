@@ -141,57 +141,6 @@
                     row.find('.edit-btn').show(); // Tampilkan kembali tombol edit
                 });
 
-                $('.edit-user-btn').click(function() {
-                    var row = $(this).closest('tr'); // Dapatkan baris yang sesuai dengan tombol yang diklik
-                    row.find('.cluster-text').hide(); // Sembunyikan teks cluster
-                    row.find('.cluster-select').show(); // Tampilkan dropdown cluster
-                    $(this).hide(); // Sembunyikan tombol edit
-                    row.find('.lock-user-btn, .cancel-user-btn').show(); // Tampilkan tombol lock dan cancel
-                });
-
-                // Event listener untuk tombol lock
-                $('.lock-user-btn').click(function() {
-                    var row = $(this).closest('tr');
-                    var nik = row.data('nik'); // Dapatkan NIK dari data attribute
-                    var selectedClusterValue = row.find('.cluster-select').val(); // Ambil nilai cluster yang dipilih
-                    var namauserValue = row.find('.nama-user').val(); // Ambil nilai cluster yang dipilih
-
-                    // Lakukan AJAX untuk menyimpan nilai baru di server
-                    $.ajax({
-                        url: '<?= base_url("inventori/proses/aksi_users") ?>', // Ubah URL ke controller aksi_users
-                        method: 'POST',
-                        data: {
-                            nik: nik,
-                            nama_user: namauserValue,
-                            id_cluster: selectedClusterValue
-                        },
-                        success: function(response) {
-                            if (response.status === 'success_add' || response.status === 'success_update') {
-                                var selectedClusterText = row.find('.cluster-select option:selected').text(); // Ambil teks cluster yang dipilih
-                                row.find('.cluster-text').text(selectedClusterText).show(); // Perbarui dan tampilkan teks cluster baru
-                                row.find('.cluster-select').hide(); // Sembunyikan dropdown cluster
-                                row.find('.lock-user-btn, .cancel-user-btn').hide(); // Sembunyikan tombol lock dan cancel
-                                row.find('.edit-user-btn').show(); // Tampilkan kembali tombol edit
-                            } else {
-                                alert('Update gagal!');
-                            }
-                        },
-                        error: function() {
-                            alert('Terjadi kesalahan dalam pengiriman data.');
-                        }
-                    });
-                });
-
-                // Event listener untuk tombol cancel
-                $('.cancel-user-btn').click(function() {
-                    var row = $(this).closest('tr');
-                    row.find('.cluster-select').hide(); // Sembunyikan dropdown cluster
-                    row.find('.cluster-text').show(); // Tampilkan kembali teks cluster
-                    $(this).hide(); // Sembunyikan tombol cancel
-                    row.find('.lock-user-btn').hide(); // Sembunyikan tombol lock
-                    row.find('.edit-user-btn').show(); // Tampilkan kembali tombol edit
-                });
-
                 // js view tambah_cluster
                 function addNewClusterRow() {
                     var newRow = $('.input-row-cluster').first().clone(); // Clone the first row

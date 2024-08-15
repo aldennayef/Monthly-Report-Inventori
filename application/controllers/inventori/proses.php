@@ -31,7 +31,6 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/navbar');
             $this->load->view('inventori/sidebar',$data);
             $this->load->view('inventori/v_users', $data);
-            $this->load->view('inventori/footer');
         }else{
             $this->load->view('inventori/error_page');
         }    
@@ -88,7 +87,6 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/navbar');
             $this->load->view('inventori/sidebar',$data);
             $this->load->view('inventori/v_clusters', $data);
-            $this->load->view('inventori/footer');
         }else{
             $this->load->view('inventori/error_page');
         }    
@@ -102,7 +100,6 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/navbar');
             $this->load->view('inventori/sidebar',$data);
             $this->load->view('inventori/tambah_cluster', $data);
-            $this->load->view('inventori/footer');
         }else{
             $this->load->view('inventori/error_page');
         }    
@@ -139,18 +136,10 @@ class Proses extends CI_Controller{
                                     'act_note' => 'Tambah Cluster Baru = '.$namaCluster[$i],
                                 ];
                         
-                                $this->db_inv->set('act_date', 'NOW()', FALSE);
-                                $this->db_inv->insert('log_data', $logdata);
+                                
                             }
                         
-                            // Masukkan data ke dalam tabel cluster melalui model dengan insert_batch
-                            if ($this->inventori->insert_batch_cluster($data)) {
-                                header('Content-Type: application/json');
-                                echo json_encode(['status'=> 'success']);
-                            } else {
-                                header('Content-Type: application/json');
-                                echo json_encode(['status'=> 'failed']);
-                            }
+                            
                         } catch (Exception $e) {
                             error_log('Error: ' . $e->getMessage());
                             header('Content-Type: application/json');
@@ -160,6 +149,16 @@ class Proses extends CI_Controller{
                         header('Content-Type: application/json');
                         echo json_encode(['status'=> 'duplicate', 'kode'=>$kode]);
                     }
+                }
+                // Masukkan data ke dalam tabel cluster melalui model dengan insert_batch
+                if ($this->inventori->insert_batch_cluster($data)) {
+                    $this->db_inv->set('act_date', 'NOW()', FALSE);
+                    $this->db_inv->insert('log_data', $logdata);
+                    header('Content-Type: application/json');
+                    echo json_encode(['status'=> 'success']);
+                } else {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status'=> 'failed']);
                 }
             } else {
                 $clusterId = $this->input->post('id_cluster');
@@ -212,7 +211,6 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/navbar');
             $this->load->view('inventori/sidebar',$data);
             $this->load->view('inventori/v_item', $data);
-            $this->load->view('inventori/footer');
         }else{
             $this->load->view('inventori/error_page');
         }
@@ -234,7 +232,6 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/navbar');
             $this->load->view('inventori/sidebar',$data);
             $this->load->view('inventori/v_aksi_item', $data);
-            $this->load->view('inventori/footer',$data);
         }else{
             $this->load->view('inventori/error_page');
         }
@@ -252,47 +249,58 @@ class Proses extends CI_Controller{
                 $jenisitem = $this->input->post('jenisitem');
                 $namaitem = $this->input->post('namaitem');
                 $noteitem = $this->input->post('note');
-    
-                foreach ($kodeitem as $i => $kode) {
-                    if (!$this->inventori->get_items_by_kode($kode)) {
-                        // Siapkan data untuk dimasukkan
-                        $data = array(
-                            'id_cluster' => $userData->id_cluster,
-                            'kode_item' => $kodeitem[$i],
-                            'jenis' => $jenisitem[$i],
-                            'nama' => $namaitem[$i],
-                            'note' => $noteitem[$i],
-                            'create_at' => date('Y-m-d'),
-                            'nik' => $this->session->userdata('nik'),
-                        );
-    
-                        $logdata = [
-                            'id_user' => $this->session->userdata('id'),
-                            'username' => $this->session->userdata('username'),
-                            'act_note' => 'Tambah Item Baru = ' . $namaitem[$i] . ' (Kode = ' . $kodeitem[$i] . ' )',
-                        ];
-    
+                foreach ($kodeitem as $kode) {
+                    if(!$this->inventori->get_items_by_kode($kode)){
+                        // Siapkan array untuk menyimpan banyak data
+                        $data = array();
+                        
                         try {
-                            // Insert data ke tabel items
-                            $this->db_inv->insert('items', $data);
-                            // Insert data ke tabel log_data
-                            $this->db_inv->set('act_date', 'NOW()', FALSE);
-                            $this->db_inv->insert('log_data', $logdata);
+                            // Looping melalui input dan siapkan data untuk insert batch
+                            for ($i = 0; $i < count($kodeitem); $i++) {
+                                
+                                $data[] = array(
+                                    'id_cluster' => $userData->id_cluster,
+                                    'kode_item' => $kodeitem[$i],
+                                    'jenis' => $jenisitem[$i],
+                                    'nama' => $namaitem[$i],
+                                    'note' => $noteitem[$i],
+                                    'create_at' => date('Y-m-d'),
+                                    'nik' => $this->session->userdata('nik'),
+                                );
+                        
+                                $logdata = [
+                                    'id_user' => $this->session->userdata('id'),
+                                    'username' => $this->session->userdata('username'),
+                                    'act_note' => 'Tambah Item Baru = ' . $namaitem[$i] . ' (Kode = ' . $kodeitem[$i] . ' )',
+                                ];
+                            }
                         } catch (Exception $e) {
                             error_log('Error: ' . $e->getMessage());
                             header('Content-Type: application/json');
-                            echo json_encode(['status' => 'failed']);
-                            return;
-                        }
-                    } 
+                            echo json_encode(['status'=> 'failed']);
+                        }  
+                    }    
                     else {
                         header('Content-Type: application/json');
                         echo json_encode(['status' => 'duplicate', 'kode' => $kode]);
                         return;
                     }
                 }
-                header('Content-Type: application/json');
-                echo json_encode(['status' => 'success']);
+                // Masukkan data ke dalam tabel cluster melalui model dengan insert_batch
+                if ($this->inventori->insert_batch_item($data)) {
+                    $this->db_inv->set('act_date', 'NOW()', FALSE);
+                    if ($this->db_inv->insert('log_data', $logdata)) {
+                        header('Content-Type: application/json');
+                        echo json_encode(['status'=> 'success']);
+                    } else {
+                        error_log('Failed to insert log data');
+                        header('Content-Type: application/json');
+                        echo json_encode(['status'=> 'failed', 'error' => 'log_failed']);
+                    }
+                } else {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status'=> 'failed', 'error' => 'batch_failed']);
+                }
             }
             else{
                 // Ambil data dari form
