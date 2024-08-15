@@ -23,7 +23,7 @@ class Proses extends CI_Controller{
     }
 
     public function detail_users(){
-        if($this->session->userdata('role_id')===1){
+        if($this->session->userdata('role_id') == 1){
             $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
             $data['all_users'] = $this->inventori->get_all_user();
             $data['clusters'] = $this->inventori->get_all_cluster();
@@ -38,7 +38,7 @@ class Proses extends CI_Controller{
     }
 
     public function aksi_users(){
-        if($this->session->userdata('role_id')===1){
+        if($this->session->userdata('role_id')==1){
             $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
             $nik = $this->input->post('nik');
             $nama_user = $this->input->post('nama_user');
@@ -366,6 +366,23 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/sidebar',$data);
             $this->load->view('inventori/v_pembelian', $data);
             $this->load->view('inventori/footer');
+        }else{
+            $this->load->view('inventori/error_page');
+        }
+    }
+
+    public function aksi_pembelian_page($aksi){
+        if($this->session->userdata('role_id')==3){
+            $data['aksi'] = $aksi;
+            $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+            $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+            $data['items'] = $this->inventori->get_items_by_id_cluster($userData->id_cluster);
+
+            $this->load->view('inventori/header', $data);
+            $this->load->view('inventori/navbar');
+            $this->load->view('inventori/sidebar',$data);
+            $this->load->view('inventori/v_aksi_pembelian', $data);
+            $this->load->view('inventori/footer',$data);
         }else{
             $this->load->view('inventori/error_page');
         }

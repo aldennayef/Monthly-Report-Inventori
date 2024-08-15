@@ -7,6 +7,8 @@
 
         <!-- Font Awesome -->
         <link rel="stylesheet" href="<?=base_url('assets/plugins/fontawesome-free/css/all.min.css')?>">
+        <!-- Daterange picker -->
+        <link rel="stylesheet" href="<?=base_url('assets/plugins/daterangepicker/daterangepicker.css')?>">
         <!-- Tempusdominus Bootstrap 4 -->
         <link rel="stylesheet" href="<?=base_url('assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css')?>">
         <!-- iCheck -->
