@@ -10,7 +10,18 @@ class Proses extends CI_Controller{
     }
 
     public function index(){
-        if($this->session->userdata('role_id')){
+        if($this->session->userdata('role_id')==3){
+            if($this->inventori->check_nik($this->session->userdata('nik'))){
+                $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+                $this->load->view('inventori/header', $data);
+                $this->load->view('inventori/navbar');
+                $this->load->view('inventori/sidebar',$data);
+                $this->load->view('inventori/dashboard', $data);
+                $this->load->view('inventori/footer');
+            }else{
+                $this->load->view('inventori/error_page');
+            }
+        }else if($this->session->userdata('role_id')==1){
             $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
             $this->load->view('inventori/header', $data);
             $this->load->view('inventori/navbar');
