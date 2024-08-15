@@ -91,3 +91,4 @@ $route['tbc'] = 'inventori/proses/tambah_clusters';
 $route['act'] = 'inventori/proses/aksi_clusters';
 $route['akm'] = 'inventori/proses/aksi_item';
 $route['deb'] = 'inventori/proses/detail_pembelian';
+$route['apbp/(:any)'] = 'inventori/proses/aksi_pembelian_page/$1';

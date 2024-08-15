@@ -25,12 +25,12 @@
               <!-- /.card-header -->
               <div class="card-body">
                 <div class="d-flex justify-content-between mb-2">
-                  <a href="<?=base_url('aip').'/add'?>">
+                  <a href="<?=base_url('apbp').'/add'?>">
                     <button type="button" class="btn btn-success">
                       <i class="fas fa-plus"></i> Tambah Pembelian
                     </button>
                   </a>
-                  <a href="<?=base_url('aip').'/edit'?>">
+                  <a href="<?=base_url('apbp').'/edit'?>">
                     <button type="button" class="btn btn-primary">
                       <i class="fas fa-edit"></i> Edit Pembelian
                     </button>

@@ -13,12 +13,6 @@
 
         <!-- jQuery -->
         <script src="<?=base_url('assets/plugins/jquery/jquery.min.js')?>"></script>
-        <!-- jQuery UI 1.11.4 -->
-        <script src="<?=base_url('assets/plugins/jquery-ui/jquery-ui.min.js')?>"></script>
-        <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-        <script>
-            $.widget.bridge('uibutton', $.ui.button)
-        </script>
         <!-- Bootstrap 4 -->
         <script src="<?=base_url('assets/plugins/bootstrap/js/bootstrap.bundle.min.js')?>"></script>
         <!-- DataTables  & Plugins -->
@@ -34,6 +28,9 @@
         <script src="<?=base_url('assets/plugins/datatables-buttons/js/buttons.html5.min.js')?>"></script>
         <script src="<?=base_url('assets/plugins/datatables-buttons/js/buttons.print.min.js')?>"></script>
         <script src="<?=base_url('assets/plugins/datatables-buttons/js/buttons.colVis.min.js')?>"></script>
+        <!-- daterangepicker -->
+        <script src="<?=base_url('assets/plugins/moment/moment.min.js')?>"></script>
+        <script src="<?=base_url('assets/plugins/daterangepicker/daterangepicker.js')?>"></script>
         <!-- Summernote -->
         <script src="<?=base_url('assets/plugins/summernote/summernote-bs4.min.js')?>"></script>
         <!-- Sparkline -->
@@ -64,6 +61,7 @@
                     "responsive": true,
                     });
                 });
+                
             $(document).ready(function() {
                 // Event listener untuk tombol edit
                 $('.edit-btn').click(function() {
@@ -611,6 +609,102 @@
                     }
                 });
 
+                $('#pembelianForm').on('submit', function(e) {
+                    e.preventDefault(); // Mencegah submit form standar
+
+                    var isValid = true;
+                    var lastRow = $('#itemInputs .input-row-item').last();
+                    var lastRowIsEmpty = true;
+                    var emptyInputNumber = null;
+
+                    // Cek apakah inputan terakhir kosong
+                    lastRow.find('.input-check').each(function() {
+                        if ($(this).val() !== '') {
+                            lastRowIsEmpty = false;
+                        }
+                    });
+
+                    // Hapus baris terakhir jika kosong
+                    if (lastRowIsEmpty && $('.input-row-item').length > 1) {
+                        lastRow.remove();
+                    }
+
+                    // Cek apakah ada inputan yang tidak terisi selain inputan terakhir
+                    $('#itemInputs .input-row-item').not(':last').each(function(index) {
+                        var row = $(this);
+                        row.find('.input-check').each(function() {
+                            if ($(this).val() === '') {
+                                isValid = false;
+                                emptyInputNumber = index + 1; // Simpan nomor inputan yang kosong
+                                $(this).focus(); // Arahkan kursor ke inputan yang belum terisi
+                                return false; // Keluar dari loop jika ditemukan inputan kosong
+                            }
+                        });
+                        if (!isValid) {
+                            return false; // Keluar dari loop jika ditemukan inputan kosong
+                        }
+                    });
+
+                    if (isValid) {
+                        // Pastikan inputan terakhir yang kosong tidak disubmit
+                        var formData = $('#pembelianForm').serializeArray();
+                        var cleanedData = formData.filter(function(item) {
+                            return item.value.trim() !== ""; // Hanya menyertakan input yang tidak kosong
+                        });
+
+                        if (cleanedData.length > 0) {
+                            // Jika valid dan ada data yang akan disubmit, submit form via AJAX
+                            $.ajax({
+                                url: '<?= base_url('akm') ?>',
+                                method: 'POST',
+                                data: $.param(cleanedData),
+                                success: function(response) {
+                                    if (response.status === 'success') {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Berhasil!',
+                                            text: 'Update item berhasil.',
+                                        }).then(function() {
+                                            window.location.href = '<?= base_url('dem') ?>'; // Redirect to 'decs' page
+                                        });
+                                    } else if (response.status === 'duplicate') {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Gagal!',
+                                            text: 'Kode ' + response.kode + ' Sudah Ada !',
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Gagal!',
+                                            text: 'Update item gagal.',
+                                        });
+                                    }
+                                },
+                                error: function() {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error!',
+                                        text: 'Terjadi kesalahan dalam pengiriman data.',
+                                    });
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Data Belum Lengkap!',
+                                text: 'Harap isi semua inputan sebelum mengirim.',
+                            });
+                        }
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Data Belum Lengkap!',
+                            text: 'Harap isi semua inputan pada nomor ' + emptyInputNumber + ' sebelum mengirim.',
+                        });
+                    }
+                });
+
             });
 
             //Convert bulan ke bhs indonesia (v_item)
@@ -712,8 +806,6 @@
 
             // Inisialisasi autocomplete untuk status
             autocomplete(document.getElementById("jenisitem"), listjenisitem);
-
-
 
         </script>
     </body>
