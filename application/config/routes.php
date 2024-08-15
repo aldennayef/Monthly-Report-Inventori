@@ -84,9 +84,10 @@ $route['gon'] = 'user/admin_department';
 # INVENTORI
 $route['dsb'] = 'inventori/proses';
 $route['dem'] = 'inventori/proses/detail_item';
-$route['tbi'] = 'inventori/proses/tambah_item';
+$route['aip/(:any)'] = 'inventori/proses/aksi_item_page/$1';
 $route['deus'] = 'inventori/proses/detail_users';
 $route['decs'] = 'inventori/proses/detail_clusters';
 $route['tbc'] = 'inventori/proses/tambah_clusters';
 $route['act'] = 'inventori/proses/aksi_clusters';
 $route['akm'] = 'inventori/proses/aksi_item';
+$route['deb'] = 'inventori/proses/detail_pembelian';
