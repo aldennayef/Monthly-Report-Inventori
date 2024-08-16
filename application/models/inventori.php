@@ -128,5 +128,64 @@ class Inventori extends CI_Model{
     public function get_pembelian_by_id_cluster($id_cluster){
         return $this->db_inv->get_where('pembelian', ['id_cluster'=>$id_cluster])->result_array();
     }
+
+    public function count_kode_beli($kodePrefix) {
+        $this->db_inv->select_max('kode_beli', 'max_kode');
+        $this->db_inv->like('kode_beli', $kodePrefix, 'after');
+        $result = $this->db_inv->get('pembelian')->row();
     
+        if ($result && isset($result->max_kode)) {
+            $lastKode = intval(str_replace($kodePrefix, '', $result->max_kode));
+            return $lastKode;
+        }
+        return 0;
+    }
+    
+    public function count_no_po($kodePrefix) {
+        $this->db_inv->select_max('no_po', 'max_po');
+        $this->db_inv->like('no_po', $kodePrefix, 'after');
+        $result = $this->db_inv->get('pembelian')->row();
+    
+        if ($result && isset($result->max_po)) {
+            $lastPO = intval(str_replace($kodePrefix, '', $result->max_po));
+            return $lastPO;
+        }
+        return 0;
+    }
+
+    public function insert_batch_pembelian($data){
+        return $this->db_inv->insert_batch('pembelian',$data);
+    }
+
+    public function check_kode_beli($kode){
+        return $this->db_inv->get_where('pembelian', ['kode_beli'=>$kode])->row_array();
+    }
+
+    public function check_kode_item($kode){
+        return $this->db_inv->get_where('pembelian', ['kode_item'=>$kode])->row_array();
+    }
+
+    public function insert_batch_stok($data){
+        return $this->db_inv->insert_batch('stok',$data);
+    }
+
+    public function check_stok($kodeitem){
+        return $this->db_inv->get_where('stok',['kode_item'=>$kodeitem])->row_array();
+    }
+    
+    public function insert_pembelian($data) {
+        $this->db_inv->insert('pembelian', $data);
+    }
+    
+    public function update_stok($kode_item, $data) {
+        $this->db_inv->where('kode_item', $kode_item);
+        $this->db_inv->update('stok', $data);
+    }
+    
+    public function insert_stok($data) {
+        $this->db_inv->insert('stok', $data);
+    }
+    
+
+
 }
