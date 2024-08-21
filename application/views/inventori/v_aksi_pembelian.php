@@ -1,198 +1,198 @@
-<!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
-  <!-- Content Header (Page header) -->
-  <div class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1 class="m-0">Sistem Informasi Inventori (SIMI)</h1>
-        </div><!-- /.col -->
-      </div><!-- /.row -->
-    </div><!-- /.container-fluid -->
-  </div>
-  <!-- /.content-header -->
-  
-<?php if($aksi === 'add'){ ?>
-  <!-- Main content -->
-  <section class="content">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-12">
-          <!-- Input data -->
-          <div class="card card-info">
-            <div class="card-header">
-              <h3 class="card-title">Input Data PO Pembelian</h3>
-            </div>
-            <form action="" name="pembelianForm" id="pembelianForm" method="POST" >
-                <div class="card-body" id="itemInputs">
-                  <div class="row">
-                    <div class="col-2">
-                        <label class='labelitem'>Kode Beli</label>
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+            <h1 class="m-0">Sistem Informasi Inventori (SIMI)</h1>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    
+    <?php if($aksi === 'add'){ ?>
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+            <!-- Input data -->
+            <div class="card card-info">
+                <div class="card-header">
+                <h3 class="card-title">Input Data PO Pembelian</h3>
+                </div>
+                <form action="" name="pembelianForm" id="pembelianForm" method="POST" >
+                    <div class="card-body" id="itemInputs">
+                    <div class="row">
+                        <div class="col-2">
+                            <label class='labelitem'>Kode Beli</label>
+                            <div class="input-group mb-3">
+                            <input type="text" class="form-control input-check" placeholder="Kode Beli" name="kodebeli" value="<?= $next_kode_beli ?>" readonly autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label>Nomor PO</label>
+                            <div class="input-group mb-3">
+                            <input type="text" class="form-control input-check" placeholder="No PO" name="nopo" id="nopo" value="<?= $next_no_po ?>" readonly autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                        <label>Tanggal</label>
                         <div class="input-group mb-3">
-                        <input type="text" class="form-control input-check" placeholder="Kode Beli" name="kodebeli" value="<?= $next_kode_beli ?>" readonly autocomplete="off">
+                            <input type="datetime-local" class="form-control" placeholder="Tanggal" name="tanggal" autocomplete="off" id="datetimeInput">&nbsp;&nbsp;
+                        </div>
                         </div>
                     </div>
-                    <div class="col-2">
-                        <label>Nomor PO</label>
+                    <div class="row input-row-item">
+                        <div class="col-3">
+                        <label><span class="item-number">1</span>. Kode Item</label>
                         <div class="input-group mb-3">
-                        <input type="text" class="form-control input-check" placeholder="No PO" name="nopo" id="nopo" value="<?= $next_no_po ?>" readonly autocomplete="off">
+                            <select class="form-control input-check" name="kodeitem[]" autocomplete="off">
+                            <option value="" selected disabled>Pilih Kode Item</option>
+                            <?php foreach ($items as $item): ?>
+                                <option value="<?= $item['kode_item'] ?>"><?= $item['kode_item'] ?> - <?= $item['nama'] ?></option>
+                            <?php endforeach; ?>
+                            </select>
                         </div>
-                    </div>
-                    <div class="col-3">
-                      <label>Tanggal</label>
-                      <div class="input-group mb-3">
-                          <input type="datetime-local" class="form-control" placeholder="Tanggal" name="tanggal" autocomplete="off" id="datetimeInput">&nbsp;&nbsp;
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row input-row-item">
-                    <div class="col-3">
-                      <label><span class="item-number">1</span>. Kode Item</label>
-                      <div class="input-group mb-3">
-                        <select class="form-control input-check" name="kodeitem[]" autocomplete="off">
-                        <option value="" selected disabled>Pilih Kode Item</option>
-                          <?php foreach ($items as $item): ?>
-                            <option value="<?= $item['kode_item'] ?>"><?= $item['kode_item'] ?> - <?= $item['nama'] ?></option>
-                          <?php endforeach; ?>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="col-2">
-                      <label>Quantity</label>
-                      <div class="input-group mb-3">
-                          <input type="text" class="form-control input-check quantity-input" placeholder="Qty" name="qty[]" autocomplete="off">
-                      </div>
-                    </div>
-                    <div class="col-2">
-                        <label>Satuan</label>
+                        </div>
+                        <div class="col-2">
+                        <label>Quantity</label>
                         <div class="input-group mb-3">
-                        <input type="text" class="form-control input-check" placeholder="Satuan" name="satuan[]" autocomplete="off">
+                            <input type="text" class="form-control input-check quantity-input" placeholder="Qty" name="qty[]" autocomplete="off">
                         </div>
-                    </div>
-                    <div class="col-2">
-                        <label>Harga Satuan</label>
+                        </div>
+                        <div class="col-2">
+                            <label>Satuan</label>
+                            <div class="input-group mb-3">
+                            <input type="text" class="form-control input-check" placeholder="Satuan" name="satuan[]" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label>Harga Satuan</label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control input-check harga-input" placeholder="Harga per Satuan" name="hargapersatuan[]" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                        <label>Exp Date</label>
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control input-check harga-input" placeholder="Harga per Satuan" name="hargapersatuan[]" autocomplete="off">
-                        </div>
-                    </div>
-                    <div class="col-3">
-                      <label>Exp Date</label>
-                      <div class="input-group mb-3">
-                          <input type="datetime-local" class="form-control" placeholder="Expire Date" name="expdate[]" autocomplete="off" id="datetimeInput" required>&nbsp;&nbsp;
-                          <div class="input-group-append">
-                              &nbsp;&nbsp;&nbsp;<button class="btn btn-sm btn-primary btn-add-row-item" type="button"><i class="fas fa-plus"></i></button>
+                            <input type="datetime-local" class="form-control" placeholder="Expire Date" name="expdate[]" autocomplete="off" id="datetimeInput" required>&nbsp;&nbsp;
+                            <div class="input-group-append">
+                                &nbsp;&nbsp;&nbsp;<button class="btn btn-sm btn-primary btn-add-row-item" type="button"><i class="fas fa-plus"></i></button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                  </div>
-                  <input type="text" name="type" id="type" value="add" hidden>
-                  <!-- /.card-body -->
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-block btn-primary" id="btnAddItem" name="btnAddItem">Submit</button>
-                </div>
-            </form>
-          </div>
-          <!-- /.card -->
-        </div>
-      </div>
-      <!-- /.row -->
-    </div><!-- /.container-fluid -->
-  </section>
-  <!-- /.content -->
-</div>
-<!-- /.content-wrapper -->
-<?php } else { ?>
-  <!-- Main content -->
-  <section class="content">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-12">
-          <!-- Input data -->
-          <div class="card card-info">
-            <div class="card-header">
-              <h3 class="card-title">Update Data PO Pembelian</h3>
+                    <input type="text" name="type" id="type" value="add" hidden>
+                    <!-- /.card-body -->
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-block btn-primary" id="btnAddItem" name="btnAddItem">Submit</button>
+                    </div>
+                </form>
             </div>
-            <form action="" name="pembelianForm" id="pembelianForm" method="POST" >
-                <div class="card-body" id="itemInputs">
-                  <div class="row">
-                    <div class="col-2">
-                        <label class='labelitem'>Kode Beli</label>
+            <!-- /.card -->
+            </div>
+        </div>
+        <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+    <?php } else { ?>
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+            <!-- Input data -->
+            <div class="card card-info">
+                <div class="card-header">
+                <h3 class="card-title">Update Data PO Pembelian</h3>
+                </div>
+                <form action="" name="pembelianForm" id="pembelianForm" method="POST" >
+                    <div class="card-body" id="itemInputs">
+                    <div class="row">
+                        <div class="col-2">
+                            <label class='labelitem'>Kode Beli</label>
+                            <div class="input-group mb-3">
+                            <input type="text" class="form-control input-check" placeholder="Kode Beli" name="kodebeli" value="<?= $next_kode_beli ?>" readonly autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label>Nomor PO</label>
+                            <div class="input-group mb-3">
+                            <input type="text" class="form-control input-check" placeholder="No PO" name="nopo" id="nopo" value="<?= $next_no_po ?>" readonly autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                        <label>Tanggal</label>
                         <div class="input-group mb-3">
-                        <input type="text" class="form-control input-check" placeholder="Kode Beli" name="kodebeli" value="<?= $next_kode_beli ?>" readonly autocomplete="off">
+                            <input type="datetime-local" class="form-control" placeholder="Tanggal" name="tanggal" autocomplete="off" id="datetimeInput">&nbsp;&nbsp;
+                        </div>
                         </div>
                     </div>
-                    <div class="col-2">
-                        <label>Nomor PO</label>
+                    <div class="row input-row-item">
+                        <div class="col-3">
+                        <label><span class="item-number">1</span>. Kode Item</label>
                         <div class="input-group mb-3">
-                        <input type="text" class="form-control input-check" placeholder="No PO" name="nopo" id="nopo" value="<?= $next_no_po ?>" readonly autocomplete="off">
+                            <select class="form-control input-check" name="kodeitem[]" autocomplete="off">
+                            <option value="" selected disabled>Pilih Kode Item</option>
+                            <?php foreach ($items as $item): ?>
+                                <option value="<?= $item['kode_item'] ?>"><?= $item['kode_item'] ?> - <?= $item['nama'] ?></option>
+                            <?php endforeach; ?>
+                            </select>
                         </div>
-                    </div>
-                    <div class="col-3">
-                      <label>Tanggal</label>
-                      <div class="input-group mb-3">
-                          <input type="datetime-local" class="form-control" placeholder="Tanggal" name="tanggal" autocomplete="off" id="datetimeInput">&nbsp;&nbsp;
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row input-row-item">
-                    <div class="col-3">
-                      <label><span class="item-number">1</span>. Kode Item</label>
-                      <div class="input-group mb-3">
-                        <select class="form-control input-check" name="kodeitem[]" autocomplete="off">
-                        <option value="" selected disabled>Pilih Kode Item</option>
-                          <?php foreach ($items as $item): ?>
-                            <option value="<?= $item['kode_item'] ?>"><?= $item['kode_item'] ?> - <?= $item['nama'] ?></option>
-                          <?php endforeach; ?>
-                        </select>
-                      </div>
-                    </div>
-                    <div class="col-2">
-                      <label>Quantity</label>
-                      <div class="input-group mb-3">
-                          <input type="text" class="form-control input-check quantity-input" placeholder="Qty" name="qty[]" autocomplete="off">
-                      </div>
-                    </div>
-                    <div class="col-2">
-                        <label>Satuan</label>
+                        </div>
+                        <div class="col-2">
+                        <label>Quantity</label>
                         <div class="input-group mb-3">
-                        <input type="text" class="form-control input-check" placeholder="Satuan" name="satuan[]" autocomplete="off">
+                            <input type="text" class="form-control input-check quantity-input" placeholder="Qty" name="qty[]" autocomplete="off">
                         </div>
-                    </div>
-                    <div class="col-2">
-                        <label>Harga Satuan</label>
+                        </div>
+                        <div class="col-2">
+                            <label>Satuan</label>
+                            <div class="input-group mb-3">
+                            <input type="text" class="form-control input-check" placeholder="Satuan" name="satuan[]" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <label>Harga Satuan</label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control input-check harga-input" placeholder="Harga per Satuan" name="hargapersatuan[]" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                        <label>Exp Date</label>
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control input-check harga-input" placeholder="Harga per Satuan" name="hargapersatuan[]" autocomplete="off">
-                        </div>
-                    </div>
-                    <div class="col-3">
-                      <label>Exp Date</label>
-                      <div class="input-group mb-3">
-                          <input type="datetime-local" class="form-control" placeholder="Expire Date" name="expdate[]" autocomplete="off" id="datetimeInput" required>&nbsp;&nbsp;
-                          <div class="input-group-append">
-                              &nbsp;&nbsp;&nbsp;<button class="btn btn-sm btn-primary btn-add-row-item" type="button"><i class="fas fa-plus"></i></button>
+                            <input type="datetime-local" class="form-control" placeholder="Expire Date" name="expdate[]" autocomplete="off" id="datetimeInput" required>&nbsp;&nbsp;
+                            <div class="input-group-append">
+                                &nbsp;&nbsp;&nbsp;<button class="btn btn-sm btn-primary btn-add-row-item" type="button"><i class="fas fa-plus"></i></button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                  </div>
-                  <input type="text" name="type" id="type" value="add" hidden>
-                  <!-- /.card-body -->
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-block btn-primary" id="btnAddItem" name="btnAddItem">Submit</button>
-                </div>
-            </form>
-          </div>
-          <!-- /.card -->
+                    <input type="text" name="type" id="type" value="add" hidden>
+                    <!-- /.card-body -->
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-block btn-primary" id="btnAddItem" name="btnAddItem">Submit</button>
+                    </div>
+                </form>
+            </div>
+            <!-- /.card -->
+            </div>
         </div>
-      </div>
-      <!-- /.row -->
-    </div><!-- /.container-fluid -->
-  </section>
-  <!-- /.content -->
-</div>
-<!-- /.content-wrapper -->
-<?php } ?>
+        <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+    <?php } ?>
   
   <!-- jQuery -->
   <script src="<?=base_url('assets/plugins/jquery/jquery.min.js')?>"></script>

@@ -72,6 +72,7 @@
             }
             .autocompletes-items {
                 position: absolute;
+                border: 1px solid #d4d4d4;
                 border-bottom: none;
                 border-top: none;
                 z-index: 99;
@@ -79,7 +80,14 @@
                 top: 100%;
                 left: 0;
                 right: 0;
+                max-height: 200px; /* Atur tinggi maksimum */
+                overflow-y: auto; /* Tambahkan scrollbar vertikal */
                 background-color: #b1d4e0;
+            }
+
+            .autocompletes-active {
+                background-color: #0a75ad; /* Warna background saat dihover atau dipilih */
+                color: #ffffff; /* Warna teks saat dihover atau dipilih */
             }
 
 
