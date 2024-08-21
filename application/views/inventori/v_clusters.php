@@ -141,7 +141,7 @@
                 });
                 $(document).ready(function() {
                     // Event listener untuk tombol edit
-                    $('.edit-btn').click(function() {
+                    $('#item').on('click', '.edit-btn', function() {
                         var row = $(this).closest('tr'); // Dapatkan baris yang sesuai dengan tombol yang diklik
                         var clusterText = row.find('.cluster-text').text(); // Ambil teks cluster yang ada
                         var kodeclusterText = row.find('.kode-cluster-text').text(); // Ambil teks cluster yang ada
@@ -154,7 +154,7 @@
                     });
 
                     // Event listener untuk tombol lock
-                    $('.lock-btn').click(function() {
+                    $('#item').on('click', '.lock-btn', function() {
                         var row = $(this).closest('tr');
                         var updatedClusterText = row.find('.cluster-input').val(); // Ambil nilai dari input
                         var oldClusterText = row.find('.cluster-old').val(); // Ambil nilai dari input
@@ -207,7 +207,7 @@
                     });
 
                     // Event listener untuk tombol cancel
-                    $('.cancel-btn').click(function() {
+                    $('#item').on('click', '.cancel-btn', function() {
                         var row = $(this).closest('tr');
                         row.find('.cluster-input').hide(); // Sembunyikan input cluster
                         row.find('.cluster-text').show(); // Tampilkan kembali teks cluster

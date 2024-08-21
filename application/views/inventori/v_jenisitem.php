@@ -20,41 +20,25 @@
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Data Items <?=$user['sub_department']?></h3>
+                <h3 class="card-title">Data Jenis Items <?=$user['sub_department']?></h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <div class="d-flex justify-content-between mb-2">
-                  <a href="<?=base_url('aip').'/add'?>">
-                    <button type="button" class="btn btn-success">
-                      <i class="fas fa-plus"></i> Tambah Item
-                    </button>
-                  </a>
-                  <a href="<?=base_url('aip').'/edit'?>">
-                    <button type="button" class="btn btn-primary">
-                      <i class="fas fa-edit"></i> Edit Item
-                    </button>
-                  </a>
-                </div>
                 <table id="item" class="table table-bordered table-hover">
                   <thead>
                     <tr>
-                      <th>Kode Item</th>
-                      <th>Jenis Item</th>
-                      <th>Nama Item</th>
-                      <th>Note</th>
+                      <th>No</th>
+                      <th>Nama Jenis</th>
                       <th>Created At</th>
                     </tr>
                   </thead>
                   <tbody>
                     <?php if($this->session->userdata('role_id')==3){ ?>
-                      <?php foreach ($item as $items) {?>
+                      <?php $i=1; foreach ($jenisitem as $ji) {?>
                       <tr>
-                        <td><?=$items['kode_item']?></td>
-                        <td><?=$items['jenis']?></td>
-                        <td><?=$items['nama']?></td>
-                        <td><?=$items['note']?></td>
-                        <td><?=strftime('%d %B %Y', strtotime($items['create_at']))?></td>
+                        <td><?=$i++;?></td>
+                        <td><?=$ji['nama_jenis']?></td>
+                        <td><?=strftime('%d %B %Y', strtotime($ji['create_at']))?></td>
                       </tr>
                       <?php }?>
                     <?php } else { ?>

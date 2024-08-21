@@ -62,7 +62,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="pages/search/enhanced.html" class="nav-link">
+                <a href="<?=base_url('dejim')?>" class="nav-link">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Jenis Item</p>
                 </a>
