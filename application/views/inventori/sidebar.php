@@ -70,55 +70,31 @@
             </ul>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="<?=base_url('deb')?>" class="nav-link">
               <i class="nav-icon fas fa-plus-square"></i>
               <p>
-                Pembelian
-                <i class="fas fa-angle-left right"></i>
+                Data Pembelian
               </p>
             </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="<?=base_url('deb')?>" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Data Pembelian</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="pages/search/enhanced.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Data Opname</p>
-                </a>
-              </li>
-            </ul>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="<?=base_url('depak')?>" class="nav-link">
               <i class="nav-icon fas fa-minus-square"></i>
               <p>
-                Pemakaian
-                <i class="fas fa-angle-left right"></i>
+                Data Pemakaian
               </p>
             </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="pages/search/simple.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Data Pemakaian</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="pages/search/enhanced.html" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Data Opname</p>
-                </a>
-              </li>
-            </ul>
           </li>
           <li class="nav-item">
-            <a href="<?= base_url('logout') ?>" class="nav-link">
+            <a href="<?= base_url('kjg') ?>" class="nav-link">
               <i class="nav-icon fas fa-flag"></i>
-              <p>Kunjungan</p>
+              <p>Data Kunjungan</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="<?=base_url('dop')?>" class="nav-link">
+              <i class="nav-icon fas fa-check-double"></i>
+              <p>Data Opname</p>
             </a>
           </li>
           <?php } ?>

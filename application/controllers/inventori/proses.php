@@ -530,61 +530,378 @@ class Proses extends CI_Controller{
             else{
                 // Ambil data dari form
                 $kodeitem = $this->input->post('kodeitem');
-                $oldkodeitem = $this->input->post('oldkodeitem');
-                $jenisitem = $this->input->post('jenisitem');
-                $oldjenisitem = $this->input->post('oldjenisitem');
-                $namaitem = $this->input->post('namaitem');
-                $oldnamaitem = $this->input->post('oldnamaitem');
-                $noteitem = $this->input->post('note');
-                $oldnoteitem = $this->input->post('oldnote');
-    
-                foreach ($kodeitem as $i => $kode) {
-                    if ($oldkodeitem[$i] === $kodeitem[$i] || !$this->inventori->get_items_by_kode($kode)) {
-                        // Siapkan data untuk dimasukkan
-                        $data = array(
-                            'id_cluster' => $userData->id_cluster,
-                            'kode_item' => $kodeitem[$i],
-                            'jenis' => $jenisitem[$i],
-                            'nama' => $namaitem[$i],
-                            'note' => $noteitem[$i],
-                            'nik' => $this->session->userdata('nik'),
-                        );
+                $kodebeli = $this->input->post('kodebeli');
+                $updateQuantity = $this->input->post('updateQuantity');
+                $updateQtyPembelian = $this->input->post('updateQtyPembelian');
 
-                        $target = array(
-                            'id_cluster' => $userData->id_cluster,
-                            'kode_item' =>$oldkodeitem[$i]
-                        );
-    
-                        $logdata = array(
-                            'id_user' => $this->session->userdata('id'),
-                            'username' => $this->session->userdata('username'),
-                            'act_note' => 'Mengupdate Item = ' . $oldnamaitem[$i] . ' (Kode = ' . $oldkodeitem[$i] . ' | Jenis = '.$oldjenisitem[$i].' | Note = '.$oldnoteitem[$i].' ) ===>>> Item = ' . $namaitem[$i] . ' (Kode = ' . $kodeitem[$i] . ' | Jenis = '.$jenisitem[$i].' | Note = '.$noteitem[$i].' )'
-                        );
-    
-                        try {
-                            // Insert data ke tabel items
-                            $this->inventori->update_item($data,$target);
-                            // Insert data ke tabel log_data
-                            $this->db_inv->set('act_date', 'NOW()', FALSE);
-                            $this->db_inv->insert('log_data', $logdata);
-                        } catch (Exception $e) {
-                            error_log('Error: ' . $e->getMessage());
-                            header('Content-Type: application/json');
-                            echo json_encode(['status' => 'failed']);
-                            return;
-                        }
-                    } 
-                    else {
+                $datapemb = array(
+                    'quantity'=>$updateQtyPembelian
+                );
+                $datastok = array(
+                    'quantity_real'=>$updateQuantity
+                );
+
+                if($this->inventori->update_qty_pembelian($datapemb,$kodebeli,$kodeitem)){
+                    if($this->inventori->update_quantity_real_by_kode_item($datastok,$kodeitem)){
                         header('Content-Type: application/json');
-                        echo json_encode(['status' => 'duplicate', 'kode' => $kode]);
-                        return;
+                        echo json_encode(['status' => 'success']);
+                    }else{
+                        header('Content-Type: application/json');
+                        echo json_encode(['status' => 'failed']);
                     }
+                }else{
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'failed']);
                 }
-                header('Content-Type: application/json');
-                echo json_encode(['status' => 'success']);
             }
         }
         else{
+            $this->load->view('inventori/error_page');
+        }
+    }
+
+
+    public function detail_pemakaian(){
+        if($this->session->userdata('role_id') == 3){
+            if($this->inventori->check_nik($this->session->userdata('nik'))){
+                $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+                $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+                $data['pemakaian'] = $this->inventori->get_pemakaian_by_id_cluster($userData->id_cluster);
+                $users = $this->inventori->get_all_users_from_external_db();
+                $listuser = array_map(function($user) {
+                    return $user['nik'] . ' - ' . $user['nama'] . ' - ' . $user['department'];
+                }, $users);
+
+                $data['all_user_ex_db'] = json_encode($listuser);
+                $this->load->view('inventori/header', $data);
+                $this->load->view('inventori/navbar');
+                $this->load->view('inventori/sidebar',$data);
+                $this->load->view('inventori/v_pemakaian',$data);
+            }
+            else{
+                $this->load->view('inventori/error_page');
+            }
+        }
+        else{
+            $this->load->view('inventori/error_page');
+        }
+    }
+
+    public function aksi_pemakaian_page($aksi){
+        if($this->session->userdata('role_id') == 3){
+            if($this->inventori->check_nik($this->session->userdata('nik'))){
+                $data['aksi'] = $aksi;
+                $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+                $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+
+                $data['all_user'] = json_encode(array_column($this->inventori->get_data_user_from_external_db(), 'nik'));
+
+                $users = $this->inventori->get_all_users_from_external_db();
+                $listuser = array_map(function($user) {
+                    return $user['nik'] . ' - ' . $user['nama'] . ' - ' . $user['department'];
+                }, $users);
+
+                $data['all_user_ex_db'] = json_encode($listuser);
+    
+                // Hitung jumlah nomor pakai yang sudah ada untuk sub_department ini
+                $kodePrefix = 'PK' . $data['user']['sub_department'].'.';
+                $lastNoPakai = $this->inventori->count_no_pakai($kodePrefix, $userData->id_cluster);
+                $nextNoPakaiNumber = str_pad($lastNoPakai + 1, 6, '0', STR_PAD_LEFT); // Menambahkan nol di depan sehingga selalu 6 digit
+                $nextNoPakai = $kodePrefix . $nextNoPakaiNumber; // Ini akan menjadi nomor pakai berikutnya
+                $data['next_no_pakai'] = $nextNoPakai; // Ini akan digunakan di frontend
+
+                $data['items'] = $this->inventori->get_item_from_po_by_id_cluster($userData->id_cluster);
+
+                $data['data_pemakaian'] = $this->inventori->get_pemakaian_unik_by_id_cluster($userData->id_cluster);
+                
+                $this->load->view('inventori/header', $data);
+                $this->load->view('inventori/navbar');
+                $this->load->view('inventori/sidebar', $data);
+                $this->load->view('inventori/v_aksi_pemakaian', $data);
+            }
+            else {
+                $this->load->view('inventori/error_page');
+            }
+        }
+        else {
+            $this->load->view('inventori/error_page');
+        }
+    }
+
+    public function aksi_pemakaian(){
+        if($this->session->userdata('role_id')==3){
+            $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+            $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+            $type = $this->input->post('type');
+            if ($type === 'add') {
+                $nopakai = $this->input->post('nopakai');
+                $jenispakai = $this->input->post('jenispakai');
+                $nik = $this->input->post('nik');
+                $idstock = $this->input->post('idstock');
+                $kodeitem = $this->input->post('kodeitem');
+                $stok = $this->input->post('stok');
+                $qty = $this->input->post('qty');
+                $nama = $this->input->post('nama');
+                $pemberi = $this->input->post('pemberi');
+                $deskripsi = $this->input->post('deskripsi');
+                $tanggal = $this->input->post('tanggal');
+
+                $data = array();
+                $logdata = [];
+
+                try {
+                    // Looping melalui input dan siapkan data untuk insert/update satu per satu
+                    for ($i = 0; $i < count($idstock); $i++) {
+                        // Siapkan data untuk tabel pembelian
+                        $dataPemakaian = array(
+                            'jenis_pakai' => $jenispakai,
+                            'id_stock' => $idstock[$i],
+                            'jml_pakai' => $qty[$i],
+                            'nik_pemakai' => $nik,
+                            'nama_pemakai' => $nama,
+                            'nopakai' => $nopakai,
+                            'pemberi' => $pemberi[$i],
+                            'deskripsi' => $deskripsi,
+                            'waktu' => $tanggal,
+                            'id_cluster' => $userData->id_cluster,
+                        );
+
+                        // Insert data ke tabel pemakaian
+                        $this->inventori->insert_pemakaian($dataPemakaian);
+
+                        // Jika kode_item sudah ada, lakukan update
+                        $stokData = array(
+                            'quantity_real' => $stok[$i] - $qty[$i],
+                        );
+                        $this->inventori->update_stok($kodeitem[$i], $stokData);
+                        
+                        // Siapkan data untuk log aktivitas
+                        $logdata = [
+                            'id_user' => $this->session->userdata('id'),
+                            'username' => $this->session->userdata('username'),
+                            'act_note' => 'Tambah Pemakaian Baru = ' . $kodeitem[$i],
+                        ];
+                    }
+
+                    $dataKunjungan = array(
+                        'kode_visit' => $nopakai,
+                        'jenis_visit' => $jenispakai,
+                        'nik_visit' => $nik,
+                        'nama_visit' => $nama,
+                        'tujuan_visit' => $deskripsi,
+                        'visit_at' => $tanggal,
+                        'id_cluster' => $userData->id_cluster,
+                    );
+
+                    // Masukkan log aktivitas
+                    $this->db_inv->set('act_date', 'NOW()', FALSE);
+                    if ($this->db_inv->insert('log_data', $logdata)) {
+                        if ($this->inventori->insert_kunjungan($dataKunjungan)) {
+                            header('Content-Type: application/json');
+                            echo json_encode(['status'=> 'success']);
+                        }
+                    } else {
+                        error_log('Failed to insert log data');
+                        header('Content-Type: application/json');
+                        echo json_encode(['status'=> 'failed', 'error' => 'log_failed']);
+                    }
+                } catch (Exception $e) {
+                    error_log('Error: ' . $e->getMessage());
+                    header('Content-Type: application/json');
+                    echo json_encode(['status'=> 'failed']);
+                }
+
+            }
+            else{
+                // Ambil data dari form
+                $id_stock = $this->input->post('id_stock');
+                $nopakai = $this->input->post('nopakai');
+                $updateQuantity = $this->input->post('updateQuantity');
+                $updateJmlPakai = $this->input->post('updateJmlPakai');
+                $jumlahPakaiOld = $this->input->post('jumlahpakai');
+
+                $data = array(
+                    'jml_pakai' => $updateJmlPakai
+                );
+
+                $dataQR = array(
+                    'quantity_real' => $updateQuantity
+                );
+
+                if($this->inventori->updateJumlahPemakaian($data,$jumlahPakaiOld,$nopakai,$id_stock,$userData->id_cluster)){
+                    if($this->inventori->update_quantity_real($dataQR,$id_stock)){
+                        header('Content-Type: application/json');
+                        echo json_encode(['status' => 'success']);
+                    }else{
+                        header('Content-Type: application/json');
+                        echo json_encode(['status' => 'failed']);
+                    }
+                }
+                else{
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'failed']);
+                }
+                
+            }
+        }
+        else{
+            $this->load->view('inventori/error_page');
+        }
+    }
+    
+    public function cek_nama_item() {
+        $no_po = $this->input->post('no_po');
+        $kodeitem = $this->input->post('kodeitem');
+        $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+    
+        // Panggil model untuk mengambil data berdasarkan no_po
+        $items = $this->inventori->get_item_by_no_po($no_po,$kodeitem,$userData->id_cluster);
+    
+        if ($items) {
+            echo json_encode(['status' => 'success', 'data' => $items]);
+        } else {
+            echo json_encode(['status' => 'not_found']);
+        }
+    }
+
+    public function get_all_user_by_nik() {
+        $nik = $this->input->post('nik');
+
+        if (!empty($nik)) {
+            $user = $this->inventori->get_data_user_from_external_db_by_nik($nik);
+
+            if ($user) {
+                $response = array(
+                    'status' => 'success',
+                    'nama' => $user->nama,
+                    'department' => $user->department
+                );
+            } else {
+                $response = array(
+                    'status' => 'error',
+                    'message' => 'User tidak ditemukan'
+                );
+            }
+        } else {
+            $response = array(
+                'status' => 'error',
+                'message' => 'NIK tidak valid'
+            );
+        }
+
+        echo json_encode($response);
+    }
+    
+    public function kunjungan(){
+        if($this->session->userdata('role_id')==3){
+            if($this->inventori->check_nik($this->session->userdata('nik'))){
+                $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+                $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+                $data['kunjungan'] = $this->inventori->get_kunjungan($userData->id_cluster);
+
+                $this->load->view('inventori/header', $data);
+                $this->load->view('inventori/navbar');
+                $this->load->view('inventori/sidebar', $data);
+                $this->load->view('inventori/v_kunjungan', $data);
+            }
+            else{
+                $this->load->view('inventori/error_page');
+            }
+        }
+        else{
+            $this->load->view('inventori/error_page');
+        }
+    }
+    
+    public function dataopname(){
+        if($this->session->userdata('role_id')==3){
+            if($this->inventori->check_nik($this->session->userdata('nik'))){
+                $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+                $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+                $data['item'] = $this->inventori->get_detail_items($userData->id_cluster);
+                $data['dataopname'] = $this->inventori->get_data_opname($userData->id_cluster);
+
+                $this->load->view('inventori/header', $data);
+                $this->load->view('inventori/navbar');
+                $this->load->view('inventori/sidebar', $data);
+                $this->load->view('inventori/v_opname', $data);
+            }
+            else{
+                $this->load->view('inventori/error_page');
+            }
+        }
+        else{
+            $this->load->view('inventori/error_page');
+        }
+    }
+
+    public function aksi_dataopname(){
+        if($this->session->userdata('role_id')==3){
+            if($this->inventori->check_nik($this->session->userdata('nik'))){
+                $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+                $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+
+                $id_cluster = $this->input->post('id_cluster');
+                $kode_item = $this->input->post('kode_item');
+                $nama_item = $this->input->post('nama_item');
+                $quantity_real = $this->input->post('quantity_real');
+                $sisa_stok = $this->input->post('sisa_stok');
+                $selisih = $this->input->post('selisih');
+                $result = $this->input->post('result');
+
+                $data = array(
+                    'kode_item'=>$kode_item,
+                    'nama_item'=>$nama_item,
+                    'sisa'=>$sisa_stok,
+                    'stok_real'=>$quantity_real,
+                    'selisih'=>$selisih,
+                    'hasil'=>$result,
+                    'waktu'=>date('Y-m-d H:i:s'),
+                    'id_cluster'=>$id_cluster,
+                );
+
+                if($this->inventori->insert_opname($data)){
+                    $logdata = [
+                        'id_user' => $this->session->userdata('id'),
+                        'username' => $this->session->userdata('username'),
+                        'act_note' => 'Data opname item = '.$nama_item.' ('.$kode_item.')',
+                    ];
+            
+                    $this->db_inv->set('act_date', 'NOW()', FALSE);
+                    $this->db_inv->insert('log_data', $logdata);
+                    header('Content-Type: application/json');
+                    echo json_encode(['status'=> 'success']);
+                }else{
+                    header('Content-Type: application/json');
+                    echo json_encode(['status'=> 'failed']);
+                }
+            }
+            else{
+                $this->load->view('inventori/error_page');
+            }
+        }
+        else{
+            $this->load->view('inventori/error_page');
+        }
+    }
+
+    public function detail_dataopname(){
+        if($this->session->userdata('role_id')==3){
+            if($this->inventori->check_nik($this->session->userdata('nik'))){
+                $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+                $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+
+                $data['dataopname'] = $this->inventori->get_data_opname($userData->id_cluster);
+                $data['detail_opname'] = $this->inventori->get_data_opname($userData->id_cluster);
+
+                $this->load->view('inventori/header', $data);
+                $this->load->view('inventori/navbar');
+                $this->load->view('inventori/sidebar', $data);
+                $this->load->view('inventori/v_detail_opname', $data);
+            }else{
+                $this->load->view('inventori/error_page');
+            }
+        }else{
             $this->load->view('inventori/error_page');
         }
     }

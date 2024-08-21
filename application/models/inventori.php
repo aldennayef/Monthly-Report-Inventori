@@ -7,6 +7,7 @@ class Inventori extends CI_Model{
         parent::__construct();
         $this->load->database();
         $this->db_inv = $this->load->database('inventori', TRUE);
+        $this->db_user = $this->load->database('db_user', TRUE);
 	}
 
     public function get_user_data($username) {
@@ -126,7 +127,12 @@ class Inventori extends CI_Model{
     }
 
     public function get_pembelian_by_id_cluster($id_cluster){
-        return $this->db_inv->get_where('pembelian', ['id_cluster'=>$id_cluster])->result_array();
+        // return $this->db_inv->get_where('pembelian', ['id_cluster'=>$id_cluster])->result_array();
+        $this->db_inv->select('pembelian.*,stok.*');
+        $this->db_inv->from('pembelian');
+        $this->db_inv->join('stok', 'pembelian.kode_item = stok.kode_item');
+        $this->db_inv->where('pembelian.id_cluster', $id_cluster);
+        return $this->db_inv->get()->result_array();
     }
 
     public function count_kode_beli($kodePrefix) {
@@ -176,6 +182,10 @@ class Inventori extends CI_Model{
     public function insert_pembelian($data) {
         $this->db_inv->insert('pembelian', $data);
     }
+
+    public function update_qty_pembelian($data,$kodebeli,$kodeitem){
+        return $this->db_inv->update('pembelian',$data, ['kode_beli'=>$kodebeli,'kode_item'=>$kodeitem]);
+    }
     
     public function update_stok($kode_item, $data) {
         $this->db_inv->where('kode_item', $kode_item);
@@ -186,6 +196,139 @@ class Inventori extends CI_Model{
         $this->db_inv->insert('stok', $data);
     }
     
+    public function get_pemakaian_by_id_cluster($idcluster){
+        // return $this->db_inv->get_where('pemakaian', ['id_cluster'=>$idcluster])->result_array();
+        $this->db_inv->select('pemakaian.*, items.*, stok.*');
+        $this->db_inv->from('pemakaian');
+        $this->db_inv->join('stok', 'pemakaian.id_stock = stok.id_stock');
+        $this->db_inv->join('items', 'stok.kode_item = items.kode_item');
+        $this->db_inv->where('pemakaian.id_cluster', $idcluster);
+        $this->db_inv->order_by('pemakaian.nopakai', 'ASC');
+        return $this->db_inv->get()->result_array();
+    }
 
+    public function count_no_pakai($kodePrefix, $id_cluster) {
+        $this->db_inv->select_max('nopakai', 'max_kode');
+        $this->db_inv->like('nopakai', $kodePrefix, 'after');
+        $this->db_inv->where('id_cluster', $id_cluster);
+        $result = $this->db_inv->get('pemakaian')->row();
+    
+        if ($result && isset($result->max_kode)) {
+            $lastKode = intval(str_replace($kodePrefix, '', $result->max_kode));
+            return $lastKode;
+        }
+        return 0;
+    }
+    
+    public function get_item_from_po_by_id_cluster($id_cluster){
+        $this->db_inv->select('pembelian.*, items.*');
+        $this->db_inv->from('pembelian');
+        $this->db_inv->join('items', 'pembelian.kode_item = items.kode_item');
+        $this->db_inv->where('pembelian.id_cluster', $id_cluster);
+        return $this->db_inv->get()->result_array();
+    }
+
+    public function get_item_by_no_po($no_po, $kodeitem, $id_cluster) {
+        $this->db_inv->select('pembelian.*, items.*, stok.*');
+        $this->db_inv->from('pembelian');
+        $this->db_inv->join('items', 'pembelian.kode_item = items.kode_item');
+        $this->db_inv->join('stok', 'stok.kode_item = items.kode_item'); // Join ke tabel stok untuk mendapatkan id_stock
+        $this->db_inv->where('pembelian.no_po', $no_po);
+        $this->db_inv->where('items.kode_item', $kodeitem);
+        $this->db_inv->where('pembelian.id_cluster', $id_cluster);
+        return $this->db_inv->get()->result_array();
+    }
+    
+
+    public function get_data_user_from_external_db(){
+    
+        return $this->db_user->get('user')->result_array();
+    }
+
+    public function get_data_user_from_external_db_by_nik($nik){
+        $this->db_user->select('nama,department');
+        $this->db_user->from('user');
+        $this->db_user->where('nik', $nik);
+        $query = $this->db_user->get();
+
+        if ($query->num_rows() > 0) {
+            return $query->row();
+        } else {
+            return false;
+        }
+    }
+
+    public function get_all_users_from_external_db() {
+        $this->db_user->select('nik, nama, department');
+        $this->db_user->from('user');
+        $query = $this->db_user->get();
+        return $query->result_array();  // Mengembalikan hasil sebagai array
+    }
+    
+    public function insert_pemakaian($data)
+    {
+        return $this->db_inv->insert('pemakaian',$data);
+    }
+
+    public function get_pemakaian_unik_by_id_cluster($idcluster) {
+        $this->db_inv->select('
+            nopakai,
+            ARRAY_AGG(DISTINCT id_stock) as items,
+            MIN(id_pakai) as id_pakai, 
+            MIN(jenis_pakai) as jenis_pakai, 
+            MIN(nama_pemakai) as nama_pemakai, 
+            MIN(nik_pemakai) as nik_pemakai, 
+            MIN(pemberi) as pemberi, 
+            MIN(deskripsi) as deskripsi, 
+            MIN(waktu) as waktu, 
+            MIN(id_cluster) as id_cluster
+        ');
+        $this->db_inv->from('pemakaian');
+        $this->db_inv->where('id_cluster', $idcluster);
+        $this->db_inv->group_by('nopakai');
+        $query = $this->db_inv->get();
+        return $query->result_array();
+    }
+    
+    public function updateJumlahPemakaian($data,$jmlpakaiold,$nopakai,$idStock,$idcluster){
+        return $this->db_inv->update('pemakaian',$data,['id_stock'=>$idStock,'nopakai'=>$nopakai,'jml_pakai'=>$jmlpakaiold,'id_cluster'=>$idcluster]);
+    }
+    
+    public function update_quantity_real($data,$idstock){
+        return $this->db_inv->update('stok',$data,['id_stock'=>$idstock]);
+    }
+
+    public function update_quantity_real_by_kode_item($data,$kodeitem){
+        return $this->db_inv->update('stok',$data,['kode_item'=>$kodeitem]);
+    }
+
+    public function get_kunjungan($idcluster){
+        return $this->db_inv->get_where('kunjungan', ['id_cluster'=>$idcluster])->result_array();
+    }
+
+
+    public function insert_kunjungan($data){
+        return $this->db_inv->insert('kunjungan',$data);
+    }
+
+    public function get_detail_items($idcluster) {
+        $this->db_inv->select('items.id_cluster, items.kode_item, items.nama, stok.quantity_real, SUM(pembelian.quantity) as total_quantity');
+        $this->db_inv->from('items');
+        $this->db_inv->join('stok', 'items.kode_item = stok.kode_item');
+        $this->db_inv->join('pembelian', 'items.kode_item = pembelian.kode_item', 'left');
+        $this->db_inv->where('items.id_cluster', $idcluster);
+        $this->db_inv->group_by('items.id_cluster, items.kode_item, items.nama, stok.quantity_real');
+        return $this->db_inv->get()->result_array();
+    }
+    
+    public function insert_opname($data){
+        return $this->db_inv->insert('opname',$data);
+    }
+
+    public function get_data_opname($idcluster){
+        return $this->db_inv->get_where('opname',['id_cluster'=>$idcluster])->result_array();
+    }
+
+    // public function check_pemakaian($)
 
 }
