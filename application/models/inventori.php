@@ -10,6 +10,10 @@ class Inventori extends CI_Model{
         $this->db_user = $this->load->database('db_user', TRUE);
 	}
 
+    public function get_department_id_by_nik($nik){
+        return $this->db->get_where('user',['nik'=>$nik])->row();
+    }
+
     public function get_user_data($username) {
         // $username = $this->session->userdata('username');
         
@@ -45,6 +49,21 @@ class Inventori extends CI_Model{
         $this->db_inv->join('jenis_item', 'user.id_cluster = jenis_item.id_cluster');
         $this->db_inv->where('user.nik', $nik);
         return $this->db_inv->get()->result_array();
+    }
+
+    public function insert_jenisitem($data){
+        return $this->db_inv->insert('jenis_item',$data);
+    }
+
+    public function delete_nama_jenis($data, $idcluster) {
+        // $data harus berupa array of strings
+        return $this->db_inv->where_in('nama_jenis', $data)
+                            ->where('id_cluster', $idcluster)
+                            ->delete('jenis_item');
+    }
+
+    public function get_jenis_item_by_nama_cluster($namajenis,$idcluster){
+        return $this->db_inv->get_where('jenis_item',['nama_jenis'=>$namajenis,'id_cluster'=>$idcluster])->row_array();
     }
     
     public function get_suggested_jenis() {
@@ -325,10 +344,49 @@ class Inventori extends CI_Model{
         return $this->db_inv->insert('opname',$data);
     }
 
-    public function get_data_opname($idcluster){
-        return $this->db_inv->get_where('opname',['id_cluster'=>$idcluster])->result_array();
+    public function get_data_opname($idcluster) {
+        $subquery = $this->db_inv
+            ->select('kode_item, MAX(waktu) as max_waktu')
+            ->from('opname')
+            ->where('id_cluster', $idcluster)
+            ->group_by('kode_item')
+            ->get_compiled_select();
+    
+        $this->db_inv->select('o.id_cluster, o.kode_item, o.stok_real, o.selisih, o.hasil, o.waktu');
+        $this->db_inv->from('opname o');
+        $this->db_inv->join("($subquery) as latest", 'o.kode_item = latest.kode_item AND o.waktu = latest.max_waktu', 'inner');
+        $this->db_inv->where('o.id_cluster', $idcluster);
+    
+        return $this->db_inv->get()->result_array();
     }
 
-    // public function check_pemakaian($)
+    public function get_detail_data_opname($idcluster){
+        return $this->db_inv->get_where('opname',['id_cluster'=>$idcluster])->result_array();
+    }
+    
+    
+
+    // MANAGER
+    public function get_data_item_by_department($department_id) {
+        // Buat query menggunakan query builder atau manual query
+        $query = $this->db_inv->query("
+            SELECT i.kode_item, i.jenis, i.nama, i.note, i.id_cluster,i.create_at, mr_user.nama, mr_user.department_id 
+            FROM items i 
+            JOIN public.user inv_user ON i.id_cluster = inv_user.id_cluster 
+            JOIN dblink(
+                'dbname=monthly_report user=postgres password=password port=9603', 
+                'SELECT nik, nama, \"department_id\", role_id FROM public.user'
+            ) AS mr_user(nik VARCHAR, nama VARCHAR, department_id INTEGER, role_id INTEGER)
+            ON inv_user.nik = mr_user.nik
+            WHERE mr_user.role_id = 3 
+            AND mr_user.department_id = {$department_id}
+        ");
+        
+        // Kembalikan hasil query
+        return $query->result_array();  // Mengembalikan array asosiatif
+    }
+    
+    
+    
 
 }

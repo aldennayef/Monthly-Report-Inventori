@@ -48,8 +48,23 @@
                                             <td>
                                                 <span><?=$dop['nama_item']?></span>
                                             </td>
+                                            <td>
+                                                <span class="real-stok-text"><?=$dop['sisa']?></span>
+                                            </td>
+                                            <td>
+                                                <span class="real-stok-text"><?=$dop['stok_real']?></span>
+                                            </td>
+                                            <td>
+                                                <span class="selisih-text"><?=$dop['selisih']?></span>
+                                            </td>
+                                            <td>
+                                                <span class="result-text"><?=$dop['hasil']?></span>
+                                            </td>
+                                            <td>
+                                                <span><?=date('d F Y H:i:s', strtotime($dop['waktu']))?></span>
+                                            </td>
                                             
-                                            <?php
+                                            <!-- <?php
                                             // Cari data opname yang sesuai dengan kode_item saat ini
                                             $matchedOpname = null;
                                             foreach ($dataopname as $dop) {
@@ -88,7 +103,7 @@
                                             
                                             <td>
                                                 <span><?=date('d F Y', strtotime($dop['waktu']))?></span>
-                                            </td>
+                                            </td> -->
                                         </tr>
                                         <?php } ?>
 

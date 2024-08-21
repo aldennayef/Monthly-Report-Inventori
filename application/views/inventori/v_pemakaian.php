@@ -29,11 +29,6 @@
                     <i class="fas fa-plus"></i> Tambah Pemakaian
                 </button>
                 </a>
-                <a href="<?=base_url('apmp').'/edit'?>">
-                <button type="button" class="btn btn-primary">
-                    <i class="fas fa-edit"></i> Edit Pemakaian
-                </button>
-                </a>
             </div>
             <table id="item" class="table table-bordered table-hover">
                 <thead>

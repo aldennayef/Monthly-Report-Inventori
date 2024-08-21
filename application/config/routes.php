@@ -84,6 +84,7 @@ $route['gon'] = 'user/admin_department';
 # INVENTORI
 $route['dsb'] = 'inventori/proses';
 $route['dem'] = 'inventori/proses/detail_item';
+$route['dejim'] = 'inventori/proses/detail_jenisitem';
 $route['aip/(:any)'] = 'inventori/proses/aksi_item_page/$1';
 $route['deus'] = 'inventori/proses/detail_users';
 $route['decs'] = 'inventori/proses/detail_clusters';

@@ -108,9 +108,9 @@ class Home extends CI_Controller {
                 redirect('dsb');
             } 
             elseif ($role_id == 2) {
-                
+                redirect('dsb');
             }else {
-                    redirect('dsb');
+                redirect('dsb');
             }
         }else{
             redirect('home');

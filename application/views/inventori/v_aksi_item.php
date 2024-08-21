@@ -89,28 +89,28 @@
                       <div class="col-3">
                         <label class='labelitem'><span class="item-number">1</span>. Kode Item</label>
                         <div class="input-group mb-3">
-                          <input type="text" class="form-control input-check" placeholder="Kode Item" name="kodeitem[]" value="<?=$item['kode_item']?>" autocomplete="off">
+                          <input type="text" class="form-control input-check" placeholder="Kode Item" name="kodeitem[]" value="<?=$item['kode_item']?>" autocomplete="off" required>
                           <input type="hidden" class="form-control input-check" name="oldkodeitem[]" value="<?=$item['kode_item']?>" autocomplete="off">
                         </div>
                       </div>
                       <div class="col-3">
                         <label>Jenis Item</label>
                         <div class="input-group mb-3 autocompletes">
-                          <input type="text" class="form-control input-check" placeholder="Jenis Item" name="jenisitem[]" id="jenisitem" value="<?=$item['jenis']?>" autocomplete="off">
+                          <input type="text" class="form-control input-check" placeholder="Jenis Item" name="jenisitem[]" id="jenisitem" value="<?=$item['jenis']?>" autocomplete="off" required>
                           <input type="hidden" class="form-control input-check" name="oldjenisitem[]" id="jenisitem" value="<?=$item['jenis']?>" autocomplete="off">
                         </div>
                       </div>
                       <div class="col-3">
                         <label>Nama Item</label>
                         <div class="input-group mb-3">
-                          <input type="text" class="form-control input-check" placeholder="Nama Item" name="namaitem[]" value="<?=$item['nama']?>" autocomplete="off">
+                          <input type="text" class="form-control input-check" placeholder="Nama Item" name="namaitem[]" value="<?=$item['nama']?>" autocomplete="off" required>
                           <input type="hidden" class="form-control input-check" name="oldnamaitem[]" value="<?=$item['nama']?>" autocomplete="off">
                         </div>
                       </div>
                       <div class="col-3">
                         <label>Note</label>
                         <div class="input-group mb-3">
-                          <input type="text" class="form-control" placeholder="Note" name="note[]" value="<?=$item['note']?>" autocomplete="off">&nbsp;&nbsp;&nbsp;&nbsp;
+                          <input type="text" class="form-control" placeholder="Note" name="note[]" value="<?=$item['note']?>" autocomplete="off" required>&nbsp;&nbsp;&nbsp;&nbsp;
                           <input type="hidden" class="form-control" placeholder="Note" name="oldnote[]" value="<?=$item['note']?>" autocomplete="off">&nbsp;&nbsp;&nbsp;&nbsp;
                         </div>
                       </div>
@@ -260,100 +260,145 @@
             });
 
             $('#itemForm').on('submit', function(e) {
-              e.preventDefault(); // Mencegah submit form standar
+    e.preventDefault(); // Mencegah submit form standar
 
-              var isValid = true;
-              var lastRow = $('#itemInputs .input-row-item').last();
-              var lastRowIsEmpty = true;
-              var emptyInputNumber = null;
+    var isValid = true;
+    var lastRow = $('#itemInputs .input-row-item').last();
+    var lastRowIsEmpty = true;
+    var emptyInputNumber = null;
+    var kodeItemArray = [];
+    var duplicateFound = false;
 
-              // Cek apakah inputan terakhir kosong
-              lastRow.find('.input-check').each(function() {
-                if ($(this).val() !== '') {
-                  lastRowIsEmpty = false;
-                }
-              });
+    // Cek apakah ada duplikat kode item
+    $('#itemInputs .input-row-item').each(function(index) {
+        var row = $(this);
+        var kodeItemInput = row.find('input[name="kodeitem[]"]');
+        var kodeItemVal = kodeItemInput.val().trim();
 
-              // Hapus baris terakhir jika kosong
-              if (lastRowIsEmpty && $('.input-row-item').length > 1) {
-                lastRow.remove();
-              }
-
-              // Cek apakah ada inputan yang tidak terisi selain inputan terakhir
-              $('#itemInputs .input-row-item').not(':last').each(function(index) {
-                var row = $(this);
-                row.find('.input-check').each(function() {
-                  if ($(this).val() === '') {
-                    isValid = false;
-                    emptyInputNumber = index + 1; // Simpan nomor inputan yang kosong
-                    $(this).focus(); // Arahkan kursor ke inputan yang belum terisi
-                    return false; // Keluar dari loop jika ditemukan inputan kosong
-                  }
-                });
-                if (!isValid) {
-                  return false; // Keluar dari loop jika ditemukan inputan kosong
-                }
-              });
-
-              if (isValid) {
-                // Pastikan inputan terakhir yang kosong tidak disubmit
-                var formData = $('#itemForm').serializeArray();
-                var cleanedData = formData.filter(function(item) {
-                  return item.value.trim() !== ""; // Hanya menyertakan input yang tidak kosong
-                });
-
-                if (cleanedData.length > 0) {
-                  // Jika valid dan ada data yang akan disubmit, submit form via AJAX
-                  $.ajax({
-                    url: '<?= base_url('akm') ?>',
-                    method: 'POST',
-                    data: $.param(cleanedData),
-                    success: function(response) {
-                      if (response.status === 'success') {
-                        Swal.fire({
-                          icon: 'success',
-                          title: 'Berhasil!',
-                          text: 'Tambah item berhasil.',
-                        }).then(function() {
-                          window.location.href = '<?= base_url('dem') ?>'; // Redirect to 'decs' page
-                        });
-                      } else if (response.status === 'duplicate') {
-                        Swal.fire({
-                          icon: 'error',
-                          title: 'Gagal!',
-                          text: 'Kode ' + response.kode + ' Sudah Ada !',
-                        });
-                      } else {
-                        Swal.fire({
-                          icon: 'error',
-                          title: 'Gagal!',
-                          text: 'Tambah item gagal.',
-                        });
-                      }
-                    },
-                    error: function() {
-                      Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: 'Terjadi kesalahan dalam pengiriman data.',
-                      });
-                    }
-                  });
-              } else {
-                  Swal.fire({
-                      icon: 'warning',
-                      title: 'Data Belum Lengkap!',
-                      text: 'Harap isi semua inputan sebelum mengirim.',
-                  });
-                }
-              } else {
+        if (kodeItemVal !== '') {
+            if (kodeItemArray.includes(kodeItemVal)) {
+                duplicateFound = true;
+                kodeItemInput.val(''); // Kosongkan input yang duplikat
+                kodeItemInput.focus();
                 Swal.fire({
-                  icon: 'warning',
-                  title: 'Data Belum Lengkap!',
-                  text: 'Harap isi semua inputan pada nomor ' + emptyInputNumber + ' sebelum mengirim.',
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: 'Kode ' + kodeItemVal + ' duplikat!',
                 });
-              }
-            });
+                return false; // Keluar dari loop jika ditemukan duplikat
+            } else {
+                kodeItemArray.push(kodeItemVal);
+            }
+        }
+    });
+
+    if (duplicateFound) {
+        return; // Jika ada duplikat, hentikan proses lebih lanjut
+    }
+
+    // Cek apakah hanya ada satu inputan
+    if ($('.input-row-item').length === 1) {
+        var singleRow = $('#itemInputs .input-row-item').first();
+        singleRow.find('.input-check').each(function() {
+            if ($(this).val().trim() === '') {
+                isValid = false;
+                $(this).focus(); // Arahkan kursor ke inputan yang belum terisi
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Data Belum Lengkap!',
+                    text: 'Harap isi semua inputan sebelum mengirim.',
+                });
+                return false; // Keluar dari loop jika ditemukan inputan kosong
+            }
+        });
+
+        if (!isValid) {
+            return; // Hentikan jika inputan tunggal kosong
+        }
+    }
+
+    // Cek apakah inputan terakhir kosong
+    lastRow.find('.input-check').each(function() {
+        if ($(this).val().trim() !== '') {
+            lastRowIsEmpty = false;
+        }
+    });
+
+    // Hapus baris terakhir jika kosong
+    if (lastRowIsEmpty && $('.input-row-item').length > 1) {
+        lastRow.remove();
+    }
+
+    // Cek apakah ada inputan yang tidak terisi selain inputan terakhir
+    $('#itemInputs .input-row-item').not(':last').each(function(index) {
+        var row = $(this);
+        row.find('.input-check').each(function() {
+            if ($(this).val().trim() === '') {
+                isValid = false;
+                emptyInputNumber = index + 1; // Simpan nomor inputan yang kosong
+                $(this).focus(); // Arahkan kursor ke inputan yang belum terisi
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Data Belum Lengkap!',
+                    text: 'Harap isi semua inputan pada nomor ' + emptyInputNumber + ' sebelum mengirim.',
+                });
+                return false; // Keluar dari loop jika ditemukan inputan kosong
+            }
+        });
+        if (!isValid) {
+            return false; // Keluar dari loop jika ditemukan inputan kosong
+        }
+    });
+
+    if (isValid) {
+        // Hapus baris terakhir jika kosong
+        if (lastRowIsEmpty) {
+            lastRow.remove();
+        }
+
+        // Serialisasi data form
+        var formData = $('#itemForm').serializeArray();
+
+        // Submit form via AJAX
+        $.ajax({
+            url: '<?= base_url('akm') ?>',
+            method: 'POST',
+            data: $.param(formData),
+            success: function(response) {
+                if (response.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: 'Tambah item berhasil.',
+                    }).then(function() {
+                        window.location.href = '<?= base_url('dem') ?>'; // Redirect to 'decs' page
+                    });
+                } else if (response.status === 'duplicate') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: 'Kode ' + response.kode + ' Sudah Ada !',
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: 'Tambah item gagal.',
+                    });
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Terjadi kesalahan dalam pengiriman data.',
+                });
+            }
+        });
+    }
+});
+
+
 
             checkRemoveButtonVisibility();
             updateItemNumbers();

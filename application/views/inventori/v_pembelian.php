@@ -20,7 +20,7 @@
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Data Items <?=$user['sub_department']?></h3>
+                <h3 class="card-title">Data Pembelian <?=$user['sub_department']?></h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -28,11 +28,6 @@
                   <a href="<?=base_url('apbp').'/add'?>">
                     <button type="button" class="btn btn-success">
                       <i class="fas fa-plus"></i> Tambah Pembelian
-                    </button>
-                  </a>
-                  <a href="<?=base_url('apbp').'/edit'?>">
-                    <button type="button" class="btn btn-primary">
-                      <i class="fas fa-edit"></i> Edit Pembelian
                     </button>
                   </a>
                 </div>
@@ -231,7 +226,7 @@
               var quantityupdate = parseFloat(row.find('.quantity-update').val()) || 0;
               var quantitynow = parseFloat(row.find('.quantity-now').val()) || 0;
               var quantityold = parseFloat(row.find('.quantity-old').val()) || 0;
-              var satuan = row.find('.satuan').text();
+              var satuan = row.find('.satuan').val();
 
               // Hitung updateQuantity
               var updateQuantity = quantitynow + quantityupdate - quantityold;
@@ -245,6 +240,7 @@
                   kodeitem: kodeitem,
                   updateQuantity: updateQuantity,
                   updateQtyPembelian: quantityupdate,
+                  updateSatuan:satuan,
                   type: "update",
                 },
                 success: function(response) {
@@ -252,6 +248,8 @@
                     // Jika berhasil, perbarui tampilan
                     row.find('.quantity-text').text(quantityupdate).show();
                     row.find('.quantity-update').hide();
+                    row.find('.satuan-text').text(satuan).show();
+                    row.find('.satuan').hide();
                     row.find('.lock-btn, .cancel-btn').hide();
                     row.find('.edit-btn').show();
                     Swal.fire({

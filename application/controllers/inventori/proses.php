@@ -21,7 +21,7 @@ class Proses extends CI_Controller{
             }else{
                 $this->load->view('inventori/error_page');
             }
-        }else if($this->session->userdata('role_id')==1){
+        }else if($this->session->userdata('role_id')==1 || $this->session->userdata('role_id')==2){
             $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
             $this->load->view('inventori/header', $data);
             $this->load->view('inventori/navbar');
@@ -177,7 +177,7 @@ class Proses extends CI_Controller{
                 $oldCluster = $this->input->post('nama_cluster_old');
                 $newkodeCluster = $this->input->post('kode_cluster');
                 $oldkodeCluster = $this->input->post('kode_cluster_old');
-                if(!$this->inventori->get_cluster_by_kode($newkodeCluster)){
+                if(!$this->inventori->get_cluster_by_kode($newkodeCluster) || $newkodeCluster == $oldkodeCluster){
                     try{
                         $dataUpdateCluster = [
                             'kode_cluster' => $newkodeCluster,
@@ -213,19 +213,26 @@ class Proses extends CI_Controller{
     
 
     public function detail_item(){
-        if($this->session->userdata('role_id')==3){
-            $user=$this->inventori->check_nik($this->session->userdata('nik'));
-            // $subDept = $this->inventori->get_sub_dept_by_username($username);
-            $data['item'] = $this->inventori->get_items_by_id_cluster($user->id_cluster);
+        if($this->session->userdata('role_id') == 3 || $this->session->userdata('role_id') == 2){
+            $user = $this->inventori->check_nik($this->session->userdata('nik'));
+            
+            if($this->session->userdata('role_id') == 3){
+                $data['item'] = $this->inventori->get_items_by_id_cluster($user->id_cluster);
+            }else{
+                $user_dept = $this->inventori->get_department_id_by_nik($this->session->userdata('nik'));
+                $data['manager_item'] = $this->inventori->get_data_item_by_department($user_dept->department_id);
+            }
             $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+            
             $this->load->view('inventori/header', $data);
             $this->load->view('inventori/navbar');
-            $this->load->view('inventori/sidebar',$data);
+            $this->load->view('inventori/sidebar', $data);
             $this->load->view('inventori/v_item', $data);
-        }else{
+        } else {
             $this->load->view('inventori/error_page');
         }
     }
+    
 
     public function aksi_item_page($aksi){
         if($this->session->userdata('role_id')==3){
@@ -268,22 +275,36 @@ class Proses extends CI_Controller{
                         try {
                             // Looping melalui input dan siapkan data untuk insert batch
                             for ($i = 0; $i < count($kodeitem); $i++) {
-                                
-                                $data[] = array(
-                                    'id_cluster' => $userData->id_cluster,
-                                    'kode_item' => $kodeitem[$i],
-                                    'jenis' => $jenisitem[$i],
-                                    'nama' => $namaitem[$i],
-                                    'note' => $noteitem[$i],
-                                    'create_at' => date('Y-m-d'),
-                                    'nik' => $this->session->userdata('nik'),
-                                );
-                        
-                                $logdata = [
-                                    'id_user' => $this->session->userdata('id'),
-                                    'username' => $this->session->userdata('username'),
-                                    'act_note' => 'Tambah Item Baru = ' . $namaitem[$i] . ' (Kode = ' . $kodeitem[$i] . ' )',
-                                ];
+                                if($jenisitem[$i] && $namaitem[$i] && $noteitem[$i]){
+                                    $data[] = array(
+                                        'id_cluster' => $userData->id_cluster,
+                                        'kode_item' => $kodeitem[$i],
+                                        'jenis' => $jenisitem[$i],
+                                        'nama' => $namaitem[$i],
+                                        'note' => $noteitem[$i],
+                                        'create_at' => date('Y-m-d'),
+                                        'nik' => $this->session->userdata('nik'),
+                                    );
+                            
+                                    $logdata = [
+                                        'id_user' => $this->session->userdata('id'),
+                                        'username' => $this->session->userdata('username'),
+                                        'act_note' => 'Tambah Item Baru = ' . $namaitem[$i] . ' (Kode = ' . $kodeitem[$i] . ' )',
+                                    ];
+                                }
+                            }
+
+                            for ($i = 0; $i < count($jenisitem); $i++){
+                                if($jenisitem[$i]){
+                                    if(!$this->inventori->get_jenis_item_by_nama_cluster($jenisitem[$i],$userData->id_cluster)){
+                                        $dataJenisItem = array(
+                                            'nama_jenis' => $jenisitem[$i],
+                                            'create_at' => date('Y-m-d'),
+                                            'id_cluster' => $userData->id_cluster
+                                        );
+                                        $this->inventori->insert_jenisitem($dataJenisItem);
+                                    }
+                                }
                             }
                         } catch (Exception $e) {
                             error_log('Error: ' . $e->getMessage());
@@ -323,6 +344,45 @@ class Proses extends CI_Controller{
                 $oldnamaitem = $this->input->post('oldnamaitem');
                 $noteitem = $this->input->post('note');
                 $oldnoteitem = $this->input->post('oldnote');
+
+                for ($i = 0; $i < count($jenisitem); $i++) {
+                    if ($jenisitem[$i]) {
+                        // Ambil semua nama_jenis yang ada di database
+                        // Ambil semua nama_jenis yang ada di database
+                        $current_nama_jenis = $this->inventori->get_jenis_items_by_nik_cluster($this->session->userdata('nik'));
+
+                        // Ambil hanya kolom nama_jenis dari hasil query
+                        $current_nama_jenis_list = array_column($current_nama_jenis, 'nama_jenis');
+
+                        // Hilangkan duplikat dalam inputan
+                        $jenisitem_unique = array_unique($jenisitem);
+
+                        // Identifikasi nama_jenis yang perlu dihapus
+                        $nama_jenis_to_delete = array_diff($current_nama_jenis_list, $jenisitem_unique);
+
+                        // Identifikasi nama_jenis baru yang perlu ditambahkan
+                        $nama_jenis_to_add = array_diff($jenisitem_unique, $current_nama_jenis_list);
+
+                        // Hapus nama_jenis yang tidak ada di inputan
+                        if (!empty($nama_jenis_to_delete)) {
+                            $this->inventori->delete_nama_jenis($nama_jenis_to_delete, $userData->id_cluster);
+                        }
+
+                        // Tambahkan nama_jenis baru yang ada di inputan
+                        if (!empty($nama_jenis_to_add)) {
+                            foreach ($nama_jenis_to_add as $nama_jenis) {
+                                $datax = array(
+                                    'nama_jenis' => $nama_jenis,
+                                    'id_cluster' => $userData->id_cluster,
+                                    'create_at' => date('Y-m-d'),
+                                );
+                                $this->inventori->insert_jenisitem($datax);
+                            }
+                        }
+
+                    }
+                }
+                
     
                 foreach ($kodeitem as $i => $kode) {
                     if ($oldkodeitem[$i] === $kodeitem[$i] || !$this->inventori->get_items_by_kode($kode)) {
@@ -372,6 +432,23 @@ class Proses extends CI_Controller{
         } 
         else {
             $this->load->view('inventori/error_page');
+        }
+    }
+
+    public function detail_jenisitem()
+    {
+        if ($this->session->userdata('role_id')==3 || $this->session->userdata('role_id')==2) {
+            if($this->session->userdata('role_id')==3 && !$this->inventori->check_nik($this->session->userdata('nik'))){
+                $this->load->view('inventori/error_page');
+            }else{
+                $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+                $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+                $data['jenisitem'] = $this->inventori->get_jenis_items_by_nik_cluster($this->session->userdata('nik'));
+                $this->load->view('inventori/header', $data);
+                $this->load->view('inventori/navbar');
+                $this->load->view('inventori/sidebar',$data);
+                $this->load->view('inventori/v_jenisitem', $data);
+            }
         }
     }
 
@@ -533,9 +610,11 @@ class Proses extends CI_Controller{
                 $kodebeli = $this->input->post('kodebeli');
                 $updateQuantity = $this->input->post('updateQuantity');
                 $updateQtyPembelian = $this->input->post('updateQtyPembelian');
+                $updateSatuan = $this->input->post('updateSatuan');
 
                 $datapemb = array(
-                    'quantity'=>$updateQtyPembelian
+                    'quantity'=>$updateQtyPembelian,
+                    'satuan' => $updateSatuan
                 );
                 $datastok = array(
                     'quantity_real'=>$updateQuantity
@@ -891,8 +970,8 @@ class Proses extends CI_Controller{
                 $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
                 $userData = $this->inventori->check_nik($this->session->userdata('nik'));
 
-                $data['dataopname'] = $this->inventori->get_data_opname($userData->id_cluster);
-                $data['detail_opname'] = $this->inventori->get_data_opname($userData->id_cluster);
+                $data['dataopname'] = $this->inventori->get_detail_data_opname($userData->id_cluster);
+                $data['detail_opname'] = $this->inventori->get_detail_data_opname($userData->id_cluster);
 
                 $this->load->view('inventori/header', $data);
                 $this->load->view('inventori/navbar');
