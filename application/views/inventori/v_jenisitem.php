@@ -42,13 +42,11 @@
                       </tr>
                       <?php }?>
                     <?php } else { ?>
-                      <?php foreach ($manager_item as $items) {?>
+                      <?php $i=1; foreach ($manager_jenisitem as $mji) {?>
                       <tr>
-                        <td><?=$items['kode_item']?></td>
-                        <td><?=$items['jenis']?></td>
-                        <td><?=$items['nama']?></td>
-                        <td><?=$items['note']?></td>
-                        <td><?=strftime('%d %B %Y', strtotime($items['create_at']))?></td>
+                        <td><?=$i++;?></td>
+                        <td><?=$mji['nama_jenis']?></td>
+                        <td><?=strftime('%d %B %Y', strtotime($mji['create_at']))?></td>
                       </tr>
                       <?php } ?>
                     <?php } ?>
