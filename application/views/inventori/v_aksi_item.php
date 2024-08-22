@@ -89,29 +89,29 @@
                       <div class="col-3">
                         <label class='labelitem'><span class="item-number">1</span>. Kode Item</label>
                         <div class="input-group mb-3">
-                          <input type="text" class="form-control input-check" placeholder="Kode Item" name="kodeitem[]" value="<?=$item['kode_item']?>" autocomplete="off" required>
-                          <input type="hidden" class="form-control input-check" name="oldkodeitem[]" value="<?=$item['kode_item']?>" autocomplete="off">
+                          <input type="text" class="form-control input-check" placeholder="Kode Item" name="kodeitem[]" value="<?=$item['ikode_item']?>" autocomplete="off" required>
+                          <input type="hidden" class="form-control input-check" name="oldkodeitem[]" value="<?=$item['ikode_item']?>" autocomplete="off">
                         </div>
                       </div>
                       <div class="col-3">
                         <label>Jenis Item</label>
                         <div class="input-group mb-3 autocompletes">
-                          <input type="text" class="form-control input-check" placeholder="Jenis Item" name="jenisitem[]" id="jenisitem" value="<?=$item['jenis']?>" autocomplete="off" required>
-                          <input type="hidden" class="form-control input-check" name="oldjenisitem[]" id="jenisitem" value="<?=$item['jenis']?>" autocomplete="off">
+                          <input type="text" class="form-control input-check" placeholder="Jenis Item" name="jenisitem[]" id="jenisitem" value="<?=$item['ijenis']?>" autocomplete="off" required>
+                          <input type="hidden" class="form-control input-check" name="oldjenisitem[]" id="jenisitem" value="<?=$item['ijenis']?>" autocomplete="off">
                         </div>
                       </div>
                       <div class="col-3">
                         <label>Nama Item</label>
                         <div class="input-group mb-3">
-                          <input type="text" class="form-control input-check" placeholder="Nama Item" name="namaitem[]" value="<?=$item['nama']?>" autocomplete="off" required>
-                          <input type="hidden" class="form-control input-check" name="oldnamaitem[]" value="<?=$item['nama']?>" autocomplete="off">
+                          <input type="text" class="form-control input-check" placeholder="Nama Item" name="namaitem[]" value="<?=$item['inama']?>" autocomplete="off" required>
+                          <input type="hidden" class="form-control input-check" name="oldnamaitem[]" value="<?=$item['inama']?>" autocomplete="off">
                         </div>
                       </div>
                       <div class="col-3">
                         <label>Note</label>
                         <div class="input-group mb-3">
-                          <input type="text" class="form-control" placeholder="Note" name="note[]" value="<?=$item['note']?>" autocomplete="off" required>&nbsp;&nbsp;&nbsp;&nbsp;
-                          <input type="hidden" class="form-control" placeholder="Note" name="oldnote[]" value="<?=$item['note']?>" autocomplete="off">&nbsp;&nbsp;&nbsp;&nbsp;
+                          <input type="text" class="form-control" placeholder="Note" name="note[]" value="<?=$item['inote']?>" autocomplete="off" required>&nbsp;&nbsp;&nbsp;&nbsp;
+                          <input type="hidden" class="form-control" placeholder="Note" name="oldnote[]" value="<?=$item['inote']?>" autocomplete="off">&nbsp;&nbsp;&nbsp;&nbsp;
                         </div>
                       </div>
                     </div>
