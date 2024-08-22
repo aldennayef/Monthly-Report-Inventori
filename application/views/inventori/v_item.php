@@ -24,25 +24,31 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <div class="d-flex justify-content-between mb-2">
-                  <a href="<?=base_url('aip').'/add'?>">
-                    <button type="button" class="btn btn-success">
-                      <i class="fas fa-plus"></i> Tambah Item
-                    </button>
-                  </a>
-                  <a href="<?=base_url('aip').'/edit'?>">
-                    <button type="button" class="btn btn-primary">
-                      <i class="fas fa-edit"></i> Edit Item
-                    </button>
-                  </a>
-                </div>
+                <?php if($this->session->userdata('role_id')==3){ ?>
+                  <div class="d-flex justify-content-between mb-2">
+                    <a href="<?=base_url('aip').'/add'?>">
+                      <button type="button" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Tambah Item
+                      </button>
+                    </a>
+                    <a href="<?=base_url('aip').'/edit'?>">
+                      <button type="button" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Edit Item
+                      </button>
+                    </a>
+                  </div>
+                <?php } ?>
                 <table id="item" class="table table-bordered table-hover">
                   <thead>
                     <tr>
                       <th>Kode Item</th>
                       <th>Jenis Item</th>
                       <th>Nama Item</th>
+                      <?php if($this->session->userdata('role_id')==3){ ?>
                       <th>Note</th>
+                      <?php } else { ?>
+                      <th>PIC</th>
+                      <?php } ?>
                       <th>Created At</th>
                     </tr>
                   </thead>
@@ -63,7 +69,7 @@
                         <td><?=$items['kode_item']?></td>
                         <td><?=$items['jenis']?></td>
                         <td><?=$items['nama']?></td>
-                        <td><?=$items['note']?></td>
+                        <td><?=$items['nama_user']?></td>
                         <td><?=strftime('%d %B %Y', strtotime($items['create_at']))?></td>
                       </tr>
                       <?php } ?>

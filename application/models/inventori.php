@@ -370,9 +370,28 @@ class Inventori extends CI_Model{
     public function get_data_item_by_department($department_id) {
         // Buat query menggunakan query builder atau manual query
         $query = $this->db_inv->query("
-            SELECT i.kode_item, i.jenis, i.nama, i.note, i.id_cluster,i.create_at, mr_user.nama, mr_user.department_id 
+            SELECT i.kode_item, i.jenis, i.nama, i.note, i.id_cluster,i.create_at, mr_user.nama AS nama_user, mr_user.department_id 
             FROM items i 
             JOIN public.user inv_user ON i.id_cluster = inv_user.id_cluster 
+            JOIN dblink(
+                'dbname=monthly_report user=postgres password=password port=9603', 
+                'SELECT nik, nama, \"department_id\", role_id FROM public.user'
+            ) AS mr_user(nik VARCHAR, nama VARCHAR, department_id INTEGER, role_id INTEGER)
+            ON inv_user.nik = mr_user.nik
+            WHERE mr_user.role_id = 3 
+            AND mr_user.department_id = {$department_id}
+        ");
+        
+        // Kembalikan hasil query
+        return $query->result_array();  // Mengembalikan array asosiatif
+    }
+
+    public function get_data_jenis_item_by_department($department_id){
+        // Buat query menggunakan query builder atau manual query
+        $query = $this->db_inv->query("
+            SELECT j.*, mr_user.nama, mr_user.department_id 
+            FROM jenis_item j
+            JOIN public.user inv_user ON j.id_cluster = inv_user.id_cluster 
             JOIN dblink(
                 'dbname=monthly_report user=postgres password=password port=9603', 
                 'SELECT nik, nama, \"department_id\", role_id FROM public.user'
