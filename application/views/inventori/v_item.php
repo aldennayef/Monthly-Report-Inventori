@@ -49,6 +49,8 @@
                       <?php } else { ?>
                       <th>PIC</th>
                       <?php } ?>
+                      <th>Harga Satuan</th>
+                      <th>Stok</th>
                       <th>Created At</th>
                     </tr>
                   </thead>
@@ -56,21 +58,25 @@
                     <?php if($this->session->userdata('role_id')==3){ ?>
                       <?php foreach ($item as $items) {?>
                       <tr>
-                        <td><?=$items['kode_item']?></td>
-                        <td><?=$items['jenis']?></td>
-                        <td><?=$items['nama']?></td>
-                        <td><?=$items['note']?></td>
-                        <td><?=strftime('%d %B %Y', strtotime($items['create_at']))?></td>
+                        <td><?=$items['ikode_item']?></td>
+                        <td><?=$items['ijenis']?></td>
+                        <td><?=$items['inama']?></td>
+                        <td><?=$items['inote']?></td>
+                        <td><?=$items['harga_satuan']?></td>
+                        <td><?=$items['quantity_real']?></td>
+                        <td><?=strftime('%d %B %Y', strtotime($items['icreate_at']))?></td>
                       </tr>
                       <?php }?>
                     <?php } else { ?>
                       <?php foreach ($manager_item as $items) {?>
                       <tr>
-                        <td><?=$items['kode_item']?></td>
-                        <td><?=$items['jenis']?></td>
-                        <td><?=$items['nama']?></td>
+                        <td><?=$items['ikode_item']?></td>
+                        <td><?=$items['ijenis']?></td>
+                        <td><?=$items['inama']?></td>
                         <td><?=$items['nama_user']?></td>
-                        <td><?=strftime('%d %B %Y', strtotime($items['create_at']))?></td>
+                        <td><?=$items['harga_satuan']?></td>
+                        <td><?=$items['quantity_real']?></td>
+                        <td><?=strftime('%d %B %Y', strtotime($items['icreate_at']))?></td>
                       </tr>
                       <?php } ?>
                     <?php } ?>
