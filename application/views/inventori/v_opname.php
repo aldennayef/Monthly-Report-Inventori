@@ -183,8 +183,24 @@
                     });
                 });
             $(document).ready(function() {
+                // Event listener untuk mencegah input selain angka positif dan koma
+                $('#item').on('input', '.real-stok', function() {
+                    var value = $(this).val();
+
+                    // Izinkan angka dan koma, hapus karakter lain
+                    value = value.replace(/[^0-9,]/g, '');
+
+                    // Pastikan hanya satu koma yang diperbolehkan
+                    if ((value.match(/,/g) || []).length > 1) {
+                        value = value.replace(/,/g, ''); // Hapus semua koma jika lebih dari satu
+                    }
+
+                    // Update nilai input
+                    $(this).val(value);
+                });
+                
                 // Event listener untuk tombol edit
-                $('.edit-btn').click(function() {
+                $('#item').on('click', '.edit-btn', function() {
                     var row = $(this).closest('tr'); // Dapatkan baris yang sesuai dengan tombol yang diklik
                     var realStokText = row.find('.real-stok-text').text(); // Ambil teks stok real yang ada
 
@@ -195,7 +211,7 @@
                 });
 
                 // Event listener untuk tombol lock
-                $('.lock-btn').click(function() {
+                $('#item').on('click', '.lock-btn', function() {
                     var row = $(this).closest('tr');
                     var updatedRealStok = row.find('.real-stok').val(); // Ambil nilai dari input stok real
                     var oldRealStok = row.find('.stok-old').val(); // Ambil nilai stok real sebelumnya
@@ -247,7 +263,7 @@
                     });
                 });
 
-                $('.cancel-btn').click(function() {
+                $('#item').on('click', '.cancel-btn', function() {
                     var row = $(this).closest('tr');
 
                     // Kembalikan nilai stok real, selisih, dan result ke nilai awal
