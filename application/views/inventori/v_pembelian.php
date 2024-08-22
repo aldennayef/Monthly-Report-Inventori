@@ -24,12 +24,14 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <div class="d-flex justify-content-between mb-2">
-                  <a href="<?=base_url('apbp').'/add'?>">
-                    <button type="button" class="btn btn-success">
-                      <i class="fas fa-plus"></i> Tambah Pembelian
-                    </button>
-                  </a>
+                <div class="d-flex justify-content-between mb">
+                  <div>
+                    <a href="<?=base_url('apbp').'/add'?>">
+                      <button type="button" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Tambah Pembelian
+                      </button>
+                    </a>
+                  </div>
                 </div>
                 <table id="item" class="table table-bordered table-hover">
                   <thead>

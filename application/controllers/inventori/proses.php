@@ -988,6 +988,8 @@ class Proses extends CI_Controller{
 
     public function backup_database(){
         if($this->session->userdata('role_id')){
+            $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+            $idcluster = $userData->id_cluster;
             // Load PhpSpreadsheet library
             require 'vendor/autoload.php';
 
@@ -1004,7 +1006,7 @@ class Proses extends CI_Controller{
                 $sheet = $spreadsheet->createSheet();
                 $sheet->setTitle($tableName);
                 
-                $data = $this->inventori->get_table_data($tableName);
+                $data = $this->inventori->get_table_data($tableName, $idcluster);
                 $column = 'A';
                 $row = 1;
 
