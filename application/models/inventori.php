@@ -47,6 +47,7 @@ class Inventori extends CI_Model{
         $this->db_inv->from('items');
         $this->db_inv->join('stok', 'items.kode_item = stok.kode_item', 'left');
         $this->db_inv->where('items.id_cluster', $id_cluster);
+        $this->db_inv->order_by('items.kode_item', 'ASC');
         return $this->db_inv->get()->result_array();
     }
 

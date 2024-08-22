@@ -52,7 +52,7 @@
                             <select class="form-control input-check" name="kodeitem[]" autocomplete="off">
                             <option value="" selected disabled>Pilih Kode Item</option>
                             <?php foreach ($items as $item): ?>
-                                <option value="<?= $item['kode_item'] ?>"><?= $item['kode_item'] ?> - <?= $item['nama'] ?></option>
+                                <option value="<?= $item['ikode_item'] ?>"><?= $item['ikode_item'] ?> - <?= $item['inama'] ?></option>
                             <?php endforeach; ?>
                             </select>
                         </div>
@@ -142,7 +142,7 @@
                             <select class="form-control input-check" name="kodeitem[]" autocomplete="off">
                             <option value="" selected disabled>Pilih Kode Item</option>
                             <?php foreach ($items as $item): ?>
-                                <option value="<?= $item['kode_item'] ?>"><?= $item['kode_item'] ?> - <?= $item['nama'] ?></option>
+                                <option value="<?= $item['ikode_item'] ?>"><?= $item['ikode_item'] ?> - <?= $item['inama'] ?></option>
                             <?php endforeach; ?>
                             </select>
                         </div>
