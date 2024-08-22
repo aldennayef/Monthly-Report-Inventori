@@ -158,7 +158,7 @@
                     $('#item').DataTable({
                     "paging": true,
                     "lengthChange": false,
-                    "searching": false,
+                    "searching": true,
                     "ordering": true,
                     "info": true,
                     "autoWidth": false,
@@ -167,7 +167,7 @@
                 });
                 $(document).ready(function() {
                 // Event listener untuk tombol edit
-                $('.edit-btn').click(function() {
+                $('#item').on('click', '.edit-btn', function() {
                     var row = $(this).closest('tr'); // Dapatkan baris yang sesuai dengan tombol yang diklik
                     // var namaitemText = row.find('.nama-item-text').text(); // Ambil teks stok real yang ada
                     var jmlpakaiText = row.find('.jumlah-pakai-text').text(); // Ambil teks stok real yang ada
@@ -191,7 +191,7 @@
                 });
 
                 // Event listener untuk tombol lock
-                $('.lock-btn').click(function() {
+                $('#item').on('click', '.lock-btn', function() {
                     var row = $(this).closest('tr');
                     var nopakai = row.find('.nopakai').val();
                     var stokReal = parseFloat(row.find('.stok-real').val()) || 0;
@@ -237,7 +237,7 @@
                     });
                 });
 
-                $('.cancel-btn').click(function() {
+                $('#item').on('click', '.cancel-btn', function() {
                     var row = $(this).closest('tr');
 
                     // Kembalikan nilai stok real, selisih, dan result ke nilai awal

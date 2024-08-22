@@ -174,4 +174,16 @@
         <!-- SweetAlert2 -->
         <script src="<?=base_url('assets/plugins/sweetalert2/sweetalertnotif2.min.js')?>"></script>
 
+        <script>
+            $(function () {
+                    $('#item').DataTable({
+                    "paging": true,
+                    "lengthChange": false,
+                    "searching": true,
+                    "ordering": true,
+                    "info": true,
+                    "autoWidth": false,
+                    "responsive": true,
+                    });
+                });
         </script>

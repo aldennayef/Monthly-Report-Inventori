@@ -405,6 +405,15 @@ class Inventori extends CI_Model{
         return $query->result_array();  // Mengembalikan array asosiatif
     }
     
+    public function get_all_tables() {
+        $query = $this->db_inv->query("SELECT table_name FROM information_schema.tables WHERE table_schema='public'");
+        return $query->result_array();
+    }
+
+    public function get_table_data($table) {
+        $query = $this->db_inv->get($table);
+        return $query->result_array();
+    }
     
     
 

@@ -130,7 +130,7 @@
                     $('#item').DataTable({
                     "paging": true,
                     "lengthChange": false,
-                    "searching": false,
+                    "searching": true,
                     "ordering": true,
                     "info": true,
                     "autoWidth": false,
@@ -138,7 +138,7 @@
                     });
                 });
                 $(document).ready(function() {
-                    $('.edit-user-btn').click(function() {
+                    $('#item').on('click', '.edit-user-btn', function() {
                         var row = $(this).closest('tr'); // Dapatkan baris yang sesuai dengan tombol yang diklik
                         row.find('.cluster-text').hide(); // Sembunyikan teks cluster
                         row.find('.cluster-select').show(); // Tampilkan dropdown cluster
@@ -147,7 +147,7 @@
                     });
 
                     // Event listener untuk tombol lock
-                    $('.lock-user-btn').click(function() {
+                    $('#item').on('click', '.lock-user-btn', function() {
                         var row = $(this).closest('tr');
                         var nik = row.data('nik'); // Dapatkan NIK dari data attribute
                         var selectedClusterValue = row.find('.cluster-select').val(); // Ambil nilai cluster yang dipilih
@@ -180,7 +180,7 @@
                     });
 
                     // Event listener untuk tombol cancel
-                    $('.cancel-user-btn').click(function() {
+                    $('#item').on('click', '.cancel-user-btn', function() {
                         var row = $(this).closest('tr');
                         row.find('.cluster-select').hide(); // Sembunyikan dropdown cluster
                         row.find('.cluster-text').show(); // Tampilkan kembali teks cluster
