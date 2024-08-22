@@ -69,6 +69,7 @@
               </li>
             </ul>
           </li>
+          <?php if($user['role_id'] == 3){?>
           <li class="nav-item">
             <a href="<?=base_url('deb')?>" class="nav-link">
               <i class="nav-icon fas fa-plus-square"></i>
@@ -97,6 +98,7 @@
               <p>Data Opname</p>
             </a>
           </li>
+          <?php } ?>
           <?php } ?>
           <li class="nav-header">ACTIONS</li>
           <li class="nav-item">

@@ -155,7 +155,7 @@
               $('#item').DataTable({
               "paging": true,
               "lengthChange": false,
-              "searching": false,
+              "searching": true,
               "ordering": true,
               "info": true,
               "autoWidth": false,
@@ -165,7 +165,7 @@
 
           $(document).ready(function() {
             // Event listener untuk tombol edit
-            $('.edit-btn').click(function() {
+            $('#item').on('click', '.edit-btn', function() {
               var row = $(this).closest('tr'); // Dapatkan baris yang sesuai dengan tombol yang diklik
               var quantityText = row.find('.quantity-text').text(); 
               var satuanText = row.find('.satuan-text').text(); 
@@ -219,7 +219,7 @@
             });
 
             // Event listener untuk tombol lock
-            $('.lock-btn').click(function() {
+            $('#item').on('click', '.lock-btn', function() {
               var row = $(this).closest('tr');
               var kodebeli = row.find('.kodebeli').val(); 
               var kodeitem = row.find('.kodeitem').val();
@@ -267,7 +267,7 @@
               });
             });
 
-            $('.cancel-btn').click(function() {
+            $('#item').on('click', '.cancel-btn', function() {
                 var row = $(this).closest('tr');
 
                 var originalquantity = row.data('original-quantity');

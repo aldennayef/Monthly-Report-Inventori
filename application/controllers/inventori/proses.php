@@ -985,6 +985,88 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/error_page');
         }
     }
+
+    public function backup_database(){
+        if($this->session->userdata('role_id')){
+            // Load PhpSpreadsheet library
+            require 'vendor/autoload.php';
+
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+
+            // Fetch database data
+            $tables = $this->inventori->get_all_tables();
+
+            foreach ($tables as $table) {
+                // Access table name from array
+                $tableName = $table['table_name'];
+
+                // Create a new worksheet for each table
+                $sheet = $spreadsheet->createSheet();
+                $sheet->setTitle($tableName);
+                
+                $data = $this->inventori->get_table_data($tableName);
+                $column = 'A';
+                $row = 1;
+
+                // Set column names
+                if (!empty($data)) {
+                    $field_names = array_keys($data[0]);
+                    foreach ($field_names as $field) {
+                        $sheet->setCellValue($column . $row, $field);
+                        $column++;
+                    }
+                    $row++;
+
+                    // Set data rows
+                    foreach ($data as $record) {
+                        $column = 'A';
+                        foreach ($record as $value) {
+                            // Make sure there is no array to string conversion
+                            if (is_array($value)) {
+                                $value = json_encode($value);
+                            }
+                            $sheet->setCellValue($column . $row, $value);
+                            $column++;
+                        }
+                        $row++;
+                    }
+                    $row++;
+                }
+            }
+
+            // Remove the default sheet created on initialization
+            $spreadsheet->removeSheetByIndex(0);
+
+            // Write to file
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+            // Get last month's number and format it
+            $lastMonthNumber = date('n', strtotime('first day of last month')); // e.g., 6 for June
+            $dateTime = date('Ymd_His');
+            $filename = "backup_inventori_period_{$lastMonthNumber}_{$dateTime}.xlsx";
+            $backupDir = 'E:\backup_db_inventori';
+
+            // Create the directory if it doesn't exist
+            if (!is_dir($backupDir)) {
+                mkdir($backupDir, 0777, true);
+            }
+
+            $filepath = $backupDir . '/' . $filename;
+            $writer->save($filepath);
+
+            $logdata = [
+                'id_user' => $this->session->userdata('id'),
+                'username' => $this->session->userdata('username'),
+                'act_note' => 'Melakukan backup data',
+            ];
+    
+            $this->db_inv->set('act_date', 'NOW()', FALSE);
+            $this->db_inv->insert('log_data', $logdata);
+            header('Content-Type: application/json');
+            echo json_encode(['status'=> 'success']);
+            redirect('dsb');
+        }
+    }
     
 
 }
