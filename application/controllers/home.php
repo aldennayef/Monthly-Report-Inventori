@@ -113,7 +113,7 @@ class Home extends CI_Controller {
             $this->db_inv->set('act_date', 'NOW()', FALSE);
             $this->db_inv->insert('log_data',$data);
             // after success login
-            if ($role_id == 1) {
+            if ($role_id == 1 && $role_id == 4) {
                 redirect('dsb');
             } 
             elseif ($role_id == 2) {

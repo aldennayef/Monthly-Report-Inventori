@@ -21,7 +21,7 @@ class Proses extends CI_Controller{
             }else{
                 $this->load->view('inventori/error_page');
             }
-        }else if($this->session->userdata('role_id')==1 || $this->session->userdata('role_id')==2){
+        }else if($this->session->userdata('role_id')==1 || $this->session->userdata('role_id')==2 ||$this->session->userdata('role_id')==4){
             $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
             $this->load->view('inventori/header', $data);
             $this->load->view('inventori/navbar');
@@ -213,7 +213,7 @@ class Proses extends CI_Controller{
     
 
     public function detail_item(){
-        if($this->session->userdata('role_id') == 3 || $this->session->userdata('role_id') == 2){
+        if($this->session->userdata('role_id') != 1){
             $user = $this->inventori->check_nik($this->session->userdata('nik'));
             
             if($this->session->userdata('role_id') == 3){
@@ -437,10 +437,10 @@ class Proses extends CI_Controller{
 
     public function detail_jenisitem()
     {
-        if ($this->session->userdata('role_id')==3 || $this->session->userdata('role_id')==2) {
+        if ($this->session->userdata('role_id')!=1) {
             $userData = $this->inventori->check_nik($this->session->userdata('nik'));
             $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
-            if($this->session->userdata('role_id')==2){
+            if($this->session->userdata('role_id')==2 || $this->session->userdata('role_id')==4){
                 $user_dept = $this->inventori->get_department_id_by_nik($this->session->userdata('nik'));
                 $data['manager_jenisitem'] = $this->inventori->get_data_jenis_item_by_department($user_dept->department_id);
             }else{
