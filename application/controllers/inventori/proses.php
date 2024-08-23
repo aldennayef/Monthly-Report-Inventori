@@ -23,6 +23,7 @@ class Proses extends CI_Controller{
             }
         }else if($this->session->userdata('role_id')==1 || $this->session->userdata('role_id')==2 ||$this->session->userdata('role_id')==4){
             $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+            $data['logdata'] = $this->inventori->get_log_data();
             $this->load->view('inventori/header', $data);
             $this->load->view('inventori/navbar');
             $this->load->view('inventori/sidebar',$data);

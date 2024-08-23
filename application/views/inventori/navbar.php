@@ -22,8 +22,8 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#" id="dark-mode-toggle" role="button">
-          <i class="fas fa-moon"></i>
+        <a class="nav-link" href="#" id="darkModeSwitch" role="button">
+          <i class="fas fa-sun"></i>
         </a>
       </li>
     </ul>

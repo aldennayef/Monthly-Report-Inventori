@@ -45,7 +45,7 @@
                       <?php $i=1; foreach ($manager_jenisitem as $mji) {?>
                       <tr>
                         <td><?=$i++;?></td>
-                        <td><?=$mji['nama_jenis']?></td>
+                        <td><?=$mji['nama_jenis']?> (<?=$mji['kode_cluster']?>)</td>
                         <td><?=strftime('%d %B %Y', strtotime($mji['create_at']))?></td>
                       </tr>
                       <?php } ?>
@@ -113,7 +113,8 @@
         <!-- AdminLTE App -->
         <script src="<?=base_url('assets/dist/js/adminlte.js')?>"></script>
         <!-- AdminLTE for demo purposes -->
-        <script src="<?=base_url('assets/dist/js/demo.js')?>"></script>
+        <!-- Light-Dark Mode -->
+        <script src="<?=base_url('assets/js/lightdarkmode.js')?>"></script>
         <!-- SweetAlert2 -->
         <script src="<?=base_url('assets/plugins/sweetalert2/sweetalertnotif2.min.js')?>"></script>
 
