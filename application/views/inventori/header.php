@@ -3,7 +3,11 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <?php if($this->session->userdata('role_id')!=3){ ?>
+        <title><?=$user['department']?> | SIMI Dashboard</title>
+        <?php } else{ ?>
         <title><?=$user['sub_department']?> | SIMI Dashboard</title>
+        <?php }?>
 
         <!-- Font Awesome -->
         <link rel="stylesheet" href="<?=base_url('assets/plugins/fontawesome-free/css/all.min.css')?>">

@@ -198,6 +198,7 @@
 
               // Autoscroll to the new input
               newRow[0].scrollIntoView({ behavior: 'smooth' });
+              initializeAutocomplete(newRow.find('#jenisitem'));
 
               checkRemoveButtonVisibility(); // Periksa visibilitas tombol remove
               updateItemNumbers();
@@ -570,5 +571,16 @@
 
             // Inisialisasi autocomplete untuk status
             autocomplete(document.getElementById("jenisitem"), listjenisitem);
+
+            // Inisialisasi autocomplete untuk input baru
+            function initializeAutocomplete(inputElement) {
+              var listjenisitem = <?= $suggest_jenis ?>;
+              autocomplete(inputElement[0], listjenisitem);
+            }
+
+            // Panggil initializeAutocomplete untuk input yang ada
+            $('#itemInputs .input-row-item').each(function() {
+              initializeAutocomplete($(this).find('#jenisitem'));
+            });
           });
         </script>
