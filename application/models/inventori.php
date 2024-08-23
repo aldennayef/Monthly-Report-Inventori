@@ -372,7 +372,9 @@ class Inventori extends CI_Model{
         return $this->db_inv->get_where('opname',['id_cluster'=>$idcluster])->result_array();
     }
     
-    
+    public function get_log_data(){
+        return $this->db_inv->get('log_data')->result_array();
+    }
 
     // MANAGER
     public function get_data_item_by_department($department_id) {
@@ -408,9 +410,10 @@ class Inventori extends CI_Model{
     public function get_data_jenis_item_by_department($department_id){
         // Buat query menggunakan query builder atau manual query
         $query = $this->db_inv->query("
-            SELECT j.*, mr_user.nama, mr_user.department_id 
+            SELECT j.*, mr_user.nama, mr_user.department_id, c.kode_cluster
             FROM jenis_item j
             JOIN public.user inv_user ON j.id_cluster = inv_user.id_cluster 
+            JOIN cluster c ON j.id_cluster = c.id_cluster 
             JOIN dblink(
                 'dbname=monthly_report user=postgres password=password port=9603', 
                 'SELECT nik, nama, \"department_id\", role_id FROM public.user'
