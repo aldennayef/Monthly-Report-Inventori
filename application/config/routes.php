@@ -101,4 +101,4 @@ $route['kjg'] = 'inventori/proses/kunjungan';
 $route['dop'] = 'inventori/proses/dataopname';
 $route['akdo'] = 'inventori/proses/aksi_dataopname';
 $route['detop'] = 'inventori/proses/detail_dataopname';
-$route['bakri'] = 'inventori/proses/backup_database';
+$route['inventori/proses/more_info'] = 'inventori/proses/more_info';
