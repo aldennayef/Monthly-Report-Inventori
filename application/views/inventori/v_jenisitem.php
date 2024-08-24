@@ -38,15 +38,15 @@
                       <tr>
                         <td><?=$i++;?></td>
                         <td><?=$ji['nama_jenis']?></td>
-                        <td><?=strftime('%d %B %Y', strtotime($ji['create_at']))?></td>
+                        <td><?=date('d F %Y', strtotime($ji['create_at']))?></td>
                       </tr>
                       <?php }?>
                     <?php } else { ?>
                       <?php $i=1; foreach ($manager_jenisitem as $mji) {?>
                       <tr>
                         <td><?=$i++;?></td>
-                        <td><?=$mji['nama_jenis']?> (<?=$mji['kode_cluster']?>)</td>
-                        <td><?=strftime('%d %B %Y', strtotime($mji['create_at']))?></td>
+                        <td><?=$mji['nama_jenis']?></td>
+                        <td><?=date('d F %Y', strtotime($mji['create_at']))?></td>
                       </tr>
                       <?php } ?>
                     <?php } ?>

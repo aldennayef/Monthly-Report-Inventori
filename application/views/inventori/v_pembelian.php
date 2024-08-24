@@ -76,7 +76,7 @@
                           <input type="text" class="form-control status" value="<?=$pemb['status']?>" style="display:none;">
                         </td>
                         <td>
-                          <span class="tanggal-text"><?=strftime('%d %B %Y', strtotime($pemb['realisasi_at']))?></span>
+                          <span class="tanggal-text"><?=date('d F Y', strtotime($pemb['realisasi_at']))?></span>
                         </td>
                         <td>
                           <button class="btn btn-sm btn-primary edit-btn"><i class="fas fa-pen"></i></button>
