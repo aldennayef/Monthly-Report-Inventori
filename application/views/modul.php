@@ -47,7 +47,7 @@
                             <h4><?= $modul['nama']; ?></h4>
                         </div>
                         <div class="card-body">
-                            <a href="<?= $modul['link']; ?>" class="btn btn-primary">Buka Modul</a>
+                            <a href="<?= $modul['link']; ?>" class="btn btn-primary buka-modul" data-link="<?= $modul['link']; ?>">Buka Modul</a>
                         </div>
                     </div>
                 </div>
@@ -57,5 +57,28 @@
         <p>Tidak ada modul yang tersedia.</p>
     <?php endif; ?>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    var cekNIK = <?= json_encode($cek_nik) ?>; // Pastikan cekNIK adalah boolean true atau false
+    var roleID = <?= json_encode($this->session->userdata('role_id')) ?>; // Pastikan cekNIK adalah boolean true atau false
+
+    // Loop melalui semua tombol "Buka Modul"
+    document.querySelectorAll('.buka-modul').forEach(function(button) {
+        var link = button.getAttribute('data-link');
+
+        // Cek jika cekNIK adalah false dan link adalah 'inventori'
+        if (!cekNIK && link === 'inventori' && roleID != 1 && roleID != 2 && roleID !=4) {
+            button.classList.add('disabled'); // Menambahkan kelas 'disabled'
+            button.classList.remove('btn-primary'); // Mengganti warna tombol menjadi abu-abu
+            button.classList.add('btn-secondary');
+            button.setAttribute('aria-disabled', 'true'); // Aksesibilitas
+            button.setAttribute('href', '#'); // Menghapus link
+        }
+    });
+});
+
+</script>
+
 </body>
 </html>
