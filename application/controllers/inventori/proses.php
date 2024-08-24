@@ -9,31 +9,96 @@ class Proses extends CI_Controller{
         $this->load->model('inventori');
     }
 
-    public function index(){
-        if($this->session->userdata('role_id')==3){
+    public function index() {
+        if($this->session->userdata('role_id') == 3){
             if($this->inventori->check_nik($this->session->userdata('nik'))){
                 $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+                $data['dashboard_data'] = $this->inventori->list_chart();
+
                 $this->load->view('inventori/header', $data);
                 $this->load->view('inventori/navbar');
-                $this->load->view('inventori/sidebar',$data);
+                $this->load->view('inventori/sidebar', $data);
                 $this->load->view('inventori/dashboard', $data);
                 $this->load->view('inventori/footer');
-            }else{
+            } else {
                 $this->load->view('inventori/error_page');
             }
-        }else if($this->session->userdata('role_id')==1 || $this->session->userdata('role_id')==2 ||$this->session->userdata('role_id')==4){
+        } else if($this->session->userdata('role_id') == 1 || $this->session->userdata('role_id') == 2){
             $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
-            $data['logdata'] = $this->inventori->get_log_data();
             $this->load->view('inventori/header', $data);
             $this->load->view('inventori/navbar');
-            $this->load->view('inventori/sidebar',$data);
+            $this->load->view('inventori/sidebar', $data);
             $this->load->view('inventori/dashboard', $data);
             $this->load->view('inventori/footer');
-        }else{
+        } else {
             $this->load->view('inventori/error_page');
         }
     }
 
+    public function more_info() {
+        try {
+            $kode_item = $this->input->post('kode_item');
+            $chart_type = $this->input->post('chart_type'); // Menangkap jenis chart yang dipilih
+    
+            if (empty($kode_item)) {
+                throw new Exception("No item code provided");
+            }
+    
+            $formatted_data = [];
+            $labels = [];
+            $item_name = '';
+    
+            if ($chart_type === 'line') {
+                // Fetch stock data for line chart
+                $chart_data = $this->inventori->get_monthly_stock_data($kode_item);
+                foreach ($chart_data as $data) {
+                    $labels[] = date('Y-m', strtotime($data['month']));
+                    $formatted_data[] = $data['total_quantity'];
+                    $item_name = $data['item_name'];
+                }
+            } elseif ($chart_type === 'bar') {
+                // Fetch purchase and usage data for bar chart
+                $purchase_data = $this->inventori->get_monthly_purchase_data($kode_item);
+                $usage_data = $this->inventori->get_monthly_usage_data($kode_item);
+    
+                $formatted_data = [
+                    'purchase' => [],
+                    'usage' => []
+                ];
+    
+                $unique_labels = [];
+    
+                foreach ($purchase_data as $data) {
+                    $month = date('Y-m', strtotime($data['month']));
+                    $unique_labels[$month] = $month;
+                    $formatted_data['purchase'][$month] = $data['total_quantity'];
+                }
+    
+                foreach ($usage_data as $data) {
+                    $month = date('Y-m', strtotime($data['month']));
+                    $unique_labels[$month] = $month;
+                    $formatted_data['usage'][$month] = $data['total_quantity'];
+                }
+    
+                $labels = array_values($unique_labels);
+                foreach ($labels as $month) {
+                    $formatted_data['purchase'][$month] = $formatted_data['purchase'][$month] ?? 0;
+                    $formatted_data['usage'][$month] = $formatted_data['usage'][$month] ?? 0;
+                }
+            }
+    
+            echo json_encode([
+                'labels' => $labels,
+                'data' => $formatted_data,
+                'item_name' => $item_name
+            ]);
+        } catch (Exception $e) {
+            log_message('error', $e->getMessage());
+            show_error($e->getMessage(), 500);
+        }
+    }
+    
+    
     public function detail_users(){
         if($this->session->userdata('role_id') == 1){
             $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
@@ -214,7 +279,7 @@ class Proses extends CI_Controller{
     
 
     public function detail_item(){
-        if($this->session->userdata('role_id') != 1){
+        if($this->session->userdata('role_id') == 3 || $this->session->userdata('role_id') == 2){
             $user = $this->inventori->check_nik($this->session->userdata('nik'));
             
             if($this->session->userdata('role_id') == 3){
@@ -438,19 +503,18 @@ class Proses extends CI_Controller{
 
     public function detail_jenisitem()
     {
-        if ($this->session->userdata('role_id')!=1) {
-            $userData = $this->inventori->check_nik($this->session->userdata('nik'));
-            $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
-            if($this->session->userdata('role_id')==2 || $this->session->userdata('role_id')==4){
-                $user_dept = $this->inventori->get_department_id_by_nik($this->session->userdata('nik'));
-                $data['manager_jenisitem'] = $this->inventori->get_data_jenis_item_by_department($user_dept->department_id);
+        if ($this->session->userdata('role_id')==3 || $this->session->userdata('role_id')==2) {
+            if($this->session->userdata('role_id')==3 && !$this->inventori->check_nik($this->session->userdata('nik'))){
+                $this->load->view('inventori/error_page');
             }else{
+                $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+                $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
                 $data['jenisitem'] = $this->inventori->get_jenis_items_by_nik_cluster($this->session->userdata('nik'));
+                $this->load->view('inventori/header', $data);
+                $this->load->view('inventori/navbar');
+                $this->load->view('inventori/sidebar',$data);
+                $this->load->view('inventori/v_jenisitem', $data);
             }
-            $this->load->view('inventori/header', $data);
-            $this->load->view('inventori/navbar');
-            $this->load->view('inventori/sidebar',$data);
-            $this->load->view('inventori/v_jenisitem', $data);
         }
     }
 
@@ -984,90 +1048,6 @@ class Proses extends CI_Controller{
             }
         }else{
             $this->load->view('inventori/error_page');
-        }
-    }
-
-    public function backup_database(){
-        if($this->session->userdata('role_id')){
-            $userData = $this->inventori->check_nik($this->session->userdata('nik'));
-            $idcluster = $userData->id_cluster;
-            // Load PhpSpreadsheet library
-            require 'vendor/autoload.php';
-
-            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-
-            // Fetch database data
-            $tables = $this->inventori->get_all_tables();
-
-            foreach ($tables as $table) {
-                // Access table name from array
-                $tableName = $table['table_name'];
-
-                // Create a new worksheet for each table
-                $sheet = $spreadsheet->createSheet();
-                $sheet->setTitle($tableName);
-                
-                $data = $this->inventori->get_table_data($tableName, $idcluster);
-                $column = 'A';
-                $row = 1;
-
-                // Set column names
-                if (!empty($data)) {
-                    $field_names = array_keys($data[0]);
-                    foreach ($field_names as $field) {
-                        $sheet->setCellValue($column . $row, $field);
-                        $column++;
-                    }
-                    $row++;
-
-                    // Set data rows
-                    foreach ($data as $record) {
-                        $column = 'A';
-                        foreach ($record as $value) {
-                            // Make sure there is no array to string conversion
-                            if (is_array($value)) {
-                                $value = json_encode($value);
-                            }
-                            $sheet->setCellValue($column . $row, $value);
-                            $column++;
-                        }
-                        $row++;
-                    }
-                    $row++;
-                }
-            }
-
-            // Remove the default sheet created on initialization
-            $spreadsheet->removeSheetByIndex(0);
-
-            // Write to file
-            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-
-            // Get last month's number and format it
-            $lastMonthNumber = date('n', strtotime('first day of last month')); // e.g., 6 for June
-            $dateTime = date('Ymd_His');
-            $filename = "backup_inventori_period_{$lastMonthNumber}_{$dateTime}.xlsx";
-            $backupDir = 'E:\backup_db_inventori';
-
-            // Create the directory if it doesn't exist
-            if (!is_dir($backupDir)) {
-                mkdir($backupDir, 0777, true);
-            }
-
-            $filepath = $backupDir . '/' . $filename;
-            $writer->save($filepath);
-
-            $logdata = [
-                'id_user' => $this->session->userdata('id'),
-                'username' => $this->session->userdata('username'),
-                'act_note' => 'Melakukan backup data',
-            ];
-    
-            $this->db_inv->set('act_date', 'NOW()', FALSE);
-            $this->db_inv->insert('log_data', $logdata);
-            header('Content-Type: application/json');
-            echo json_encode(['status'=> 'success']);
-            redirect('dsb');
         }
     }
     
