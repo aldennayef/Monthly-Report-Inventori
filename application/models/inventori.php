@@ -36,11 +36,19 @@ class Inventori extends CI_Model{
     public function get_items_by_id_cluster($id_cluster) {
         
         // Query dengan menggunakan dblink untuk join antar database
-        $query = $this->db_inv->query("
-            SELECT * from items
-            WHERE id_cluster = ?", array($id_cluster));
+        // $query = $this->db_inv->query("
+        //     SELECT * from items
+        //     WHERE id_cluster = ?", array($id_cluster));
         
-        return $query->result_array();
+        // return $query->result_array();
+
+        $this->db_inv->select('items.id_cluster AS iid_cluster, items.kode_item AS ikode_item, items.jenis AS ijenis, 
+        items.nama AS inama, items.note AS inote, items.create_at AS icreate_at, stok.*');
+        $this->db_inv->from('items');
+        $this->db_inv->join('stok', 'items.kode_item = stok.kode_item', 'left');
+        $this->db_inv->where('items.id_cluster', $id_cluster);
+        $this->db_inv->order_by('items.kode_item', 'ASC');
+        return $this->db_inv->get()->result_array();
     }
 
     public function get_jenis_items_by_nik_cluster($nik) {
@@ -84,7 +92,7 @@ class Inventori extends CI_Model{
         FROM public.user u
         JOIN public.user_department ud ON u.department_id = ud.id
         JOIN public.user_sub_department usd ON u.sub_department_id = usd.id
-        LEFT JOIN dblink('dbname=inventori user=postgres password=password port=9603', 
+        LEFT JOIN dblink('dbname=inventori user=postgres password=password port=7070', 
                          'SELECT DISTINCT u.nik, u.id_cluster, c.nama_cluster 
                           FROM public.user u 
                           JOIN public.cluster c ON u.id_cluster = c.id_cluster') 
@@ -363,7 +371,7 @@ class Inventori extends CI_Model{
     public function get_detail_data_opname($idcluster){
         return $this->db_inv->get_where('opname',['id_cluster'=>$idcluster])->result_array();
     }
-
+    
     // Fungsi untuk mengambil data list chart
     public function list_chart() {
         // Fetch data from the cluster, items, and stok tables
@@ -436,16 +444,46 @@ class Inventori extends CI_Model{
         
         return $query->result_array();
     }
-    
+
     // MANAGER
     public function get_data_item_by_department($department_id) {
         // Buat query menggunakan query builder atau manual query
         $query = $this->db_inv->query("
-            SELECT i.kode_item, i.jenis, i.nama, i.note, i.id_cluster,i.create_at, mr_user.nama, mr_user.department_id 
+            SELECT 
+                i.kode_item AS ikode_item, 
+                i.jenis as ijenis, 
+                i.nama as inama, 
+                i.note as inote, 
+                i.id_cluster as iid_cluster,
+                i.create_at as icreate_at, 
+                mr_user.nama AS nama_user, 
+                mr_user.department_id, 
+                s.*
             FROM items i 
             JOIN public.user inv_user ON i.id_cluster = inv_user.id_cluster 
+            LEFT JOIN stok s ON s.kode_item = i.kode_item
             JOIN dblink(
-                'dbname=monthly_report user=postgres password=password port=9603', 
+                'dbname=monthly_report user=postgres password=password port=7070', 
+                'SELECT nik, nama, \"department_id\", role_id FROM public.user'
+            ) AS mr_user(nik VARCHAR, nama VARCHAR, department_id INTEGER, role_id INTEGER)
+            ON inv_user.nik = mr_user.nik
+            WHERE mr_user.role_id = 3 
+            AND mr_user.department_id = {$department_id}
+        ");
+        
+        // Kembalikan hasil query
+        return $query->result_array();  // Mengembalikan array asosiatif
+    }
+    
+
+    public function get_data_jenis_item_by_department($department_id){
+        // Buat query menggunakan query builder atau manual query
+        $query = $this->db_inv->query("
+            SELECT j.*, mr_user.nama, mr_user.department_id 
+            FROM jenis_item j
+            JOIN public.user inv_user ON j.id_cluster = inv_user.id_cluster 
+            JOIN dblink(
+                'dbname=monthly_report user=postgres password=password port=7070', 
                 'SELECT nik, nama, \"department_id\", role_id FROM public.user'
             ) AS mr_user(nik VARCHAR, nama VARCHAR, department_id INTEGER, role_id INTEGER)
             ON inv_user.nik = mr_user.nik
@@ -458,6 +496,23 @@ class Inventori extends CI_Model{
     }
     
     
-    
+    // for backup
+    public function has_id_cluster_column($table) {
+        $fields = $this->db_inv->list_fields($table);
+        return in_array('id_cluster', $fields);
+    }
+    public function get_all_tables() {
+        $query = $this->db_inv->query("SELECT table_name FROM information_schema.tables WHERE table_schema='public'");
+        return $query->result_array();
+    }
 
+    public function get_table_data($table, $id_cluster) {
+        if ($id_cluster !== null && $this->has_id_cluster_column($table)) {
+            $this->db_inv->where('id_cluster', $id_cluster);
+        }
+        $query = $this->db_inv->get($table);
+        return $query->result_array();
+    }
+    
+    
 }

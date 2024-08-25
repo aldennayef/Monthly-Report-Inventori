@@ -38,7 +38,7 @@
                       <tr>
                         <td><?=$i++;?></td>
                         <td><?=$ji['nama_jenis']?></td>
-                        <td><?=date('d F %Y', strtotime($ji['create_at']))?></td>
+                        <td><?=date('d F Y', strtotime($ji['create_at']))?></td>
                       </tr>
                       <?php }?>
                     <?php } else { ?>
@@ -46,7 +46,7 @@
                       <tr>
                         <td><?=$i++;?></td>
                         <td><?=$mji['nama_jenis']?></td>
-                        <td><?=date('d F %Y', strtotime($mji['create_at']))?></td>
+                        <td><?=date('d F Y', strtotime($mji['create_at']))?></td>
                       </tr>
                       <?php } ?>
                     <?php } ?>

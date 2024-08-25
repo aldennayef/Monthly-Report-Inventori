@@ -503,18 +503,19 @@ class Proses extends CI_Controller{
 
     public function detail_jenisitem()
     {
-        if ($this->session->userdata('role_id')==3 || $this->session->userdata('role_id')==2) {
-            if($this->session->userdata('role_id')==3 && !$this->inventori->check_nik($this->session->userdata('nik'))){
-                $this->load->view('inventori/error_page');
+        if ($this->session->userdata('role_id')!=1) {
+            $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+            $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+            if($this->session->userdata('role_id')==2 || $this->session->userdata('role_id')==4){
+                $user_dept = $this->inventori->get_department_id_by_nik($this->session->userdata('nik'));
+                $data['manager_jenisitem'] = $this->inventori->get_data_jenis_item_by_department($user_dept->department_id);
             }else{
-                $userData = $this->inventori->check_nik($this->session->userdata('nik'));
-                $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
                 $data['jenisitem'] = $this->inventori->get_jenis_items_by_nik_cluster($this->session->userdata('nik'));
-                $this->load->view('inventori/header', $data);
-                $this->load->view('inventori/navbar');
-                $this->load->view('inventori/sidebar',$data);
-                $this->load->view('inventori/v_jenisitem', $data);
             }
+            $this->load->view('inventori/header', $data);
+            $this->load->view('inventori/navbar');
+            $this->load->view('inventori/sidebar',$data);
+            $this->load->view('inventori/v_jenisitem', $data);
         }
     }
 
@@ -1050,6 +1051,7 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/error_page');
         }
     }
+    
     
 
 }
