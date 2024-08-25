@@ -64,7 +64,7 @@
                         <td><?=$items['inote']?></td>
                         <td><?=$items['harga_satuan']?></td>
                         <td><?=$items['quantity_real']?></td>
-                        <td><?=date('d F %Y', strtotime($items['icreate_at']))?></td>
+                        <td><?=date('d F Y', strtotime($items['icreate_at']))?></td>
                       </tr>
                       <?php }?>
                     <?php } else { ?>
@@ -76,7 +76,7 @@
                         <td><?=$items['nama_user']?></td>
                         <td><?=$items['harga_satuan']?></td>
                         <td><?=$items['quantity_real']?></td>
-                        <td><?=date('d F %Y', strtotime($items['icreate_at']))?></td>
+                        <td><?=date('d F Y', strtotime($items['icreate_at']))?></td>
                       </tr>
                       <?php } ?>
                     <?php } ?>
