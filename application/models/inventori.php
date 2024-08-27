@@ -92,7 +92,7 @@ class Inventori extends CI_Model{
         FROM public.user u
         JOIN public.user_department ud ON u.department_id = ud.id
         JOIN public.user_sub_department usd ON u.sub_department_id = usd.id
-        LEFT JOIN dblink('dbname=inventori user=postgres password=password port=7070', 
+        LEFT JOIN dblink('dbname=inventori user=postgres password=password port=9603', 
                          'SELECT DISTINCT u.nik, u.id_cluster, c.nama_cluster 
                           FROM public.user u 
                           JOIN public.cluster c ON u.id_cluster = c.id_cluster') 
@@ -248,19 +248,20 @@ class Inventori extends CI_Model{
     }
     
     public function get_item_from_po_by_id_cluster($id_cluster){
-        $this->db_inv->select('pembelian.*, items.*');
+        $this->db_inv->select('pembelian.kode_item, items.nama');
         $this->db_inv->from('pembelian');
         $this->db_inv->join('items', 'pembelian.kode_item = items.kode_item');
         $this->db_inv->where('pembelian.id_cluster', $id_cluster);
+        $this->db_inv->group_by('pembelian.kode_item, items.nama');
         return $this->db_inv->get()->result_array();
     }
+    
 
-    public function get_item_by_no_po($no_po, $kodeitem, $id_cluster) {
+    public function get_item_by_kode_item($kodeitem, $id_cluster) {
         $this->db_inv->select('pembelian.*, items.*, stok.*');
         $this->db_inv->from('pembelian');
         $this->db_inv->join('items', 'pembelian.kode_item = items.kode_item');
         $this->db_inv->join('stok', 'stok.kode_item = items.kode_item'); // Join ke tabel stok untuk mendapatkan id_stock
-        $this->db_inv->where('pembelian.no_po', $no_po);
         $this->db_inv->where('items.kode_item', $kodeitem);
         $this->db_inv->where('pembelian.id_cluster', $id_cluster);
         return $this->db_inv->get()->result_array();
@@ -463,7 +464,7 @@ class Inventori extends CI_Model{
             JOIN public.user inv_user ON i.id_cluster = inv_user.id_cluster 
             LEFT JOIN stok s ON s.kode_item = i.kode_item
             JOIN dblink(
-                'dbname=monthly_report user=postgres password=password port=7070', 
+                'dbname=monthly_report user=postgres password=password port=9603', 
                 'SELECT nik, nama, \"department_id\", role_id FROM public.user'
             ) AS mr_user(nik VARCHAR, nama VARCHAR, department_id INTEGER, role_id INTEGER)
             ON inv_user.nik = mr_user.nik
@@ -483,7 +484,7 @@ class Inventori extends CI_Model{
             FROM jenis_item j
             JOIN public.user inv_user ON j.id_cluster = inv_user.id_cluster 
             JOIN dblink(
-                'dbname=monthly_report user=postgres password=password port=7070', 
+                'dbname=monthly_report user=postgres password=password port=9603', 
                 'SELECT nik, nama, \"department_id\", role_id FROM public.user'
             ) AS mr_user(nik VARCHAR, nama VARCHAR, department_id INTEGER, role_id INTEGER)
             ON inv_user.nik = mr_user.nik

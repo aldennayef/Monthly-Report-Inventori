@@ -167,6 +167,90 @@
           });
 
           $(document).ready(function() {
+            $('.quantity-update').on('input', function() {
+        var $row = $(this).closest('td');
+        var value = $(this).val();
+        var quantityOld = parseFloat($row.find('.quantity-old').val()) || 0;
+        var quantityNow = parseFloat($row.find('.quantity-now').val()) || 0;
+        var minQuantity = quantityOld - quantityNow;
+
+        // Hapus karakter yang bukan angka, titik, atau koma
+        var cleanedValue = value.replace(/[^0-9.,]/g, '');
+
+        // Cek apakah ada lebih dari satu titik
+        if ((cleanedValue.match(/\./g) || []).length > 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'Hanya boleh ada satu titik desimal.',
+            });
+            cleanedValue = cleanedValue.substring(0, cleanedValue.length - 1); // Hapus karakter titik tambahan
+        }
+
+        // Cek apakah titik berada di depan tanpa didahului oleh angka
+        if (/^\./.test(cleanedValue)) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'Titik tidak boleh di depan tanpa didahului oleh angka.',
+            });
+            cleanedValue = ''; // Kosongkan input jika tidak valid
+        }
+
+        // Cek apakah angka diawali dengan 0 yang tidak diikuti oleh titik
+        if (/^0[^.]/.test(cleanedValue)) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'Angka tidak boleh diawali dengan 0 kecuali diikuti titik.',
+            });
+            cleanedValue = cleanedValue.substring(0, cleanedValue.length - 1); // Hapus karakter yang tidak valid
+        }
+
+        // Cek apakah koma dimasukkan setelah titik atau ada lebih dari satu koma berturut-turut
+        var dotIndex = cleanedValue.indexOf('.');
+        var lastCommaIndex = cleanedValue.lastIndexOf(',');
+
+        if (dotIndex !== -1 && lastCommaIndex > dotIndex) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'Koma tidak boleh dimasukkan setelah titik desimal.',
+            });
+            cleanedValue = cleanedValue.substring(0, lastCommaIndex); // Hapus koma yang dimasukkan setelah titik
+        }
+
+        // Cek apakah ada lebih dari satu koma berturut-turut
+        if (/,,/.test(cleanedValue)) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'Koma tidak boleh dimasukkan berturut-turut.',
+            });
+            cleanedValue = cleanedValue.replace(/,,/g, ','); // Hapus koma ganda
+        }
+
+        // Format angka dengan koma sebagai pemisah ribuan
+        var formattedValue = formatNumber(cleanedValue);
+
+        // Perbarui nilai input
+        $(this).val(formattedValue);
+    });
+
+    // Fungsi untuk memformat angka dengan koma sebagai pemisah ribuan
+    function formatNumber(num) {
+        // Pisahkan bagian desimal jika ada
+        var parts = num.split('.');
+        // Format bagian ribuan
+        parts[0] = parts[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        // Gabungkan kembali jika ada bagian desimal
+        return parts.join('.');
+    }
+
+    // Fungsi untuk membersihkan input dari karakter selain angka, titik, dan koma
+    function cleanInput(input) {
+        return input.replace(/[^0-9.,]/g, '');
+    }
             // Event listener untuk tombol edit
             $('#item').on('click', '.edit-btn', function() {
               var row = $(this).closest('tr'); // Dapatkan baris yang sesuai dengan tombol yang diklik
@@ -221,54 +305,76 @@
               row.find('.lock-btn, .cancel-btn').show(); // Tampilkan tombol lock dan cancel
             });
 
-            // Event listener untuk tombol lock
             $('#item').on('click', '.lock-btn', function() {
-              var row = $(this).closest('tr');
-              var kodebeli = row.find('.kodebeli').val(); 
-              var kodeitem = row.find('.kodeitem').val();
-              var quantityupdate = parseFloat(row.find('.quantity-update').val()) || 0;
-              var quantitynow = parseFloat(row.find('.quantity-now').val()) || 0;
-              var quantityold = parseFloat(row.find('.quantity-old').val()) || 0;
-              var satuan = row.find('.satuan').val();
+    var row = $(this).closest('tr');
+    var kodebeli = row.find('.kodebeli').val(); 
+    var kodeitem = row.find('.kodeitem').val();
+    var quantityupdate = parseFloat(row.find('.quantity-update').val()) || 0;
+    var quantitynow = parseFloat(row.find('.quantity-now').val()) || 0;
+    var quantityold = parseFloat(row.find('.quantity-old').val()) || 0;
+    var satuan = row.find('.satuan').val();
 
-              // Hitung updateQuantity
-              var updateQuantity = quantitynow + quantityupdate - quantityold;
+    // Hitung updateQuantity
+    var updateQuantity = quantitynow + quantityupdate - quantityold;
+    var minQuantity = quantityold - quantitynow;
 
-              // Kirim data ke server via AJAX
-              $.ajax({
-                url: '<?= base_url('akpb') ?>',  // Ganti dengan URL yang sesuai
-                method: 'POST',
-                data: {
-                  kodebeli: kodebeli,
-                  kodeitem: kodeitem,
-                  updateQuantity: updateQuantity,
-                  updateQtyPembelian: quantityupdate,
-                  updateSatuan:satuan,
-                  type: "update",
-                },
-                success: function(response) {
-                  if (response.status === 'success') {
-                    // Jika berhasil, perbarui tampilan
-                    row.find('.quantity-text').text(quantityupdate).show();
-                    row.find('.quantity-update').hide();
-                    row.find('.satuan-text').text(satuan).show();
-                    row.find('.satuan').hide();
-                    row.find('.lock-btn, .cancel-btn').hide();
-                    row.find('.edit-btn').show();
-                    Swal.fire({
-                      icon: 'success',
-                      title: 'Sukses !',
-                      text: 'Quantity Diupdate !',
-                    });
-                  } else {
-                    alert('Update gagal: ' + response.message);
-                  }
-                },
-                error: function() {
-                  alert('Terjadi kesalahan saat mengirim data.');
-                }
-              });
-            });
+    // Validasi quantity-update sebelum submit
+    if (quantityupdate < minQuantity) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning!',
+            text: `Quantity tidak boleh kurang dari ${minQuantity}.`,
+        });
+        row.find('.quantity-update').val(minQuantity.toString()); // Setel ke nilai minimum yang valid
+        return; // Hentikan proses jika validasi gagal
+    }
+
+    // Validasi tambahan untuk input kosong (opsional)
+    if (isNaN(quantityupdate) || quantityupdate === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Warning!',
+            text: 'Quantity update tidak boleh kosong atau 0.',
+        });
+        return; // Hentikan proses jika validasi gagal
+    }
+
+    // Kirim data ke server via AJAX
+    $.ajax({
+        url: '<?= base_url('akpb') ?>',  // Ganti dengan URL yang sesuai
+        method: 'POST',
+        data: {
+            kodebeli: kodebeli,
+            kodeitem: kodeitem,
+            updateQuantity: updateQuantity,
+            updateQtyPembelian: quantityupdate,
+            updateSatuan: satuan,
+            type: "update",
+        },
+        success: function(response) {
+            if (response.status === 'success') {
+                // Jika berhasil, perbarui tampilan
+                row.find('.quantity-text').text(quantityupdate).show();
+                row.find('.quantity-update').hide();
+                row.find('.satuan-text').text(satuan).show();
+                row.find('.satuan').hide();
+                row.find('.lock-btn, .cancel-btn').hide();
+                row.find('.edit-btn').show();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sukses !',
+                    text: 'Quantity Diupdate !',
+                });
+            } else {
+                alert('Update gagal: ' + response.message);
+            }
+        },
+        error: function() {
+            alert('Terjadi kesalahan saat mengirim data.');
+        }
+    });
+});
+
 
             $('#item').on('click', '.cancel-btn', function() {
                 var row = $(this).closest('tr');

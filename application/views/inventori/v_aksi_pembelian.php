@@ -232,20 +232,65 @@
     });
 
     $(document).ready(function() {
-    // Fungsi untuk memformat angka dengan koma sebagai pemisah ribuan
-    function formatNumber(num) {
-        return num.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
-
-    // Fungsi untuk membersihkan input dari karakter selain angka dan titik
-    function cleanInput(input) {
-        return input.replace(/[^0-9.]/g, '');
-    }
-
     // Event listener untuk input quantity dan harga satuan
     $('#itemInputs').on('input', '.quantity-input, .harga-input', function() {
         var value = $(this).val();
-        var cleanedValue = cleanInput(value);
+
+        // Hapus karakter yang bukan angka, titik, atau koma
+        var cleanedValue = value.replace(/[^0-9.,]/g, '');
+
+        // Cek apakah ada lebih dari satu titik
+        if ((cleanedValue.match(/\./g) || []).length > 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'Hanya boleh ada satu titik desimal.',
+            });
+            cleanedValue = cleanedValue.substring(0, cleanedValue.length - 1); // Hapus karakter titik tambahan
+        }
+
+        // Cek apakah titik berada di depan tanpa didahului oleh angka
+        if (/^\./.test(cleanedValue)) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'Titik tidak boleh di depan tanpa didahului oleh angka.',
+            });
+            cleanedValue = ''; // Kosongkan input jika tidak valid
+        }
+
+        // Cek apakah angka diawali dengan 0 yang tidak diikuti oleh titik
+        if (/^0[^.]/.test(cleanedValue)) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'Angka tidak boleh diawali dengan 0 kecuali diikuti titik.',
+            });
+            cleanedValue = cleanedValue.substring(0, cleanedValue.length - 1); // Hapus karakter yang tidak valid
+        }
+
+        // Cek apakah koma dimasukkan setelah titik atau ada lebih dari satu koma berturut-turut
+        var dotIndex = cleanedValue.indexOf('.');
+        var lastCommaIndex = cleanedValue.lastIndexOf(',');
+
+        if (dotIndex !== -1 && lastCommaIndex > dotIndex) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'Koma tidak boleh dimasukkan setelah titik desimal.',
+            });
+            cleanedValue = cleanedValue.substring(0, lastCommaIndex); // Hapus koma yang dimasukkan setelah titik
+        }
+
+        // Cek apakah ada lebih dari satu koma berturut-turut
+        if (/,,/.test(cleanedValue)) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning!',
+                text: 'Koma tidak boleh dimasukkan berturut-turut.',
+            });
+            cleanedValue = cleanedValue.replace(/,,/g, ','); // Hapus koma ganda
+        }
 
         // Format angka dengan koma sebagai pemisah ribuan
         var formattedValue = formatNumber(cleanedValue);
@@ -253,6 +298,22 @@
         // Perbarui nilai input
         $(this).val(formattedValue);
     });
+
+    // Fungsi untuk memformat angka dengan koma sebagai pemisah ribuan
+    function formatNumber(num) {
+        // Pisahkan bagian desimal jika ada
+        var parts = num.split('.');
+        // Format bagian ribuan
+        parts[0] = parts[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        // Gabungkan kembali jika ada bagian desimal
+        return parts.join('.');
+    }
+
+    // Fungsi untuk membersihkan input dari karakter selain angka, titik, dan koma
+    function cleanInput(input) {
+        return input.replace(/[^0-9.,]/g, '');
+    }
+
 
     // Fungsi untuk menghapus tanda koma sebelum form disubmit
     function removeCommasFromInputs() {

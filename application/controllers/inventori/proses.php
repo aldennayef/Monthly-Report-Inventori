@@ -21,7 +21,7 @@ class Proses extends CI_Controller{
                 $this->load->view('inventori/dashboard', $data);
                 $this->load->view('inventori/footer');
             } else {
-                $this->load->view('inventori/error_page');
+                redirect('home');
             }
         } else if($this->session->userdata('role_id') == 1 || $this->session->userdata('role_id') == 2){
             $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
@@ -31,7 +31,7 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/dashboard', $data);
             $this->load->view('inventori/footer');
         } else {
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }
     }
 
@@ -109,7 +109,7 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/sidebar',$data);
             $this->load->view('inventori/v_users', $data);
         }else{
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }    
     }
 
@@ -165,7 +165,7 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/sidebar',$data);
             $this->load->view('inventori/v_clusters', $data);
         }else{
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }    
     }
 
@@ -178,7 +178,7 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/sidebar',$data);
             $this->load->view('inventori/tambah_cluster', $data);
         }else{
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }    
     }
 
@@ -295,7 +295,7 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/sidebar', $data);
             $this->load->view('inventori/v_item', $data);
         } else {
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }
     }
     
@@ -317,7 +317,7 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/sidebar',$data);
             $this->load->view('inventori/v_aksi_item', $data);
         }else{
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }
     }
     
@@ -497,7 +497,7 @@ class Proses extends CI_Controller{
             } 
         } 
         else {
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }
     }
 
@@ -529,7 +529,7 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/sidebar',$data);
             $this->load->view('inventori/v_pembelian', $data);
         }else{
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }
     }
 
@@ -557,7 +557,7 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/sidebar',$data);
             $this->load->view('inventori/v_aksi_pembelian', $data);
         } else {
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }
     }
 
@@ -702,7 +702,7 @@ class Proses extends CI_Controller{
             }
         }
         else{
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }
     }
 
@@ -725,11 +725,11 @@ class Proses extends CI_Controller{
                 $this->load->view('inventori/v_pemakaian',$data);
             }
             else{
-                $this->load->view('inventori/error_page');
+                redirect('home');
             }
         }
         else{
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }
     }
 
@@ -766,11 +766,11 @@ class Proses extends CI_Controller{
                 $this->load->view('inventori/v_aksi_pemakaian', $data);
             }
             else {
-                $this->load->view('inventori/error_page');
+                redirect('home');
             }
         }
         else {
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }
     }
 
@@ -891,7 +891,7 @@ class Proses extends CI_Controller{
             }
         }
         else{
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }
     }
     
@@ -901,7 +901,7 @@ class Proses extends CI_Controller{
         $userData = $this->inventori->check_nik($this->session->userdata('nik'));
     
         // Panggil model untuk mengambil data berdasarkan no_po
-        $items = $this->inventori->get_item_by_no_po($no_po,$kodeitem,$userData->id_cluster);
+        $items = $this->inventori->get_item_by_kode_item($kodeitem,$userData->id_cluster);
     
         if ($items) {
             echo json_encode(['status' => 'success', 'data' => $items]);
@@ -951,11 +951,11 @@ class Proses extends CI_Controller{
                 $this->load->view('inventori/v_kunjungan', $data);
             }
             else{
-                $this->load->view('inventori/error_page');
+                redirect('home');
             }
         }
         else{
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }
     }
     
@@ -973,11 +973,11 @@ class Proses extends CI_Controller{
                 $this->load->view('inventori/v_opname', $data);
             }
             else{
-                $this->load->view('inventori/error_page');
+                redirect('home');
             }
         }
         else{
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }
     }
 
@@ -1023,11 +1023,11 @@ class Proses extends CI_Controller{
                 }
             }
             else{
-                $this->load->view('inventori/error_page');
+                redirect('home');
             }
         }
         else{
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }
     }
 
@@ -1045,13 +1045,94 @@ class Proses extends CI_Controller{
                 $this->load->view('inventori/sidebar', $data);
                 $this->load->view('inventori/v_detail_opname', $data);
             }else{
-                $this->load->view('inventori/error_page');
+                redirect('home');
             }
         }else{
-            $this->load->view('inventori/error_page');
+            redirect('home');
         }
     }
     
+    public function backup_database() {
+        if ($this->session->userdata('role_id')) {
+            $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+            $idcluster = $userData->id_cluster;
+    
+            // Load PhpSpreadsheet library
+            require 'vendor/autoload.php';
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    
+            // Fetch database data
+            $tables = $this->inventori->get_all_tables();
+    
+            foreach ($tables as $table) {
+                $tableName = $table['table_name'];
+                $sheet = $spreadsheet->createSheet();
+                $sheet->setTitle($tableName);
+    
+                $data = $this->inventori->get_table_data($tableName, $idcluster);
+                $column = 'A';
+                $row = 1;
+    
+                // Set column names
+                if (!empty($data)) {
+                    $field_names = array_keys($data[0]);
+                    foreach ($field_names as $field) {
+                        $sheet->setCellValue($column . $row, $field);
+                        $column++;
+                    }
+                    $row++;
+    
+                    // Set data rows
+                    foreach ($data as $record) {
+                        $column = 'A';
+                        foreach ($record as $value) {
+                            if (is_array($value)) {
+                                $value = json_encode($value);
+                            }
+                            $sheet->setCellValue($column . $row, $value);
+                            $column++;
+                        }
+                        $row++;
+                    }
+                    $row++;
+                }
+            }
+    
+            // Remove the default sheet created on initialization
+            $spreadsheet->removeSheetByIndex(0);
+    
+            // Write to file
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            $lastMonthNumber = date('n', strtotime('first day of last month'));
+            $dateTime = date('Ymd_His');
+            $filename = "backup_inventori_period_{$lastMonthNumber}_{$dateTime}.xlsx";
+            $backupDir = 'E:\backup_db_inventori';
+    
+            if (!is_dir($backupDir)) {
+                mkdir($backupDir, 0777, true);
+            }
+    
+            $filepath = $backupDir . '/' . $filename;
+            $writer->save($filepath);
+    
+            // Log the action
+            $logdata = [
+                'id_user' => $this->session->userdata('id'),
+                'username' => $this->session->userdata('username'),
+                'act_note' => 'Melakukan backup data',
+            ];
+    
+            $this->db_inv->set('act_date', 'NOW()', FALSE);
+            $this->db_inv->insert('log_data', $logdata);
+    
+            // Return JSON response
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'success', 'message' => 'Backup database berhasil dilakukan.']);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Anda tidak memiliki akses untuk melakukan backup.']);
+        }
+    }
     
 
 }

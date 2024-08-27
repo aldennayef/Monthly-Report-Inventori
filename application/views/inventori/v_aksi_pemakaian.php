@@ -65,13 +65,13 @@
                                 </div>
                             </div>
                             <div class="row input-row-item">
-                                <div class="col-3">
+                                <div class="col-2">
                                     <label><span class="item-number">1</span>. Nama Item</label>
                                     <div class="input-group mb-3">
                                         <select class="form-control input-check" name="namaitem[]" autocomplete="off">
                                             <option value="" selected disabled>Pilih Nama Item</option>
                                             <?php foreach ($items as $item): ?>
-                                                <option value="<?= $item['no_po'] . '|' . $item['kode_item'] ?>"><?= $item['nama'] ?> - <?= $item['no_po'] ?></option>
+                                                <option value="<?= $item['kode_item'] ?>"><?= $item['nama'] ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
@@ -84,10 +84,15 @@
                                     </div>
                                 </div>
                                 <div class="col-2">
+                                    <label>Stok</label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control input-check quantity-input" placeholder="stok" name="stok[]" readonly autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="col-2">
                                     <label>Quantity</label>
                                     <div class="input-group mb-3">
                                         <input type="text" class="form-control input-check quantity-input" placeholder="Qty" name="qty[]" autocomplete="off">
-                                        <input type="text" class="form-control input-check quantity-input" placeholder="stok" name="stok[]" hidden readonly autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="col-2">
@@ -96,7 +101,7 @@
                                     <input type="text" class="form-control input-check" placeholder="Satuan" name="satuan[]" disabled autocomplete="off">
                                     </div>
                                 </div>
-                                <div class="col-3">
+                                <div class="col-2">
                                     <label>Pemberi</label>
                                     <div class="input-group mb-3">
                                         <input type="text" class="form-control input-check" placeholder="Pemberi" name="pemberi[]" value="PIC <?=$user['sub_department']?>" readonly autocomplete="off">
@@ -296,7 +301,68 @@
     });
 
     $(document).ready(function() {
-        
+        $('input[name="qty[]"]').each(function() {
+        var $this = $(this);
+        var stok = parseFloat($this.closest('.input-row-item').find('input[name="stok[]"]').val());
+
+        // Validasi input quantity agar hanya bisa angka dan titik
+        $this.off('input keypress').on('keypress', function(event) {
+            var charCode = (event.which) ? event.which : event.keyCode;
+            // Mengizinkan hanya angka dan titik
+            if (charCode !== 46 && (charCode < 48 || charCode > 57)) {
+                event.preventDefault(); // Mencegah karakter yang tidak diinginkan
+            }
+        }).on('input', function() {
+            var value = $(this).val();
+            // Hapus karakter yang bukan angka atau titik
+            $(this).val(value.replace(/[^0-9.]/g, ''));
+
+            // Cek apakah ada lebih dari satu titik
+            if ((value.match(/\./g) || []).length > 1) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'Hanya boleh ada satu titik desimal.',
+                });
+                $(this).val(value.substring(0, value.length - 1)); // Hapus karakter titik tambahan
+                return;
+            }
+
+            // Cek apakah titik berada di depan tanpa didahului oleh angka
+            if (/^\./.test(value)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'Titik tidak boleh di depan tanpa didahului oleh angka.',
+                });
+                $(this).val(''); // Kosongkan input jika tidak valid
+                return;
+            }
+
+            // Cek apakah angka diawali dengan 0 yang tidak diikuti oleh titik
+            if (/^0[0-9]/.test(value)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'Angka tidak boleh diawali dengan 0 kecuali diikuti titik.',
+                });
+                $(this).val(''); // Kosongkan input jika tidak valid
+                return;
+            }
+
+            // Cek apakah quantity melebihi stok
+            var quantity = parseFloat(value);
+            if (quantity > stok) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'Quantity tidak boleh melebihi stok yang tersedia.',
+                });
+                $(this).val(stok.toString()); // Set value ke stok maksimum yang tersedia
+            }
+        });
+    });
+
 
         $('#nopakaiupdate').change(function() {
             // Dapatkan option yang dipilih
@@ -575,49 +641,115 @@
         $('#itemInputs').on('change', 'select[name="namaitem[]"]', function() {
             var selectedValue = $(this).val();
             var values = selectedValue.split('|');
-            var noPo = values[0];  // Ambil no_po
             var kodeItem = values[1];  // Ambil kode_item
             var $row = $(this).closest('.input-row-item');
             
-            if (noPo) {
-                $.ajax({
-                    url: '<?= base_url('inventori/proses/cek_nama_item') ?>',
-                    type: 'POST',
-                    data: {no_po: noPo, kodeitem:kodeItem},
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            // Kosongkan dropdown kode item dan satuan terlebih dahulu
-                            $row.find('input[name="kodeitem[]"]').val('');
-                            $row.find('input[name="idstock[]"]').val('');
-                            $row.find('input[name="stok[]"]').val('');
-                            $row.find('input[name="satuan[]"]').val('');
-                            
-                            // Jika ada data, isi inputan kode item dan satuan
-                            if (response.data.length > 0) {
-                                $row.find('input[name="kodeitem[]"]').val(response.data[0].kode_item);
-                                $row.find('input[name="idstock[]"]').val(response.data[0].id_stock);
-                                $row.find('input[name="stok[]"]').val(response.data[0].quantity_real);
-                                $row.find('input[name="satuan[]"]').val(response.data[0].satuan);
+            $.ajax({
+                url: '<?= base_url('inventori/proses/cek_nama_item') ?>',
+                type: 'POST',
+                data: {kodeitem: selectedValue},
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        // Kosongkan inputan terlebih dahulu
+                        $row.find('input[name="kodeitem[]"]').val('');
+                        $row.find('input[name="idstock[]"]').val('');
+                        $row.find('input[name="stok[]"]').val('');
+                        $row.find('input[name="satuan[]"]').val('');
+                        $row.find('input[name="qty[]"]').val('');
+                        
+                        // Jika ada data, isi inputan dan cek stok
+                        if (response.data.length > 0) {
+                            var stok = parseFloat(response.data[0].quantity_real); // Gunakan titik untuk perbandingan angka
+                            $row.find('input[name="kodeitem[]"]').val(response.data[0].kode_item);
+                            $row.find('input[name="idstock[]"]').val(response.data[0].id_stock);
+                            $row.find('input[name="stok[]"]').val(response.data[0].quantity_real);
+                            $row.find('input[name="satuan[]"]').val(response.data[0].satuan);
+
+                            // Cek apakah stok 0, jika ya, disable input quantity
+                            if (stok === 0) {
+                                $row.find('input[name="qty[]"]').prop('disabled', true);
+                            } else {
+                                $row.find('input[name="qty[]"]').prop('disabled', false);
                             }
-                        } else {
-                            // Jika tidak ditemukan, kosongkan input kode item dan satuan
-                            $row.find('input[name="kodeitem[]"]').val('');
-                            $row.find('input[name="idstock[]"]').val('');
-                            $row.find('input[name="stok[]"]').val('');
-                            $row.find('input[name="satuan[]"]').val('');
+
+                            // Validasi input quantity agar hanya bisa angka dan titik
+                            $row.find('input[name="qty[]"]').off('input keypress').on('keypress', function(event) {
+                                var charCode = (event.which) ? event.which : event.keyCode;
+                                // Mengizinkan hanya angka dan titik
+                                if (charCode !== 46 && (charCode < 48 || charCode > 57)) {
+                                    event.preventDefault(); // Mencegah karakter yang tidak diinginkan
+                                }
+                            }).on('input', function() {
+                                var value = $(this).val();
+                                // Hapus karakter yang bukan angka atau titik
+                                $(this).val(value.replace(/[^0-9.]/g, ''));
+
+                                // Cek apakah ada lebih dari satu titik
+                                if ((value.match(/\./g) || []).length > 1) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Warning!',
+                                        text: 'Hanya boleh ada satu titik desimal.',
+                                    });
+                                    $(this).val(value.substring(0, value.length - 1)); // Hapus karakter titik tambahan
+                                    return;
+                                }
+
+                                // Cek apakah titik berada di depan tanpa didahului oleh angka
+                                if (/^\./.test(value)) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Warning!',
+                                        text: 'Titik tidak boleh di depan tanpa didahului oleh angka.',
+                                    });
+                                    $(this).val(''); // Kosongkan input jika tidak valid
+                                    return;
+                                }
+
+                                // Cek apakah angka diawali dengan 0 yang tidak diikuti oleh titik
+                                if (/^0[0-9]/.test(value)) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Warning!',
+                                        text: 'Angka tidak boleh diawali dengan 0 kecuali diikuti titik.',
+                                    });
+                                    $(this).val(''); // Kosongkan input jika tidak valid
+                                    return;
+                                }
+
+                                // Cek apakah quantity melebihi stok
+                                var quantity = parseFloat(value);
+                                if (quantity > stok) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Warning!',
+                                        text: 'Quantity tidak boleh melebihi stok yang tersedia.',
+                                    });
+                                    $(this).val(stok.toString()); // Set value ke stok maksimum yang tersedia
+                                }
+                            });
                         }
-                    },
-                    error: function() {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: 'Terjadi kesalahan saat mengecek nama item.',
-                        });
+                    } else {
+                        // Jika tidak ditemukan, kosongkan input kode item dan satuan
+                        $row.find('input[name="kodeitem[]"]').val('');
+                        $row.find('input[name="idstock[]"]').val('');
+                        $row.find('input[name="stok[]"]').val('');
+                        $row.find('input[name="satuan[]"]').val(''); 
+                        $row.find('input[name="qty[]"]').prop('disabled', false);
                     }
-                });
-            }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Terjadi kesalahan saat mengecek nama item.',
+                    });
+                }
+            });
         });
+
+
 
         // Fungsi untuk mengambil nama berdasarkan NIK
         function fetchUserName(nik) {

@@ -169,27 +169,87 @@
                 $(document).ready(function() {
                 // Event listener untuk tombol edit
                 $('#item').on('click', '.edit-btn', function() {
-                    var row = $(this).closest('tr'); // Dapatkan baris yang sesuai dengan tombol yang diklik
-                    // var namaitemText = row.find('.nama-item-text').text(); // Ambil teks stok real yang ada
-                    var jmlpakaiText = row.find('.jumlah-pakai-text').text(); // Ambil teks stok real yang ada
-                    // var nikpemakaiText = row.find('.nik-pemakai-text').text(); // Ambil teks stok real yang ada
-                    // var namapemakaiText = row.find('.nama-pemakai-text').text(); // Ambil teks stok real yang ada
-                    // var deskripsiText = row.find('.deskripsi-text').text(); // Ambil teks stok real yang ada
+        var row = $(this).closest('tr');
+        var jmlpakaiText = row.find('.jumlah-pakai-text').text();
+        var stokReal = parseFloat(row.find('.stok-real').val()) || 0;
+        var jumlahPakaiOld = parseFloat(row.find('.jumlah-pakai-old').val()) || 0;
 
-                    // row.find('.nama-item-text').hide();
-                    row.find('.jumlah-pakai-text').hide();
-                    // row.find('.nik-pemakai-text').hide();
-                    // row.find('.nama-pemakai-text').hide();
-                    // row.find('.deskripsi-text').hide();
+        row.find('.jumlah-pakai-text').hide();
+        row.find('.jumlah-pakai').val(jmlpakaiText).show();
+        $(this).hide(); // Sembunyikan tombol edit
+        row.find('.lock-btn, .cancel-btn').show(); // Tampilkan tombol lock dan cancel
 
-                    // row.find('.nama-item').val(namaitemText).show();
-                    row.find('.jumlah-pakai').val(jmlpakaiText).show();
-                    // row.find('.nik-pemakai').val(nikpemakaiText).show();
-                    // row.find('.nama-pemakai').val(namapemakaiText).show();
-                    // row.find('.deskripsi').val(deskripsiText).show();
-                    $(this).hide(); // Sembunyikan tombol edit
-                    row.find('.lock-btn, .cancel-btn').show(); // Tampilkan tombol lock dan cancel
+        // Tambahkan event listener untuk validasi input
+        row.find('.jumlah-pakai').off('keypress input').on('keypress', function(event) {
+            var charCode = (event.which) ? event.which : event.keyCode;
+            // Mengizinkan hanya angka dan titik
+            if (charCode !== 46 && (charCode < 48 || charCode > 57)) {
+                event.preventDefault(); // Mencegah karakter yang tidak diinginkan
+            }
+        }).on('input', function() {
+            var value = $(this).val();
+            // Hapus karakter yang bukan angka atau titik
+            $(this).val(value.replace(/[^0-9.]/g, ''));
+
+            // Validasi tambahan untuk memastikan tidak ada lebih dari satu titik
+            if ((value.match(/\./g) || []).length > 1) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'Hanya boleh ada satu titik desimal.',
                 });
+                $(this).val(value.substring(0, value.length - 1)); // Hapus karakter titik tambahan
+                return;
+            }
+
+            // Cek apakah titik berada di depan tanpa didahului oleh angka
+            if (/^\./.test(value)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'Titik tidak boleh di depan tanpa didahului oleh angka.',
+                });
+                $(this).val(''); // Kosongkan input jika tidak valid
+                return;
+            }
+
+            // Cek apakah angka diawali dengan 0 yang tidak diikuti oleh titik
+            if (/^0[0-9]/.test(value)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'Angka tidak boleh diawali dengan 0 kecuali diikuti titik.',
+                });
+                $(this).val(''); // Kosongkan input jika tidak valid
+                return;
+            }
+
+            // Logika validasi jumlah pakai
+            var jumlahPakai = parseFloat($(this).val());
+            if (stokReal === 0) {
+                // Jika stok real 0, tidak boleh melebihi jumlah-pakai-old
+                if (jumlahPakai > jumlahPakaiOld) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning!',
+                        text: 'Jumlah pakai tidak boleh melebihi jumlah pakai sebelumnya karena stok real kosong.',
+                    });
+                    $(this).val(jumlahPakaiOld); // Setel nilai ke jumlah pakai lama
+                }
+            } else {
+                // Jika stok real masih ada, tidak boleh melebihi stok-real + jumlah-pakai-old
+                var maxJumlahPakai = stokReal + jumlahPakaiOld;
+                if (jumlahPakai > maxJumlahPakai) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Warning!',
+                        text: 'Jumlah pakai tidak boleh melebihi ' + maxJumlahPakai + ' karena stok terbatas.',
+                    });
+                    $(this).val(maxJumlahPakai); // Setel nilai ke stok-real + jumlah-pakai-old
+                }
+            }
+        });
+    });
 
                 // Event listener untuk tombol lock
                 $('#item').on('click', '.lock-btn', function() {

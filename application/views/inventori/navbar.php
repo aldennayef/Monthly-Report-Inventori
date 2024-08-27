@@ -9,7 +9,7 @@
         <a href="<?=base_url('dsb')?>" class="nav-link">Home</a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?=base_url('bakri')?>" class="nav-link">Backup</a>
+        <a href="javascript:void(0);" class="nav-link" onClick="performBackup()">Backup</a>
       </li>
     </ul>
 
@@ -29,3 +29,39 @@
     </ul>
   </nav>
   <!-- /.navbar -->
+
+  <script>
+    function performBackup() {
+    $.ajax({
+        url: '<?= base_url('bakri') ?>', // Ganti dengan nama controller yang sesuai
+        method: 'POST',
+        dataType: 'json',
+        success: function(response) {
+            if (response.status === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: response.message,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: response.message,
+                });
+            }
+        },
+        error: function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Terjadi kesalahan saat melakukan backup.',
+            });
+        }
+    });
+}
+
+
+  </script>
