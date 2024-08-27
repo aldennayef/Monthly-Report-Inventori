@@ -63,7 +63,7 @@
                         </td>
                         <td>
                           <span class="quantity-text"><?=$pemb['quantity']?></span>
-                          <input type="text" class="form-control quantity-update" value="<?=$pemb['quantity']?>" style="display:none;">
+                          <input type="text" class="form-control quantity-update" value="<?=number_format($pemb['quantity'])?>" style="display:none;">
                           <input type="text" class="form-control quantity-now" value="<?=$pemb['quantity_real']?>" style="display:none;">
                           <input type="text" class="form-control quantity-old" value="<?=$pemb['quantity']?>" style="display:none;">
                         </td>
@@ -306,74 +306,74 @@
             });
 
             $('#item').on('click', '.lock-btn', function() {
-    var row = $(this).closest('tr');
-    var kodebeli = row.find('.kodebeli').val(); 
-    var kodeitem = row.find('.kodeitem').val();
-    var quantityupdate = parseFloat(row.find('.quantity-update').val()) || 0;
-    var quantitynow = parseFloat(row.find('.quantity-now').val()) || 0;
-    var quantityold = parseFloat(row.find('.quantity-old').val()) || 0;
-    var satuan = row.find('.satuan').val();
+              var row = $(this).closest('tr');
+              var kodebeli = row.find('.kodebeli').val(); 
+              var kodeitem = row.find('.kodeitem').val();
+              var quantityupdate = parseFloat(row.find('.quantity-update').val().replace(/,/g, '')) || 0;
+              var quantitynow = parseFloat(row.find('.quantity-now').val()) || 0;
+              var quantityold = parseFloat(row.find('.quantity-old').val()) || 0;
+              var satuan = row.find('.satuan').val();
 
-    // Hitung updateQuantity
-    var updateQuantity = quantitynow + quantityupdate - quantityold;
-    var minQuantity = quantityold - quantitynow;
+              // Hitung updateQuantity
+              var updateQuantity = quantitynow + quantityupdate - quantityold;
+              var minQuantity = quantityold - quantitynow;
 
-    // Validasi quantity-update sebelum submit
-    if (quantityupdate < minQuantity) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Warning!',
-            text: `Quantity tidak boleh kurang dari ${minQuantity}.`,
-        });
-        row.find('.quantity-update').val(minQuantity.toString()); // Setel ke nilai minimum yang valid
-        return; // Hentikan proses jika validasi gagal
-    }
+              // Validasi quantity-update sebelum submit
+              if (quantityupdate < minQuantity) {
+                  Swal.fire({
+                      icon: 'warning',
+                      title: 'Warning!',
+                      text: `Quantity tidak boleh kurang dari ${minQuantity}.`,
+                  });
+                  row.find('.quantity-update').val(minQuantity.toString()); // Setel ke nilai minimum yang valid
+                  return; // Hentikan proses jika validasi gagal
+              }
 
-    // Validasi tambahan untuk input kosong (opsional)
-    if (isNaN(quantityupdate) || quantityupdate === 0) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Warning!',
-            text: 'Quantity update tidak boleh kosong atau 0.',
-        });
-        return; // Hentikan proses jika validasi gagal
-    }
+              // Validasi tambahan untuk input kosong (opsional)
+              if (isNaN(quantityupdate) || quantityupdate === 0) {
+                  Swal.fire({
+                      icon: 'warning',
+                      title: 'Warning!',
+                      text: 'Quantity update tidak boleh kosong atau 0.',
+                  });
+                  return; // Hentikan proses jika validasi gagal
+              }
 
-    // Kirim data ke server via AJAX
-    $.ajax({
-        url: '<?= base_url('akpb') ?>',  // Ganti dengan URL yang sesuai
-        method: 'POST',
-        data: {
-            kodebeli: kodebeli,
-            kodeitem: kodeitem,
-            updateQuantity: updateQuantity,
-            updateQtyPembelian: quantityupdate,
-            updateSatuan: satuan,
-            type: "update",
-        },
-        success: function(response) {
-            if (response.status === 'success') {
-                // Jika berhasil, perbarui tampilan
-                row.find('.quantity-text').text(quantityupdate).show();
-                row.find('.quantity-update').hide();
-                row.find('.satuan-text').text(satuan).show();
-                row.find('.satuan').hide();
-                row.find('.lock-btn, .cancel-btn').hide();
-                row.find('.edit-btn').show();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Sukses !',
-                    text: 'Quantity Diupdate !',
-                });
-            } else {
-                alert('Update gagal: ' + response.message);
-            }
-        },
-        error: function() {
-            alert('Terjadi kesalahan saat mengirim data.');
-        }
-    });
-});
+              // Kirim data ke server via AJAX
+              $.ajax({
+                  url: '<?= base_url('akpb') ?>',  // Ganti dengan URL yang sesuai
+                  method: 'POST',
+                  data: {
+                      kodebeli: kodebeli,
+                      kodeitem: kodeitem,
+                      updateQuantity: updateQuantity,
+                      updateQtyPembelian: quantityupdate,
+                      updateSatuan: satuan,
+                      type: "update",
+                  },
+                  success: function(response) {
+                      if (response.status === 'success') {
+                          // Jika berhasil, perbarui tampilan
+                          row.find('.quantity-text').text(quantityupdate).show();
+                          row.find('.quantity-update').hide();
+                          row.find('.satuan-text').text(satuan).show();
+                          row.find('.satuan').hide();
+                          row.find('.lock-btn, .cancel-btn').hide();
+                          row.find('.edit-btn').show();
+                          Swal.fire({
+                              icon: 'success',
+                              title: 'Sukses !',
+                              text: 'Quantity Diupdate !',
+                          });
+                      } else {
+                          alert('Update gagal: ' + response.message);
+                      }
+                  },
+                  error: function() {
+                      alert('Terjadi kesalahan saat mengirim data.');
+                  }
+              });
+            });
 
 
             $('#item').on('click', '.cancel-btn', function() {
