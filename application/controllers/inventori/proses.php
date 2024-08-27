@@ -23,7 +23,7 @@ class Proses extends CI_Controller{
             } else {
                 redirect('home');
             }
-        } else if($this->session->userdata('role_id') == 1 || $this->session->userdata('role_id') == 2){
+        } else if($this->session->userdata('role_id')==1 || $this->session->userdata('role_id')==2 ||$this->session->userdata('role_id')==4){
             $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
             $this->load->view('inventori/header', $data);
             $this->load->view('inventori/navbar');
@@ -279,7 +279,7 @@ class Proses extends CI_Controller{
     
 
     public function detail_item(){
-        if($this->session->userdata('role_id') == 3 || $this->session->userdata('role_id') == 2){
+        if($this->session->userdata('role_id') != 1){
             $user = $this->inventori->check_nik($this->session->userdata('nik'));
             
             if($this->session->userdata('role_id') == 3){
@@ -295,7 +295,7 @@ class Proses extends CI_Controller{
             $this->load->view('inventori/sidebar', $data);
             $this->load->view('inventori/v_item', $data);
         } else {
-            redirect('home');
+            $this->load->view('inventori/error_page');
         }
     }
     
