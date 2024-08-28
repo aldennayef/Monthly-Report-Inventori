@@ -638,11 +638,32 @@
             checkRemoveButtonVisibility(); // Periksa visibilitas tombol setelah baris dihapus
         });
 
+        function isItemAlreadySelected(selectedValue, currentSelect) {
+            var isSelected = false;
+            $('select[name="namaitem[]"]').each(function() {
+                if ($(this).val() === selectedValue && this !== currentSelect) {
+                    isSelected = true;
+                    return false; // Stop the loop if item is already selected
+                }
+            });
+            return isSelected;
+        }
+
         $('#itemInputs').on('change', 'select[name="namaitem[]"]', function() {
             var selectedValue = $(this).val();
             var values = selectedValue.split('|');
             var kodeItem = values[1];  // Ambil kode_item
             var $row = $(this).closest('.input-row-item');
+
+            if (isItemAlreadySelected(selectedValue, this)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Warning!',
+                    text: 'Nama item sudah diinputkan.',
+                });
+                $(this).val(''); // Reset the select input to its default value
+                return;
+            }
             
             $.ajax({
                 url: '<?= base_url('inventori/proses/cek_nama_item') ?>',

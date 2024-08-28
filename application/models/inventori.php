@@ -51,6 +51,15 @@ class Inventori extends CI_Model{
         return $this->db_inv->get()->result_array();
     }
 
+    public function get_nama_item_by_id_stok($idstok) {
+        $this->db_inv->select('stok.id_stock, stok.kode_item, items.nama');
+        $this->db_inv->from('stok');
+        $this->db_inv->join('items','stok.kode_item = items.kode_item');
+        $this->db_inv->where('id_stock', $idstok);
+        $result = $this->db_inv->get()->row_array();
+        return $result['nama'];
+    }
+
     public function get_jenis_items_by_nik_cluster($nik) {
         $this->db_inv->select('user.*, jenis_item.*');
         $this->db_inv->from('user');
@@ -162,6 +171,18 @@ class Inventori extends CI_Model{
         return $this->db_inv->get()->result_array();
     }
 
+    public function get_kode_item_join_from_pembelian($idbeli){
+        $this->db_inv->select('pembelian.id_beli, pembelian.kode_item,stok.id_stock, stok.kode_item AS skode_item');
+        $this->db_inv->from('pembelian');
+        $this->db_inv->join('stok', 'pembelian.kode_item = stok.kode_item');
+        $this->db_inv->where('pembelian.id_beli', $idbeli);
+        $result= $this->db_inv->get()->row_array();
+        return $result['id_stock'];
+    }
+    public function update_tanggal($tabel,$data,$where){
+        return $this->db_inv->update($tabel, $data, ['id_stock'=>$where]);
+    }
+
     public function count_kode_beli($kodePrefix) {
         $this->db_inv->select_max('kode_beli', 'max_kode');
         $this->db_inv->like('kode_beli', $kodePrefix, 'after');
@@ -188,6 +209,14 @@ class Inventori extends CI_Model{
 
     public function insert_batch_pembelian($data){
         return $this->db_inv->insert_batch('pembelian',$data);
+    }
+
+    public function insert_staging_stok($data){
+        return $this->db_inv->insert('staging_stok',$data);
+    }
+
+    public function get_stok_staging($kodebeli,$kodeitem){
+        return $this->db_inv->get_where('staging_stok',['kode_beli'=> $kodebeli,'kode_item'=> $kodeitem])->row_array();
     }
 
     public function check_kode_beli($kode){

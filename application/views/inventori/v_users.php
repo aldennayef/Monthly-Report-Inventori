@@ -53,7 +53,7 @@
                                                 </td>
                                                 <td>
                                                     <button class="btn btn-sm btn-primary edit-user-btn"><i class="fas fa-pen"></i></button>
-                                                    <button class="btn btn-sm btn-success lock-user-btn" style="display:none;"><i class="fas fa-lock"></i></button>
+                                                    <button class="btn btn-sm btn-success lock-user-btn" style="display:none;"><img src="<?=base_url('assets/gambar/save.png')?>" alt="save" style="width: 18px; height: 18px;"></button>
                                                     <button class="btn btn-sm btn-danger cancel-user-btn" style="display:none;"><i class="fas fa-times"></i></button>
                                                 </td>
                                             </tr>

@@ -262,143 +262,143 @@
             });
 
             $('#itemForm').on('submit', function(e) {
-    e.preventDefault(); // Mencegah submit form standar
+                e.preventDefault(); // Mencegah submit form standar
 
-    var isValid = true;
-    var lastRow = $('#itemInputs .input-row-item').last();
-    var lastRowIsEmpty = true;
-    var emptyInputNumber = null;
-    var kodeItemArray = [];
-    var duplicateFound = false;
+                var isValid = true;
+                var lastRow = $('#itemInputs .input-row-item').last();
+                var lastRowIsEmpty = true;
+                var emptyInputNumber = null;
+                var kodeItemArray = [];
+                var duplicateFound = false;
 
-    // Cek apakah ada duplikat kode item
-    $('#itemInputs .input-row-item').each(function(index) {
-        var row = $(this);
-        var kodeItemInput = row.find('input[name="kodeitem[]"]');
-        var kodeItemVal = kodeItemInput.val().trim();
+                // Cek apakah ada duplikat kode item
+                $('#itemInputs .input-row-item').each(function(index) {
+                    var row = $(this);
+                    var kodeItemInput = row.find('input[name="kodeitem[]"]');
+                    var kodeItemVal = kodeItemInput.val().trim();
 
-        if (kodeItemVal !== '') {
-            if (kodeItemArray.includes(kodeItemVal)) {
-                duplicateFound = true;
-                kodeItemInput.val(''); // Kosongkan input yang duplikat
-                kodeItemInput.focus();
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal!',
-                    text: 'Kode ' + kodeItemVal + ' duplikat!',
+                    if (kodeItemVal !== '') {
+                        if (kodeItemArray.includes(kodeItemVal)) {
+                            duplicateFound = true;
+                            kodeItemInput.val(''); // Kosongkan input yang duplikat
+                            kodeItemInput.focus();
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal!',
+                                text: 'Kode ' + kodeItemVal + ' duplikat!',
+                            });
+                            return false; // Keluar dari loop jika ditemukan duplikat
+                        } else {
+                            kodeItemArray.push(kodeItemVal);
+                        }
+                    }
                 });
-                return false; // Keluar dari loop jika ditemukan duplikat
-            } else {
-                kodeItemArray.push(kodeItemVal);
-            }
-        }
-    });
 
-    if (duplicateFound) {
-        return; // Jika ada duplikat, hentikan proses lebih lanjut
-    }
+                if (duplicateFound) {
+                    return; // Jika ada duplikat, hentikan proses lebih lanjut
+                }
 
-    // Cek apakah hanya ada satu inputan
-    if ($('.input-row-item').length === 1) {
-        var singleRow = $('#itemInputs .input-row-item').first();
-        singleRow.find('.input-check').each(function() {
-            if ($(this).val().trim() === '') {
-                isValid = false;
-                $(this).focus(); // Arahkan kursor ke inputan yang belum terisi
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Data Belum Lengkap!',
-                    text: 'Harap isi semua inputan sebelum mengirim.',
-                });
-                return false; // Keluar dari loop jika ditemukan inputan kosong
-            }
-        });
-
-        if (!isValid) {
-            return; // Hentikan jika inputan tunggal kosong
-        }
-    }
-
-    // Cek apakah inputan terakhir kosong
-    lastRow.find('.input-check').each(function() {
-        if ($(this).val().trim() !== '') {
-            lastRowIsEmpty = false;
-        }
-    });
-
-    // Hapus baris terakhir jika kosong
-    if (lastRowIsEmpty && $('.input-row-item').length > 1) {
-        lastRow.remove();
-    }
-
-    // Cek apakah ada inputan yang tidak terisi selain inputan terakhir
-    $('#itemInputs .input-row-item').not(':last').each(function(index) {
-        var row = $(this);
-        row.find('.input-check').each(function() {
-            if ($(this).val().trim() === '') {
-                isValid = false;
-                emptyInputNumber = index + 1; // Simpan nomor inputan yang kosong
-                $(this).focus(); // Arahkan kursor ke inputan yang belum terisi
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Data Belum Lengkap!',
-                    text: 'Harap isi semua inputan pada nomor ' + emptyInputNumber + ' sebelum mengirim.',
-                });
-                return false; // Keluar dari loop jika ditemukan inputan kosong
-            }
-        });
-        if (!isValid) {
-            return false; // Keluar dari loop jika ditemukan inputan kosong
-        }
-    });
-
-    if (isValid) {
-        // Hapus baris terakhir jika kosong
-        if (lastRowIsEmpty) {
-            lastRow.remove();
-        }
-
-        // Serialisasi data form
-        var formData = $('#itemForm').serializeArray();
-
-        // Submit form via AJAX
-        $.ajax({
-            url: '<?= base_url('akm') ?>',
-            method: 'POST',
-            data: $.param(formData),
-            success: function(response) {
-                if (response.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: 'Tambah item berhasil.',
-                    }).then(function() {
-                        window.location.href = '<?= base_url('dem') ?>'; // Redirect to 'decs' page
+                // Cek apakah hanya ada satu inputan
+                if ($('.input-row-item').length === 1) {
+                    var singleRow = $('#itemInputs .input-row-item').first();
+                    singleRow.find('.input-check').each(function() {
+                        if ($(this).val().trim() === '') {
+                            isValid = false;
+                            $(this).focus(); // Arahkan kursor ke inputan yang belum terisi
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Data Belum Lengkap!',
+                                text: 'Harap isi semua inputan sebelum mengirim.',
+                            });
+                            return false; // Keluar dari loop jika ditemukan inputan kosong
+                        }
                     });
-                } else if (response.status === 'duplicate') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal!',
-                        text: 'Kode ' + response.kode + ' Sudah Ada !',
+
+                    if (!isValid) {
+                        return; // Hentikan jika inputan tunggal kosong
+                    }
+                }
+
+                // Cek apakah inputan terakhir kosong
+                lastRow.find('.input-check').each(function() {
+                    if ($(this).val().trim() !== '') {
+                        lastRowIsEmpty = false;
+                    }
+                });
+
+                // Hapus baris terakhir jika kosong
+                if (lastRowIsEmpty && $('.input-row-item').length > 1) {
+                    lastRow.remove();
+                }
+
+                // Cek apakah ada inputan yang tidak terisi selain inputan terakhir
+                $('#itemInputs .input-row-item').not(':last').each(function(index) {
+                    var row = $(this);
+                    row.find('.input-check').each(function() {
+                        if ($(this).val().trim() === '') {
+                            isValid = false;
+                            emptyInputNumber = index + 1; // Simpan nomor inputan yang kosong
+                            $(this).focus(); // Arahkan kursor ke inputan yang belum terisi
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Data Belum Lengkap!',
+                                text: 'Harap isi semua inputan pada nomor ' + emptyInputNumber + ' sebelum mengirim.',
+                            });
+                            return false; // Keluar dari loop jika ditemukan inputan kosong
+                        }
                     });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal!',
-                        text: 'Tambah item gagal.',
+                    if (!isValid) {
+                        return false; // Keluar dari loop jika ditemukan inputan kosong
+                    }
+                });
+
+                if (isValid) {
+                    // Hapus baris terakhir jika kosong
+                    if (lastRowIsEmpty) {
+                        lastRow.remove();
+                    }
+
+                    // Serialisasi data form
+                    var formData = $('#itemForm').serializeArray();
+
+                    // Submit form via AJAX
+                    $.ajax({
+                        url: '<?= base_url('akm') ?>',
+                        method: 'POST',
+                        data: $.param(formData),
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil!',
+                                    text: 'Tambah item berhasil.',
+                                }).then(function() {
+                                    window.location.href = '<?= base_url('dem') ?>'; // Redirect to 'decs' page
+                                });
+                            } else if (response.status === 'duplicate') {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal!',
+                                    text: 'Kode ' + response.kode + ' Sudah Ada !',
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal!',
+                                    text: 'Tambah item gagal.',
+                                });
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Terjadi kesalahan dalam pengiriman data.',
+                            });
+                        }
                     });
                 }
-            },
-            error: function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Terjadi kesalahan dalam pengiriman data.',
-                });
-            }
-        });
-    }
-});
+            });
 
 
 

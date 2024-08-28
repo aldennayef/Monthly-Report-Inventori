@@ -43,6 +43,7 @@
                       <th>Satuan</th>
                       <th>Status</th>
                       <th>Realisasi At</th>
+                      <th>Realisasi</th>
                       <th>Aksi</th>
                     </tr>
                   </thead>
@@ -78,10 +79,19 @@
                         <td>
                           <span class="tanggal-text"><?=date('d F Y', strtotime($pemb['realisasi_at']))?></span>
                         </td>
+                        <!-- <td>
+                          <input type="datetime-local" class="form-control" placeholder="Tanggal" name="tanggal[]" autocomplete="off" id="datetimeInput" required value="<?=date('Y-m-d\TH:i', strtotime($pemb['realisasi_at']))?>">                        
+                        </td> -->
+                        <!-- <td>
+                          <input type="datetime-local" class="form-control" placeholder="Expire Date" name="expdate[]" autocomplete="off" id="datetimeInput_<?=$pemb['id_beli']?>" required value="<?=date('Y-m-d\TH:i', strtotime($pemb['exp_date']))?>" data-id_beli="<?=$pemb['id_beli']?>">
+                        </td> -->
+                        <td>
+                          <button class="btn btn-sm btn-success realisasi-btn"><i class="fas fa-check-square"></i></button>
+                        </td>
                         <td>
                           <button class="btn btn-sm btn-primary edit-btn"><i class="fas fa-pen"></i></button>
-                          <button class="btn btn-sm btn-success lock-btn" style="display:none;"><i class="fas fa-lock"></i></button>
-                          <button class="btn btn-sm btn-danger cancel-btn" style="display:none;"><i class="fas fa-times"></i></button>
+                          <button class="btn btn-sm btn-success lock-btn" style="display:none;border-radius:0;"><img src="<?=base_url('assets/gambar/save.png')?>" alt="save" style="width: 18px; height: 18px;"></button>
+                          <button class="btn btn-sm btn-danger cancel-btn" style="display:none; border-radius:0;"><i class="fas fa-times" style="width: 18px; height: 18px;"></i></button>
                         </td>
                     </tr>
                     <?php }?>
@@ -167,6 +177,7 @@
           });
 
           $(document).ready(function() {
+
             $('.quantity-update').on('input', function() {
         var $row = $(this).closest('td');
         var value = $(this).val();
@@ -390,6 +401,53 @@
                 $(this).hide(); // Sembunyikan tombol cancel
                 row.find('.lock-btn').hide(); // Sembunyikan tombol lock
                 row.find('.edit-btn').show(); // Tampilkan kembali tombol edit
+            });
+          });
+
+          $('#item').on('click', '.realisasi-btn', function() {
+            // var expDate = $(this).val(); // Ambil nilai yang dipilih
+            // var id = $(this).data('id_beli'); // Ambil ID dari atribut data-id
+            var row = $(this).closest('tr');
+            var kodebeli = row.find('.kodebeli').val(); 
+            var kodeitem = row.find('.kodeitem').val();
+
+            $.ajax({
+                url: '<?= base_url('akpb') ?>',  // Ganti dengan URL sesuai controller Anda
+                method: 'POST',
+                data: {
+                    // id_beli: id,
+                    // exp_date: expDate,
+                    // type: 'updatetanggal'
+                    kodebeli: kodebeli,
+                    kodeitem: kodeitem,
+                    type: 'realisasi'
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                      Swal.fire({
+                          icon: 'success',
+                          title: 'Berhasil!',
+                          text: 'PO Berhasil Direalisasi.',
+                      }).then((result) => {
+                          if (result.isConfirmed) {
+                              window.location.href = "<?=base_url('deb')?>";
+                          }
+                      });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: 'PO Gagal Direalisasi.',
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Terjadi kesalahan saat mengirim data.',
+                    });
+                }
             });
           });
         </script>

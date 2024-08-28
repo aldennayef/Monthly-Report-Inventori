@@ -615,33 +615,57 @@ class Proses extends CI_Controller{
                             'kode_beli' => $kodebeli,
                             'no_po' => $nopo,
                             'kode_item' => $kodeitem[$i],
-                            'quantity' => $qty[$i],
+                            // 'quantity' => $qty[$i],
                             'satuan' => $satuan[$i],
-                            'status' => 'ok',
+                            'status' => 'Belum terealisasi',
                             'realisasi_at' => $tanggal,
                         );
 
                         // Insert data ke tabel pembelian
                         $this->inventori->insert_pembelian($dataPembelian);
 
+                        $stokStaging = array(
+                            'kode_beli' => $kodebeli,
+                            'stok_staging' => $qty[$i],
+                            'kode_item' => $kodeitem[$i],
+                            'harga_satuan' => $hargapersatuan[$i],
+                            'exp_date' => $expdate[$i]
+                        );
+                        // Insert stok staging ke staging_stok
+                        $this->inventori->insert_staging_stok($stokStaging);
+
+                        // // Cek apakah kode_item sudah ada di stok
+                        // $checkItem = $this->inventori->check_stok($kodeitem[$i]);
+
+                        // if ($checkItem) {
+                        //     // Jika kode_item sudah ada, lakukan update
+                        //     $stokData = array(
+                        //         'quantity_real' => $qty[$i] + $checkItem['quantity_real'],
+                        //         'exp_date' => $expdate[$i],
+                        //         'harga_satuan' => $hargapersatuan[$i],
+                        //     );
+                        //     $this->inventori->update_stok($kodeitem[$i], $stokData);
+                        // } else {
+                        //     // Jika kode_item belum ada, lakukan insert
+                        //     $stokData = array(
+                        //         'kode_item' => $kodeitem[$i],
+                        //         'quantity_real' => $qty[$i],
+                        //         'exp_date' => $expdate[$i],
+                        //         'harga_satuan' => $hargapersatuan[$i],
+                        //     );
+                        //     $this->inventori->insert_stok($stokData);
+                        // }
+
                         // Cek apakah kode_item sudah ada di stok
                         $checkItem = $this->inventori->check_stok($kodeitem[$i]);
 
-                        if ($checkItem) {
+                        if (!$checkItem) {
                             // Jika kode_item sudah ada, lakukan update
                             $stokData = array(
-                                'quantity_real' => $qty[$i] + $checkItem['quantity_real'],
-                                'exp_date' => $expdate[$i],
-                                'harga_satuan' => $hargapersatuan[$i],
-                            );
-                            $this->inventori->update_stok($kodeitem[$i], $stokData);
-                        } else {
-                            // Jika kode_item belum ada, lakukan insert
-                            $stokData = array(
                                 'kode_item' => $kodeitem[$i],
-                                'quantity_real' => $qty[$i],
-                                'exp_date' => $expdate[$i],
-                                'harga_satuan' => $hargapersatuan[$i],
+                                // 'quantity_real' => $qty[$i],
+                                // 'exp_date' => $expdate[$i],
+                                // 'harga_satuan' => $hargapersatuan[$i],
                             );
                             $this->inventori->insert_stok($stokData);
                         }
@@ -670,6 +694,64 @@ class Proses extends CI_Controller{
                     echo json_encode(['status'=> 'failed']);
                 }
 
+            }
+            else if($type=='realisasi'){
+                $kodebeli = $this->input->post('kodebeli');
+                $kodeitem = $this->input->post('kodeitem');
+                $stokStaging = $this->inventori->get_stok_staging($kodebeli, $kodeitem);
+                if($stokStaging){
+                    date_default_timezone_set('Asia/Jakarta');
+                    $dataPemb = array(
+                        'quantity' => $stokStaging['stok_staging'],
+                        'status' => 'Terealisasi',
+                        'realisasi_at' => date('Y-m-d H:i:s'),
+                    );
+                    if($this->inventori->update_qty_pembelian($dataPemb,$kodebeli,$kodeitem)){
+                        // Cek apakah kode_item sudah ada di stok
+                        $checkItem = $this->inventori->check_stok($kodeitem);
+
+                        if ($checkItem) {
+                            // Jika kode_item sudah ada, lakukan update
+                            $stokData = array(
+                                'quantity_real' => $stokStaging['stok_staging'] + $checkItem['quantity_real'],
+                                'exp_date' => $stokStaging['exp_date'],
+                                'harga_satuan' => $stokStaging['harga_satuan'],
+                            );
+                            $this->inventori->update_stok($kodeitem, $stokData);
+                        } else {
+                            // Jika kode_item belum ada, lakukan insert
+                            $stokData = array(
+                                'kode_item' => $kodeitem,
+                                'quantity_real' => $stokStaging['stok_staging'],
+                                'exp_date' => $stokStaging['exp_date'],
+                                'harga_satuan' => $stokStaging['harga_satuan'],
+                            );
+                            $this->inventori->insert_stok($stokData);
+                        }
+                        header('Content-Type: application/json');
+                        echo json_encode(['status' => 'success']);
+                    }else{
+                        header('Content-Type: application/json');
+                        echo json_encode(['status' => 'failed']);
+                    }
+                }
+            }
+            else if($type ==='updatetanggal'){
+                $id_beli = $this->input->post('id_beli');
+                $exp_date = $this->input->post('exp_date');
+
+                $idstock = $this->inventori->get_kode_item_join_from_pembelian($id_beli);
+
+                $data = array(
+                    'exp_date' => $exp_date
+                );
+                if ($this->inventori->update_tanggal('stok', $data, $idstock)) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'success']);
+                } else {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'error']);
+                }
             }
             else{
                 // Ambil data dari form
@@ -793,9 +875,17 @@ class Proses extends CI_Controller{
                 $tanggal = $this->input->post('tanggal');
 
                 $data = array();
+                $detailDeskripsi = '';
                 $logdata = [];
 
                 try {
+                    for($i = 0; $i < count($idstock); $i++) {
+                        if ($i > 0) {
+                            // Tambahkan koma sebagai pemisah sebelum menambahkan item berikutnya, kecuali untuk item pertama
+                            $detailDeskripsi .= ', ';
+                        }
+                        $detailDeskripsi .= $this->inventori->get_nama_item_by_id_stok($idstock[$i]);
+                    }
                     // Looping melalui input dan siapkan data untuk insert/update satu per satu
                     for ($i = 0; $i < count($idstock); $i++) {
                         // Siapkan data untuk tabel pembelian
@@ -807,7 +897,7 @@ class Proses extends CI_Controller{
                             'nama_pemakai' => $nama,
                             'nopakai' => $nopakai,
                             'pemberi' => $pemberi[$i],
-                            'deskripsi' => $deskripsi,
+                            'deskripsi' => $deskripsi . ' [ '. $detailDeskripsi.' ]',
                             'waktu' => $tanggal,
                             'id_cluster' => $userData->id_cluster,
                         );
@@ -834,7 +924,7 @@ class Proses extends CI_Controller{
                         'jenis_visit' => $jenispakai,
                         'nik_visit' => $nik,
                         'nama_visit' => $nama,
-                        'tujuan_visit' => $deskripsi,
+                        'tujuan_visit' => $deskripsi . ' [ '. $detailDeskripsi.' ]',
                         'visit_at' => $tanggal,
                         'id_cluster' => $userData->id_cluster,
                     );
