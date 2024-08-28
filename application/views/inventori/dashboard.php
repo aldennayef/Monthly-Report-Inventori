@@ -1,22 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sistem Informasi Inventori (SIMI)</title>
-
-    <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet" href="<?= base_url('assets/plugins/fontawesome-free/css/all.min.css') ?>">
-    <!-- overlayScrollbars -->
-    <link rel="stylesheet" href="<?= base_url('assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') ?>">
-    <!-- Tempus Dominus Bootstrap 4 -->
-    <link rel="stylesheet" href="<?= base_url('assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css') ?>">
-    <!-- daterangepicker -->
-    <link rel="stylesheet" href="<?= base_url('assets/plugins/daterangepicker/daterangepicker.css') ?>">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="<?= base_url('assets/css/adminlte.min.css') ?>">
-</head>
 
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
     <div class="wrapper">
@@ -33,6 +14,52 @@
                 </div>
             </div>
 
+            <!-- Main content -->
+            <?php if($this->session->userdata('role_id')==1){?>
+            <section class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                            <h3 class="card-title">Log Data</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                            <table id="item" class="table table-bordered table-hover">
+                                <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>User</th>
+                                    <th>Aktivitas</th>
+                                    <th>Created At</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php $i=1; foreach ($logdata as $ld) {?>
+                                <tr>
+                                    <td><?=$i++;?></td>
+                                    <td><?=$ld['username']?></td>
+                                    <td><?=$ld['act_note']?></td>
+                                    <td><?=strftime('%d %B %Y', strtotime($ld['act_date']))?></td>
+                                </tr>
+                                <?php }?>
+                                </tbody>
+                            </table>
+                            </div>
+                            <!-- /.card-body -->
+                        </div>
+                        <!-- /.card -->
+
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </section>
+            <?php } ?>
+            <!-- /.content -->
+            <?php if($this->session->userdata('role_id') == 2){?>
             <!-- Dashboard List -->
             <section class="content" id="dashboard-section">
                 <div class="container-fluid">
@@ -160,6 +187,10 @@
                     </div>
                 </div>
             </section>
+            <script>
+                var $j = jQuery.noConflict();
+            </script>
+            <?php }?>
         </div>
 
         <!-- Preloader -->
@@ -172,11 +203,23 @@
 
     <!-- REQUIRED SCRIPTS -->
     <script src="<?= base_url('assets/plugins/jquery/jquery.min.js') ?>"></script>
-    <script>
-        var $j = jQuery.noConflict();
-    </script>
+    
     <script src="<?= base_url('assets/plugins/moment/moment.min.js') ?>"></script>
     <script src="<?= base_url('assets/plugins/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
+    <!-- DataTables  & Plugins -->
+    <script src="<?=base_url('assets/plugins/datatables/jquery.dataTables.min.js')?>"></script>
+    <script src="<?=base_url('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js')?>"></script>
+    <script src="<?=base_url('assets/plugins/datatables-responsive/js/dataTables.responsive.min.js')?>"></script>
+    <script src="<?=base_url('assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js')?>"></script>
+    <script src="<?=base_url('assets/plugins/datatables-buttons/js/dataTables.buttons.min.js')?>"></script>
+    <script src="<?=base_url('assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js')?>"></script>
+    <script src="<?=base_url('assets/plugins/jszip/jszip.min.js')?>"></script>
+    <script src="<?=base_url('assets/plugins/pdfmake/pdfmake.min.js')?>"></script>
+    <script src="<?=base_url('assets/plugins/pdfmake/vfs_fonts.js')?>"></script>
+    <script src="<?=base_url('assets/plugins/datatables-buttons/js/buttons.html5.min.js')?>"></script>
+    <script src="<?=base_url('assets/plugins/datatables-buttons/js/buttons.print.min.js')?>"></script>
+    <script src="<?=base_url('assets/plugins/datatables-buttons/js/buttons.colVis.min.js')?>"></script>
+    
     <script src="<?= base_url('assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') ?>"></script>
     <script src="<?= base_url('assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') ?>"></script>
     <script src="<?= base_url('assets/plugins/daterangepicker/daterangepicker.js') ?>"></script>
@@ -184,6 +227,17 @@
     <script src="<?= base_url('assets/js/adminlte.js') ?>"></script>
 
     <script>
+        $(function () {
+                    $('#item').DataTable({
+                    "paging": true,
+                    "lengthChange": false,
+                    "searching": true,
+                    "ordering": true,
+                    "info": true,
+                    "autoWidth": false,
+                    "responsive": true,
+                    });
+        });
         $j(document).ready(function() {
             let lineChartUnique; // Unique variable for this chart
             let currentItemCode = ""; // Store the currently selected item code
@@ -358,7 +412,6 @@
             });
         });
     </script>
-
 </body>
 
 </html>

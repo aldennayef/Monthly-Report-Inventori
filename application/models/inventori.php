@@ -544,5 +544,7 @@ class Inventori extends CI_Model{
         return $query->result_array();
     }
     
-    
+    public function get_log_data(){
+        return $this->db_inv->get('log_data')->result_array();
+    }
 }
