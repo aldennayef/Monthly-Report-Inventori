@@ -98,6 +98,12 @@
               <p>Data Opname</p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="<?=base_url('astokp')?>" class="nav-link">
+              <i class="nav-icon fas fa-sliders-h"></i>
+              <p>Adjust Stok</p>
+            </a>
+          </li>
           <?php } ?>
           <?php } ?>
           <li class="nav-header">ACTIONS</li>

@@ -547,4 +547,33 @@ class Inventori extends CI_Model{
     public function get_log_data(){
         return $this->db_inv->get('log_data')->result_array();
     }
+
+    public function insert_stok_adjust($data){
+        return $this->db_inv->insert('stok_adjust', $data);
+    }
+
+    public function get_data_stok_adjust($idcluster) {
+        $subquery = $this->db_inv
+            ->select('kode_item, MAX(adjust_at) as max_adjust_at')
+            ->from('stok_adjust')
+            ->where('id_cluster', $idcluster)
+            ->group_by('kode_item')
+            ->get_compiled_select();
+    
+        $this->db_inv->select('sa.id_cluster, sa.kode_item, sa.stok_real, sa.stok_adjust, sa.adjust_at');
+        $this->db_inv->from('stok_adjust sa');
+        $this->db_inv->join("($subquery) as latest", 'sa.kode_item = latest.kode_item AND sa.adjust_at = latest.max_adjust_at', 'inner');
+        $this->db_inv->where('sa.id_cluster', $idcluster);
+    
+        return $this->db_inv->get()->result_array();
+    }
+
+    public function get_detail_stok_adjust($idcluster) {
+        $this->db_inv->select('stok_adjust.*, items.nama');
+        $this->db_inv->from('stok_adjust');
+        $this->db_inv->join('items','stok_adjust.kode_item = items.kode_item');
+        $this->db_inv->where('stok_adjust.id_cluster', $idcluster);
+        return $this->db_inv->get()->result_array();
+    }
+
 }

@@ -1225,5 +1225,88 @@ class Proses extends CI_Controller{
         }
     }
     
+    public function aksi_adjust_stok_page(){
+        if($this->session->userdata('role_id')==3){
+            if($this->inventori->check_nik($this->session->userdata('nik'))){
+                $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+                $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+                $data['item'] = $this->inventori->get_detail_items($userData->id_cluster);
+                $data['dataadjuststok'] = $this->inventori->get_data_stok_adjust($userData->id_cluster);
+
+                $this->load->view('inventori/header', $data);
+                $this->load->view('inventori/navbar');
+                $this->load->view('inventori/sidebar', $data);
+                $this->load->view('inventori/v_adjust_stok', $data);
+            }
+            else{
+                redirect('home');
+            }
+        }
+        else{
+            redirect('home');
+        }
+    }
+
+    public function aksi_adjust_stok(){
+        if($this->session->userdata('role_id')==3){
+            if($this->inventori->check_nik($this->session->userdata('nik'))){
+                $id_cluster = $this->input->post('id_cluster');
+                $kode_item = $this->input->post('kode_item');
+                $quantity_real = $this->input->post('quantity_real');
+                $sisa_stok = $this->input->post('sisa_stok');
+                $stokAdjust = $this->input->post('stokAdjust');
+                date_default_timezone_set('Asia/Jakarta');
+                $data = array(
+                    'kode_item'=>$kode_item,
+                    'sisa_stok'=>$sisa_stok,
+                    'stok_real'=>$quantity_real,
+                    'stok_adjust'=>$stokAdjust,
+                    'adjust_at'=>date('Y-m-d H:i:s'),
+                    'id_cluster'=>$id_cluster,
+                );
+                $datax = array(
+                    'quantity_real' => $stokAdjust
+                );
+                if($this->inventori->insert_stok_adjust($data)){
+                    if($this->inventori->update_quantity_real_by_kode_item($datax,$kode_item)){
+                        header('Content-Type: application/json');
+                        echo json_encode(['status' => 'success', 'message' => 'Berhasil Adjust Stok']);
+                    }else{
+                        header('Content-Type: application/json');
+                        echo json_encode(['status' => 'failed', 'message' => 'Gagal Memperbarui Stok.']);
+                    }
+                }else{
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'failed', 'message' => 'Gagal Adjust Stok.']);
+                }
+            }else{
+                redirect('home');
+            }
+        }
+        else{
+            redirect('home');
+        }
+    }
+
+    public function detail_adjust_stok(){
+        if($this->session->userdata('role_id')==3){
+            if($this->inventori->check_nik($this->session->userdata('nik'))){
+                $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+                $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+                $data['dataadjuststok']= $this->inventori->get_detail_stok_adjust($userData->id_cluster);
+                $data['detail_adjuststok']= $this->inventori->get_detail_stok_adjust($userData->id_cluster);
+                $this->load->view('inventori/header', $data);
+                $this->load->view('inventori/navbar');
+                $this->load->view('inventori/sidebar', $data);
+                $this->load->view('inventori/v_detail_adjust_stok', $data);
+            }
+            else{
+
+            }
+        }
+        else{
+
+        }
+    }
 
 }

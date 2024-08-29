@@ -86,12 +86,16 @@
                           <input type="datetime-local" class="form-control" placeholder="Expire Date" name="expdate[]" autocomplete="off" id="datetimeInput_<?=$pemb['id_beli']?>" required value="<?=date('Y-m-d\TH:i', strtotime($pemb['exp_date']))?>" data-id_beli="<?=$pemb['id_beli']?>">
                         </td> -->
                         <td>
+                          <?php if($pemb['status']!='Terealisasi'){?>
                           <button class="btn btn-sm btn-success realisasi-btn"><i class="fas fa-check-square"></i></button>
+                          <?php }?>
                         </td>
                         <td>
-                          <button class="btn btn-sm btn-primary edit-btn"><i class="fas fa-pen"></i></button>
-                          <button class="btn btn-sm btn-success lock-btn" style="display:none;border-radius:0;"><img src="<?=base_url('assets/gambar/save.png')?>" alt="save" style="width: 18px; height: 18px;"></button>
-                          <button class="btn btn-sm btn-danger cancel-btn" style="display:none; border-radius:0;"><i class="fas fa-times" style="width: 18px; height: 18px;"></i></button>
+                          <?php if($pemb['status']!='Terealisasi'){?>
+                            <button class="btn btn-sm btn-primary edit-btn"><i class="fas fa-pen"></i></button>
+                            <button class="btn btn-sm btn-success lock-btn" style="display:none;border-radius:0;"><img src="<?=base_url('assets/gambar/save.png')?>" alt="save" style="width: 18px; height: 18px;"></button>
+                            <button class="btn btn-sm btn-danger cancel-btn" style="display:none; border-radius:0;"><i class="fas fa-times" style="width: 18px; height: 18px;"></i></button>
+                          <?php }?>
                         </td>
                     </tr>
                     <?php }?>

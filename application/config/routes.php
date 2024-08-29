@@ -103,3 +103,6 @@ $route['akdo'] = 'inventori/proses/aksi_dataopname';
 $route['detop'] = 'inventori/proses/detail_dataopname';
 $route['inventori/proses/more_info'] = 'inventori/proses/more_info';
 $route['bakri'] = 'inventori/proses/backup_database';
+$route['astokp'] = 'inventori/proses/aksi_adjust_stok_page';
+$route['astok'] = 'inventori/proses/aksi_adjust_stok';
+$route['deastok'] = 'inventori/proses/detail_adjust_stok';
