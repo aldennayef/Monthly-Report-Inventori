@@ -77,7 +77,11 @@
                           <input type="text" class="form-control status" value="<?=$pemb['status']?>" style="display:none;">
                         </td>
                         <td>
-                          <span class="tanggal-text"><?=date('d F Y', strtotime($pemb['realisasi_at']))?></span>
+                          <?php if($pemb['status']!='Terealisasi'){?>
+                            <span class="tanggal-text">-</span>
+                          <?php } else {?>
+                            <span class="tanggal-text"><?=date('d F Y H:i:s', strtotime($pemb['realisasi_at']))?></span>
+                          <?php }?>
                         </td>
                         <!-- <td>
                           <input type="datetime-local" class="form-control" placeholder="Tanggal" name="tanggal[]" autocomplete="off" id="datetimeInput" required value="<?=date('Y-m-d\TH:i', strtotime($pemb['realisasi_at']))?>">                        

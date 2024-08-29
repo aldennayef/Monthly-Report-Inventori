@@ -77,7 +77,7 @@
                         <input type="text" class="form-control deskripsi" value="" style="display:none;">
                     </td>
                     <td>
-                        <span class="waktu-text"><?=date('d F Y', strtotime($pk['waktu']))?></span>
+                        <span class="waktu-text"><?=date('d F Y H:i:s', strtotime($pk['waktu']))?></span>
                     </td>
                     <td>
                         <button class="btn btn-sm btn-primary edit-btn"><i class="fas fa-pen"></i></button>
