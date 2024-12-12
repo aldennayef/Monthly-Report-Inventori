@@ -40,24 +40,24 @@ class Home extends CI_Controller {
 
                 $current_date = date('d'); // Mendapatkan hari dalam bulan
 
-                // Jika tanggal 22
-                if ($current_date == '22') {
+                // Jika tanggal 6
+                if ($current_date == '8') {
                     // Mendapatkan tanggal pertama bulan kemarin
-                    $last_month_date = date("Y-m-d", strtotime("first day of previous month"));
-                    // Mendapatkan tanggal terakhir bulan kemarin
-                    $last_day_of_last_month = date("Y-m-t", strtotime($last_month_date));
+                    // $last_month_date = date("Y-m-d", strtotime("first day of previous month"));
+                    // // Mendapatkan tanggal terakhir bulan kemarin
+                    // $last_day_of_last_month = date("Y-m-t", strtotime($last_month_date));
 
-                    // Subquery untuk mendapatkan user_id dari kolom_attributes yang terkait dengan kolom_id di kolom_values
-                    $this->db->select('kolom_attributes.user_id')
-                            ->from('kolom_attributes')
-                            ->join('kolom_values', 'kolom_values.kolom_id = kolom_attributes.id')
-                            ->where('kolom_values.periode <=', $last_day_of_last_month);
+                    // // Subquery untuk mendapatkan user_id dari kolom_attributes yang terkait dengan kolom_id di kolom_values
+                    // $this->db->select('kolom_attributes.user_id')
+                    //         ->from('kolom_attributes')
+                    //         ->join('kolom_values', 'kolom_values.kolom_id = kolom_attributes.id')
+                    //         ->where('kolom_values.periode <=', $last_day_of_last_month);
 
-                    $subquery = $this->db->get_compiled_select(); // Kompilasi subquery
+                    // $subquery = $this->db->get_compiled_select(); // Kompilasi subquery
 
                     // Update status_periode menjadi 1 di tabel user berdasarkan user_id dari subquery
                     $this->db->set('status_periode', 1);
-                    $this->db->where("id IN ($subquery)", NULL, FALSE); // Menggunakan subquery sebagai kondisi
+                    $this->db->where("id", $data['user_id']); // Menggunakan subquery sebagai kondisi
                     $this->db->update('user');
                 }
                 redirect('modul');

@@ -10,58 +10,93 @@ class Proses extends CI_Controller{
     }
 
     public function index() {
-        if($this->session->userdata('role_id') == 3){
-            if($this->inventori->check_nik($this->session->userdata('nik'))){
+        $nik = $this->session->userdata('nik');
+        $role_id = $this->session->userdata('role_id');
+        $department_id = $this->session->userdata('department_id');
+    
+        $user_clusters = $this->inventori->get_user_clusters($nik);
+        $jenis_filter = $this->input->get('jenis');
+    
+        if ($role_id == 3) {
+            if ($this->inventori->check_nik($nik)) {
                 $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
-                $data['dashboard_data'] = $this->inventori->list_chart();
-
-                $this->load->view('inventori/header', $data);
-                $this->load->view('inventori/navbar');
-                $this->load->view('inventori/sidebar', $data);
-                $this->load->view('inventori/dashboard', $data);
-                // $this->load->view('inventori/footer');
+                $data['dashboard_data'] = $this->inventori->get_dashboard_data($user_clusters, null, $jenis_filter);
             } else {
                 redirect('home');
+                return;
             }
-        } else if($this->session->userdata('role_id')==1 || $this->session->userdata('role_id')==2 ||$this->session->userdata('role_id')==4){
+        } elseif ($role_id == 2) {
+            $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
+            $data['dashboard_data'] = $this->inventori->get_dashboard_data(null, isset($department_id) ? $department_id : null, $jenis_filter);
+        } elseif ($role_id == 1 || $role_id == 4) {
             $data['user'] = $this->inventori->get_user_data($this->session->userdata('username'));
             $data['logdata'] = $this->inventori->get_log_data();
-            $this->load->view('inventori/header', $data);
-            $this->load->view('inventori/navbar');
-            $this->load->view('inventori/sidebar', $data);
-            $this->load->view('inventori/dashboard', $data);
-            // $this->load->view('inventori/footer');
+            $data['dashboard_data'] = $this->inventori->get_dashboard_data($user_clusters, null, $jenis_filter);
         } else {
             redirect('home');
+            return;
         }
+    
+        // Ambil jenis items dari dashboard_data untuk filter
+        $data['jenis_items'] = $this->inventori->get_jenis_items_from_dashboard($data['dashboard_data']);
+    
+        $this->load->view('inventori/header', $data);
+        $this->load->view('inventori/navbar');
+        $this->load->view('inventori/sidebar', $data);
+        $this->load->view('inventori/dashboard', $data); // Pastikan view menerima $data['jenis_items']
+        $this->load->view('inventori/footer');
     }
-
+    
+    
     public function more_info() {
         try {
+            // Ambil data dari request POST
             $kode_item = $this->input->post('kode_item');
-            $chart_type = $this->input->post('chart_type'); // Menangkap jenis chart yang dipilih
+            $chart_type = $this->input->post('chart_type');
+            $start_date = $this->input->post('start_month');
+            $end_date = $this->input->post('end_month');
+            $month = $this->input->post('month');  // Ambil 'month' untuk chart 'bar'
     
+            // Validasi input
             if (empty($kode_item)) {
                 throw new Exception("No item code provided");
             }
     
-            $formatted_data = [];
+            // Jika start_date atau end_date kosong, ambil semua data (tanpa filter tanggal)
+            if (empty($start_date) || empty($end_date)) {
+                $start_date = null; // Kosongkan untuk mengambil semua data
+                $end_date = null;
+            }
+    
+            // Persiapan variabel
             $labels = [];
-            $item_name = '';
+            $formatted_data = [];
     
+            // Proses chart line
             if ($chart_type === 'line') {
-                // Fetch stock data for line chart
-                $chart_data = $this->inventori->get_monthly_stock_data($kode_item);
-                foreach ($chart_data as $data) {
-                    $labels[] = date('Y-m', strtotime($data['month']));
-                    $formatted_data[] = $data['total_quantity'];
-                    $item_name = $data['item_name'];
-                }
-            } elseif ($chart_type === 'bar') {
-                // Fetch purchase and usage data for bar chart
-                $purchase_data = $this->inventori->get_monthly_purchase_data($kode_item);
-                $usage_data = $this->inventori->get_monthly_usage_data($kode_item);
+                $chart_data = $this->inventori->get_monthly_stock_data_filtered($kode_item, $start_date, $end_date);
     
+                foreach ($chart_data as $data) {
+                    $labels[] = $data['month'];  
+                    $formatted_data[] = $data['total_quantity'];
+                }
+    
+                if (empty($formatted_data)) {
+                    echo json_encode(['labels' => [], 'data' => []]);
+                    return;
+                }
+    
+            // Proses chart bar
+            } elseif ($chart_type === 'bar') {
+                if (empty($month)) {
+                    throw new Exception("No month provided for bar chart");
+                }
+    
+                // Ambil data pembelian dan pemakaian
+                $purchase_data = $this->inventori->get_monthly_purchase_data($kode_item, $month);
+                $usage_data = $this->inventori->get_monthly_usage_data($kode_item, $month);
+    
+                // Inisialisasi data yang diformat
                 $formatted_data = [
                     'purchase' => [],
                     'usage' => []
@@ -69,35 +104,39 @@ class Proses extends CI_Controller{
     
                 $unique_labels = [];
     
+                // Proses data pembelian
                 foreach ($purchase_data as $data) {
-                    $month = date('Y-m', strtotime($data['month']));
-                    $unique_labels[$month] = $month;
-                    $formatted_data['purchase'][$month] = $data['total_quantity'];
+                    $month_label = $data['month'];
+                    $unique_labels[$month_label] = $month_label;
+                    $formatted_data['purchase'][$month_label] = $data['total_quantity'];
                 }
     
+                // Proses data pemakaian
                 foreach ($usage_data as $data) {
-                    $month = date('Y-m', strtotime($data['month']));
-                    $unique_labels[$month] = $month;
-                    $formatted_data['usage'][$month] = $data['total_quantity'];
+                    $month_label = $data['month'];
+                    $unique_labels[$month_label] = $month_label;
+                    $formatted_data['usage'][$month_label] = $data['total_quantity'];
                 }
     
+                // Simpan labels unik dan isi data jika tidak ada
                 $labels = array_values($unique_labels);
-                foreach ($labels as $month) {
-                    $formatted_data['purchase'][$month] = $formatted_data['purchase'][$month] ?? 0;
-                    $formatted_data['usage'][$month] = $formatted_data['usage'][$month] ?? 0;
+                foreach ($labels as $month_label) {
+                    $formatted_data['purchase'][$month_label] = $formatted_data['purchase'][$month_label] ?? 0;
+                    $formatted_data['usage'][$month_label] = $formatted_data['usage'][$month_label] ?? 0;
                 }
             }
     
-            echo json_encode([
-                'labels' => $labels,
-                'data' => $formatted_data,
-                'item_name' => $item_name
-            ]);
+            // Kirim respons JSON
+            echo json_encode(['labels' => $labels, 'data' => $formatted_data]);
+    
         } catch (Exception $e) {
+            // Jika terjadi error, log error dan kirim respons JSON dengan pesan error
             log_message('error', $e->getMessage());
-            show_error($e->getMessage(), 500);
+            echo json_encode(['error' => $e->getMessage()]);
         }
     }
+    
+    
     
     
     public function detail_users(){
@@ -308,6 +347,13 @@ class Proses extends CI_Controller{
             $userData = $this->inventori->check_nik($this->session->userdata('nik'));
             $data['jenis_items'] = $this->inventori->get_jenis_items_by_nik_cluster($this->session->userdata('nik'));
             $data['suggest_jenis'] = json_encode(array_column($this->inventori->get_suggested_jenis($userData->id_cluster), 'jenis'));
+
+            $kodeCluster = $this->inventori->get_kode_cluster($userData->id_cluster);
+            // Hitung jumlah kode item yang sudah ada untuk sub_department ini
+            $kodePrefix = $kodeCluster['kode_cluster'].'_';
+            $lastKodeItem = $this->inventori->count_kode_item($kodePrefix);
+            $nextKodeItem = $kodePrefix . ($lastKodeItem + 1);
+            $data['next_kode_item'] = $nextKodeItem; // Ini akan digunakan di frontend
             
             if($aksi === 'edit'){
                 $data['items'] = $this->inventori->get_items_by_id_cluster($userData->id_cluster);
@@ -338,6 +384,7 @@ class Proses extends CI_Controller{
                     if(!$this->inventori->get_items_by_kode($kode)){
                         // Siapkan array untuk menyimpan banyak data
                         $data = array();
+                        $logdata = array();
                         
                         try {
                             // Looping melalui input dan siapkan data untuk insert batch
@@ -352,11 +399,12 @@ class Proses extends CI_Controller{
                                         'create_at' => date('Y-m-d'),
                                         'nik' => $this->session->userdata('nik'),
                                     );
-                            
-                                    $logdata = [
+                                    date_default_timezone_set('Asia/Jakarta');
+                                    $logdata[] = [
                                         'id_user' => $this->session->userdata('id'),
                                         'username' => $this->session->userdata('username'),
                                         'act_note' => 'Tambah Item Baru = ' . $namaitem[$i] . ' (Kode = ' . $kodeitem[$i] . ' )',
+                                        'act_date' => date('Y-m-d H:i:s'),
                                     ];
                                 }
                             }
@@ -387,8 +435,8 @@ class Proses extends CI_Controller{
                 }
                 // Masukkan data ke dalam tabel cluster melalui model dengan insert_batch
                 if ($this->inventori->insert_batch_item($data)) {
-                    $this->db_inv->set('act_date', 'NOW()', FALSE);
-                    if ($this->db_inv->insert('log_data', $logdata)) {
+                    // $this->db_inv->set('act_date', 'NOW()', FALSE);
+                    if ($this->db_inv->insert_batch('log_data', $logdata)) {
                         header('Content-Type: application/json');
                         echo json_encode(['status'=> 'success']);
                     } else {
@@ -630,7 +678,8 @@ class Proses extends CI_Controller{
                             'stok_staging' => $qty[$i],
                             'kode_item' => $kodeitem[$i],
                             'harga_satuan' => $hargapersatuan[$i],
-                            'exp_date' => $expdate[$i]
+                            'exp_date' => $expdate[$i],
+                            'id_cluster' => $userData->id_cluster
                         );
                         // Insert stok staging ke staging_stok
                         $this->inventori->insert_staging_stok($stokStaging);
@@ -663,6 +712,7 @@ class Proses extends CI_Controller{
                         if (!$checkItem) {
                             // Jika kode_item sudah ada, lakukan update
                             $stokData = array(
+                                'id_cluster' => $userData->id_cluster,
                                 'kode_item' => $kodeitem[$i],
                                 // 'quantity_real' => $qty[$i],
                                 // 'exp_date' => $expdate[$i],
@@ -761,17 +811,39 @@ class Proses extends CI_Controller{
                 $updateQuantity = $this->input->post('updateQuantity');
                 $updateQtyPembelian = $this->input->post('updateQtyPembelian');
                 $updateSatuan = $this->input->post('updateSatuan');
+                $updateQtyStaging = $this->input->post('qtyUpdateStaging');
 
-                $datapemb = array(
-                    'quantity'=>$updateQtyPembelian,
-                    'satuan' => $updateSatuan
-                );
-                $datastok = array(
-                    'quantity_real'=>$updateQuantity
+                $dataStagingStok = array(
+                    'stok_staging'=>$updateQtyStaging
                 );
 
-                if($this->inventori->update_qty_pembelian($datapemb,$kodebeli,$kodeitem)){
-                    if($this->inventori->update_quantity_real_by_kode_item($datastok,$kodeitem)){
+                $where=array(
+                    'kode_beli'=>$kodebeli,
+                    'kode_item'=>$kodeitem
+                );
+                // $datapemb = array(
+                //     'quantity'=>$updateQtyPembelian,
+                //     'satuan' => $updateSatuan
+                // );
+                // $datastok = array(
+                //     'quantity_real'=>$updateQuantity
+                // );
+
+                // if($this->inventori->update_qty_pembelian($datapemb,$kodebeli,$kodeitem)){
+                //     if($this->inventori->update_quantity_real_by_kode_item($datastok,$kodeitem)){
+                //         header('Content-Type: application/json');
+                //         echo json_encode(['status' => 'success']);
+                //     }else{
+                //         header('Content-Type: application/json');
+                //         echo json_encode(['status' => 'failed']);
+                //     }
+                // }else{
+                //     header('Content-Type: application/json');
+                //     echo json_encode(['status' => 'failed']);
+                // }
+
+                if($this->inventori->get_info_staging_stok($kodebeli,$kodeitem)){
+                    if($this->inventori->update_staging_stok($dataStagingStok,$where)){
                         header('Content-Type: application/json');
                         echo json_encode(['status' => 'success']);
                     }else{
@@ -995,6 +1067,14 @@ class Proses extends CI_Controller{
         $items = $this->inventori->get_item_by_kode_item($kodeitem,$userData->id_cluster);
     
         if ($items) {
+            // Iterasi melalui setiap item dan cek apakah quantity_real bernilai null
+            foreach ($items as &$item) {
+                if (is_null($item['quantity_real'])) {
+                    // Jika null, set quantity_real menjadi 0
+                    $item['quantity_real'] = 0;
+                }
+            }
+    
             echo json_encode(['status' => 'success', 'data' => $items]);
         } else {
             echo json_encode(['status' => 'not_found']);
@@ -1143,54 +1223,211 @@ class Proses extends CI_Controller{
         }
     }
     
+    // public function backup_database() {
+    //     if ($this->session->userdata('role_id')) {
+    //         $userData = $this->inventori->check_nik($this->session->userdata('nik'));
+    //         $idcluster = $userData->id_cluster;
+    
+    //         // Load PhpSpreadsheet library
+    //         require 'vendor/autoload.php';
+    //         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    
+    //         // Fetch database data
+    //         $tables = $this->inventori->get_all_tables();
+    
+    //         foreach ($tables as $table) {
+    //             $tableName = $table['table_name'];
+    //             $sheet = $spreadsheet->createSheet();
+    //             $sheet->setTitle($tableName);
+    
+    //             $data = $this->inventori->get_table_data($tableName, $idcluster);
+    //             $column = 'A';
+    //             $row = 1;
+    
+    //             // Set column names
+    //             if (!empty($data)) {
+    //                 $field_names = array_keys($data[0]);
+    //                 foreach ($field_names as $field) {
+    //                     $sheet->setCellValue($column . $row, $field);
+    //                     $column++;
+    //                 }
+    //                 $row++;
+    
+    //                 // Set data rows
+    //                 foreach ($data as $record) {
+    //                     $column = 'A';
+    //                     foreach ($record as $value) {
+    //                         if (is_array($value)) {
+    //                             $value = json_encode($value);
+    //                         }
+    //                         $sheet->setCellValue($column . $row, $value);
+    //                         $column++;
+    //                     }
+    //                     $row++;
+    //                 }
+    //                 $row++;
+    //             }
+    //         }
+    
+    //         // Remove the default sheet created on initialization
+    //         $spreadsheet->removeSheetByIndex(0);
+    
+    //         // Write to file
+    //         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    //         $lastMonthNumber = date('n', strtotime('first day of last month'));
+    //         $dateTime = date('Ymd_His');
+    //         $filename = "backup_inventori_period_{$lastMonthNumber}_{$dateTime}.xlsx";
+    //         $backupDir = 'E:\backup_db_inventori';
+    
+    //         if (!is_dir($backupDir)) {
+    //             mkdir($backupDir, 0777, true);
+    //         }
+    
+    //         $filepath = $backupDir . '/' . $filename;
+    //         $writer->save($filepath);
+    
+    //         // Log the action
+    //         $logdata = [
+    //             'id_user' => $this->session->userdata('id'),
+    //             'username' => $this->session->userdata('username'),
+    //             'act_note' => 'Melakukan backup data',
+    //         ];
+    
+    //         $this->db_inv->set('act_date', 'NOW()', FALSE);
+    //         $this->db_inv->insert('log_data', $logdata);
+    
+    //         // Return JSON response
+    //         header('Content-Type: application/json');
+    //         echo json_encode(['status' => 'success', 'message' => 'Backup database berhasil dilakukan.']);
+    //     } else {
+    //         header('Content-Type: application/json');
+    //         echo json_encode(['status' => 'error', 'message' => 'Anda tidak memiliki akses untuk melakukan backup.']);
+    //     }
+    // }
+
     public function backup_database() {
         if ($this->session->userdata('role_id')) {
             $userData = $this->inventori->check_nik($this->session->userdata('nik'));
-            $idcluster = $userData->id_cluster;
-    
+            $roleId = $this->session->userdata('role_id');
+            $userDepartment = $this->inventori->get_department_id_by_nik($this->session->userdata('nik'));
+            
             // Load PhpSpreadsheet library
             require 'vendor/autoload.php';
             $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet(); // Menggunakan sheet aktif
+            $sheet->setTitle('Backup Data'); // Beri nama sheet
     
-            // Fetch database data
-            $tables = $this->inventori->get_all_tables();
+            $column = 'A';  // Awal kolom untuk set kolom pertama
+            $row = 1;       // Awal baris untuk set data
     
-            foreach ($tables as $table) {
-                $tableName = $table['table_name'];
-                $sheet = $spreadsheet->createSheet();
-                $sheet->setTitle($tableName);
+            $logDataBackedUp = false; // Variabel untuk melacak apakah log_data telah dibackup
     
-                $data = $this->inventori->get_table_data($tableName, $idcluster);
-                $column = 'A';
-                $row = 1;
+            if ($roleId == 2) {
+                // Ambil semua nik dan id_cluster dari tabel user database inventori, 
+                // cocokkan dengan department_id dari tabel user database monthly_report
+                $nikList = $this->inventori->get_nik_by_department($userDepartment->department_id);
     
-                // Set column names
-                if (!empty($data)) {
-                    $field_names = array_keys($data[0]);
-                    foreach ($field_names as $field) {
-                        $sheet->setCellValue($column . $row, $field);
-                        $column++;
+                foreach ($nikList as $nikData) {
+                    $id_cluster = $nikData['id_cluster'];  // Ambil id_cluster dari hasil query
+                    
+                    // Backup data berdasarkan id_cluster di db_inv
+                    $tables = $this->inventori->get_all_tables();
+                    foreach ($tables as $table) {
+                        $tableName = $table['table_name'];
+                        
+                        // Backup log_data hanya sekali
+                        if ($tableName == 'log_data' && $logDataBackedUp) {
+                            continue; // Lompat jika log_data sudah dibackup
+                        }
+    
+                        // Backup data dari db_inv berdasarkan id_cluster
+                        $data = $this->inventori->get_table_data($tableName, $id_cluster);
+    
+                        // Set nama tabel di file Excel sebelum data
+                        $sheet->setCellValue($column . $row, 'Tabel: ' . $tableName . ' (Cluster ID: ' . $id_cluster . ')');
+                        $row++;
+    
+                        // Set column names
+                        if (!empty($data)) {
+                            $field_names = array_keys($data[0]);
+                            $current_column = $column;
+    
+                            // Tampilkan nama kolom di Excel
+                            foreach ($field_names as $field) {
+                                $sheet->setCellValue($current_column . $row, $field);
+                                $current_column++;
+                            }
+                            $row++;
+    
+                            // Tampilkan data dari tabel
+                            foreach ($data as $record) {
+                                $current_column = $column;
+                                foreach ($record as $value) {
+                                    if (is_array($value)) {
+                                        $value = json_encode($value);
+                                    }
+                                    $sheet->setCellValue($current_column . $row, $value);
+                                    $current_column++;
+                                }
+                                $row++;
+                            }
+                        }
+                        $row++; // Tambahkan baris kosong setelah tiap tabel
+    
+                        // Tandai bahwa log_data telah dibackup
+                        if ($tableName == 'log_data') {
+                            $logDataBackedUp = true;
+                        }
                     }
+                }
+            } else {
+                // Backup normal untuk role_id selain 2
+                $idcluster = $userData->id_cluster;
+                $tables = $this->inventori->get_all_tables();
+    
+                foreach ($tables as $table) {
+                    $tableName = $table['table_name'];
+    
+                    // Abaikan tabel log_data jika role_id bukan 2
+                    if ($tableName == 'log_data') {
+                        continue; // Lompat ke tabel berikutnya
+                    }
+    
+                    // Backup data dari db_inv berdasarkan id_cluster
+                    $data = $this->inventori->get_table_data($tableName, $idcluster);
+    
+                    // Set nama tabel di file Excel sebelum data
+                    $sheet->setCellValue($column . $row, 'Tabel: ' . $tableName . ' (Cluster ID: ' . $idcluster . ')');
                     $row++;
     
-                    // Set data rows
-                    foreach ($data as $record) {
-                        $column = 'A';
-                        foreach ($record as $value) {
-                            if (is_array($value)) {
-                                $value = json_encode($value);
-                            }
-                            $sheet->setCellValue($column . $row, $value);
-                            $column++;
+                    // Set column names
+                    if (!empty($data)) {
+                        $field_names = array_keys($data[0]);
+                        $current_column = $column;
+    
+                        // Tampilkan nama kolom di Excel
+                        foreach ($field_names as $field) {
+                            $sheet->setCellValue($current_column . $row, $field);
+                            $current_column++;
                         }
                         $row++;
+    
+                        // Tampilkan data dari tabel
+                        foreach ($data as $record) {
+                            $current_column = $column;
+                            foreach ($record as $value) {
+                                if (is_array($value)) {
+                                    $value = json_encode($value);
+                                }
+                                $sheet->setCellValue($current_column . $row, $value);
+                                $current_column++;
+                            }
+                            $row++;
+                        }
                     }
-                    $row++;
+                    $row++; // Tambahkan baris kosong setelah tiap tabel
                 }
             }
-    
-            // Remove the default sheet created on initialization
-            $spreadsheet->removeSheetByIndex(0);
     
             // Write to file
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
@@ -1225,6 +1462,11 @@ class Proses extends CI_Controller{
         }
     }
     
+    
+    
+    
+    
+    
     public function aksi_adjust_stok_page(){
         if($this->session->userdata('role_id')==3){
             if($this->inventori->check_nik($this->session->userdata('nik'))){
@@ -1255,12 +1497,14 @@ class Proses extends CI_Controller{
                 $quantity_real = $this->input->post('quantity_real');
                 $sisa_stok = $this->input->post('sisa_stok');
                 $stokAdjust = $this->input->post('stokAdjust');
+                $deskripsi = $this->input->post('adjustDetail');
                 date_default_timezone_set('Asia/Jakarta');
                 $data = array(
                     'kode_item'=>$kode_item,
                     'sisa_stok'=>$sisa_stok,
                     'stok_real'=>$quantity_real,
                     'stok_adjust'=>$stokAdjust,
+                    'deskripsi'=>$deskripsi,
                     'adjust_at'=>date('Y-m-d H:i:s'),
                     'id_cluster'=>$id_cluster,
                 );

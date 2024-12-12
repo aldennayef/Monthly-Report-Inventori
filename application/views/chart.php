@@ -40,74 +40,74 @@
     </style>
 </head>
 
-<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed dark-mode">
+<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
     <div class="wrapper">
-    <?php if($this->session->userdata('role_id')!=1 && $this->session->userdata('role_id')!=4){ ?>
-        <!-- Overview Chart Section -->
-        <section class="content" id="chart-section">
-            <div class="container-fluid">
-                <div class="row">
-                    <!-- Overview Line Chart -->
-                    <div class="col-lg-8 col-md-12">
-                        <div class="card card-primary">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h3 class="card-title" id="overview-line-chart-title">Overview Line Chart</h3>
-                                <div class="form-group select-report ml-auto">
-                                    <label for="lineChartReportSelect" class="sr-only">Select Report:</label>
-                                    <select id="lineChartReportSelect" class="form-control">
-                                        <!-- Options will be dynamically added here -->
-                                    </select>
+        <?php if ($this->session->userdata('role_id') != 1 && $this->session->userdata('role_id') != 4) { ?>
+            <!-- Overview Chart Section -->
+            <section class="content" id="chart-section">
+                <div class="container-fluid">
+                    <div class="row">
+                        <!-- Overview Line Chart -->
+                        <div class="col-lg-8 col-md-12">
+                            <div class="card card-primary">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h3 class="card-title" id="overview-line-chart-title">Grafik 1</h3>
+                                    <div class="form-group select-report ml-auto">
+                                        <label for="lineChartReportSelect" class="sr-only">Select Report:</label>
+                                        <select id="lineChartReportSelect" class="form-control" style="width: 300px; transform: translateX(-150px);">
+                                            <!-- Options will be dynamically added here -->
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="card-body">
-                                <div id="overviewLineChartContainer" style="height: 526.5px;">
-                                    <canvas id="overviewLineChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4 col-md-12">
-                        <!-- Overview Bar Chart -->
-                        <div class="card card-primary mb-4">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h3 class="card-title" id="overview-bar-chart-title">Overview Bar Chart</h3>
-                                <div class="form-group select-report">
-                                    <label for="barChartReportSelect" class="sr-only">Select Report:</label>
-                                    <select id="barChartReportSelect" class="form-control">
-                                        <!-- Options will be dynamically added here -->
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div id="overviewBarChartContainer" style="height: 200px;">
-                                    <canvas id="overviewBarChart" style="height: 200px;"></canvas>
+                                <div class="card-body">
+                                    <div id="overviewLineChartContainer" style="height: 526.5px;">
+                                        <canvas id="overviewLineChart"></canvas>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Overview Donut Chart -->
-                        <div class="card card-primary">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h3 class="card-title" id="overview-donut-chart-title">Overview Donut Chart</h3>
-                                <div class="form-group select-report">
-                                    <label for="donutChartReportSelect" class="sr-only">Select Report:</label>
-                                    <select id="donutChartReportSelect" class="form-control">
-                                        <!-- Options will be dynamically added here -->
-                                    </select>
+                        <div class="col-lg-4 col-md-12">
+                            <!-- Overview Bar Chart -->
+                            <div class="card card-primary mb-4">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h3 class="card-title" id="overview-bar-chart-title">Grafik 2</h3>
+                                    <div class="form-group select-report">
+                                        <label for="barChartReportSelect" class="sr-only">Select Report:</label>
+                                        <select id="barChartReportSelect" class="form-control" style="width: 300px; transform: translateX(-70px);">
+                                            <!-- Options will be dynamically added here -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="overviewBarChartContainer" style="height: 200px;">
+                                        <canvas id="overviewBarChart" style="height: 200px;"></canvas>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="card-body">
-                                <div id="overviewDonutChartContainer" style="height: 200px;">
-                                    <canvas id="overviewDonutChart" style="height: 200px;"></canvas>
+
+                            <!-- Overview Donut Chart -->
+                            <div class="card card-primary">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h3 class="card-title" id="overview-donut-chart-title">Grafik 3</h3>
+                                    <div class="form-group select-report">
+                                        <label for="donutChartReportSelect" class="sr-only">Select Report:</label>
+                                        <select id="donutChartReportSelect" class="form-control" style="width: 300px; transform: translateX(-70px);">
+                                            <!-- Options will be dynamically added here -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div id="overviewDonutChartContainer" style="height: 200px;">
+                                        <canvas id="overviewDonutChart" style="height: 200px;"></canvas>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-    <?php } ?>
+            </section>
+        <?php } ?>
         <!-- Additional Chart Section -->
         <section class="content" id="additional-chart-section" style="display: none;">
             <div class="container-fluid">
@@ -215,18 +215,18 @@
                 </div>
 
                 <!-- SidebarSearch Form -->
-                <?php if($this->session->userdata('role_id')!=1 && $this->session->userdata('role_id')!=4){?>
-                <!-- SidebarSearch Form -->
-                <div class="form-inline">
-                    <div class="input-group" data-widget="sidebar-search">
-                        <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-                        <div class="input-group-append">
-                            <button class="btn btn-sidebar">
-                                <i class="fas fa-search"></i>
-                            </button>
+                <?php if ($this->session->userdata('role_id') != 1 && $this->session->userdata('role_id') != 4) { ?>
+                    <!-- SidebarSearch Form -->
+                    <div class="form-inline">
+                        <div class="input-group" data-widget="sidebar-search">
+                            <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+                            <div class="input-group-append">
+                                <button class="btn btn-sidebar">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
                 <?php } ?>
 
                 <!-- Sidebar Menu -->
@@ -260,12 +260,6 @@
                             </li>
                         <?php endforeach; ?>
                         <li class="nav-header">ACTIONS</li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('modul') ?>" class="nav-link">
-                                <i class="nav-icon fas fa-book-open"></i>
-                            <p>Modul</p>
-                            </a>
-                        </li>
                         <li class="nav-item">
                             <a href="<?= base_url('logout') ?>" class="nav-link">
                                 <i class="nav-icon fas fa-sign-out-alt"></i>
@@ -378,311 +372,270 @@
     <script src="<?= base_url('assets/js/adminlte.js') ?>"></script>
 
     <script>
-        const baseUrl = "<?= base_url(); ?>";
-        const userId = "<?= $user['id'] ?>"; // Assuming the user's ID is available in PHP
-        let overviewLineChart = null;
-        let overviewBarChart = null;
-        let overviewDonutChart = null;
-        let lineChart = null;
-        let detailBarChart = null;
+    const baseUrl = "<?= base_url(); ?>";
+    const userId = "<?= $user['id'] ?>"; // Assuming the user's ID is available in PHP
+    let overviewLineChart = null; // Objek untuk grafik garis
+    let overviewBarChart = null; // sama tapi batang
+    let overviewDonutChart = null; // sama tapi donat
+    let lineChart = null; // Grafik detail garis
+    let detailBarChart = null; // Grafik detail batang
 
-        const getColorSettings = () => {
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            const colorSettings = {
+    const createChart = (chartType, chartId, data, chartOptions = {}) => {
+        const ctx = document.getElementById(chartId).getContext('2d');
+        const config = {
+            type: chartType,
+            data: data, //data untuk grafiknya
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
+                        beginAtZero: true, // Dari 0 titiknya
                         ticks: {
-                            color: isDarkMode ? 'white' : 'black'
+                            color: 'white',
+                            callback: function(value) {
+                                // Convert to "YYYY-MMMM-DD" format
+                                const date = moment(value, 'YYYY-MM-DD');
+                                if (date.isValid()) {
+                                    return date.format('YYYY-MMMM-DD'); // Convert to "YYYY-MMMM-DD" format
+                                }
+                                return value;
+                            }
                         }
                     },
                     x: {
                         ticks: {
-                            color: isDarkMode ? 'white' : 'black'
+                            color: 'white' 
+                        }
+                    }
+                },
+                elements: {
+                    line: {
+                        fill: false,
+                        tension: 0,
+                        borderWidth: 5
+                    },
+                    point: {
+                        backgroundColor: 'white',
+                        borderColor: 'lightcoral',
+                        borderWidth: 2,
+                        radius: 6
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'white'
+                        }
+                    }
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            const dataset = data.datasets[tooltipItem.datasetIndex];
+                            const value = dataset.data[tooltipItem.index];
+                            return `${value} ${dataset.satuan}`; // Format tooltip
+                        }
+                    }
+                }
+            }
+        };
+        const chart = new Chart(ctx, { ...config, options: { ...config.options, ...chartOptions } });
+        return chart;
+    };
+
+    const createBarChart = (chartId, data) => {
+        const ctx = document.getElementById(chartId).getContext('2d');
+        const colors = [
+            'rgba(255, 99, 132, 0.9)',  // Red
+            'rgba(54, 162, 235, 0.9)',  // Blue
+            'rgba(255, 206, 86, 0.9)',  // Yellow
+            'rgba(75, 192, 192, 0.9)',  // Teal
+            'rgba(153, 102, 255, 0.9)', // Purple
+            'rgba(255, 159, 64, 0.9)',  // Orange
+            'rgba(201, 203, 207, 0.9)', // Light Gray
+            'rgba(255, 99, 71, 0.9)',   // Tomato
+            'rgba(60, 179, 113, 0.9)',  // Medium Sea Green
+            'rgba(106, 90, 205, 0.9)',  // Slate Blue
+            'rgba(255, 20, 147, 0.9)',  // Deep Pink
+            'rgba(0, 255, 255, 0.9)',   // Cyan
+            'rgba(255, 69, 0, 0.9)',    // Red-Orange
+            'rgba(0, 128, 0, 0.9)',     // Green
+            'rgba(255, 105, 180, 0.9)', // Hot Pink
+            'rgba(255, 215, 0, 0.9)',   // Gold
+            'rgba(0, 0, 255, 0.9)',     // Blue
+            'rgba(255, 0, 0, 0.9)',     // Red
+            'rgba(128, 0, 128, 0.9)',   // Purple
+            'rgba(0, 255, 0, 0.9)',     // Lime
+            'rgba(255, 0, 255, 0.9)',   // Fuchsia
+            'rgba(128, 128, 0, 0.9)',   // Olive
+            'rgba(0, 128, 128, 0.9)',   // Teal
+            'rgba(255, 192, 203, 0.9)', // Pink
+            'rgba(105, 105, 105, 0.9)', // Dim Gray
+            'rgba(255, 140, 0, 0.9)',   // Dark Orange
+            'rgba(255, 69, 0, 0.9)',    // Red-Orange
+            'rgba(70, 130, 180, 0.9)',  // Steel Blue
+            'rgba(139, 0, 139, 0.9)',   // Dark Magenta
+            'rgba(255, 182, 193, 0.9)', // Light Pink
+            'rgba(184, 134, 11, 0.9)',  // Dark Golden Rod
+            'rgba(0, 255, 127, 0.9)',   // Spring Green
+            'rgba(0, 0, 128, 0.9)'      // Navy
+        ];
+        const borderColors = colors.map(color => color.replace('0.9', '0.8'));
+
+        const datasets = Object.keys(data.values).map((status, index) => {
+            const colorIndex = index % colors.length;
+            return {
+            label: `${status} (${data.satuan})`, // Label dataset
+            data: data.values[status], // Data sesuai status
+            backgroundColor: colors[colorIndex], // Warna latar
+            borderColor: borderColors[colorIndex], // Warna border
+            borderWidth: 1, // Ketebalan border
+            barThickness: 'flex', // Ketebalan batang fleksibel
+            maxBarThickness: 50, // Ketebalan maksimum batang
+            satuan: data.satuan // Satuan data
+            };
+        });
+
+        const config = {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stacked: false,
+                        ticks: {
+                            color: 'white'
+                        }
+                    },
+                    x: {
+                        stacked: false,
+                        barPercentage: 0.5,
+                        categoryPercentage: 0.5,
+                        ticks: {
+                            color: 'white'
                         }
                     }
                 },
                 plugins: {
                     legend: {
                         labels: {
-                            color: isDarkMode ? 'white' : 'black'
+                            color: 'white'
                         }
                     }
-                }
-            };
-            return colorSettings;
-        };
-
-        const createChart = (chartType, chartId, data, chartOptions = {}) => {
-            const ctx = document.getElementById(chartId).getContext('2d');
-            const config = {
-                type: chartType,
-                data: data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    ...getColorSettings(),
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        },
-                        x: {}
-                    },
-                    elements: {
-                        line: {
-                            fill: false,
-                            tension: 0,
-                            borderWidth: 5
-                        },
-                        point: {
-                            backgroundColor: 'white',
-                            borderColor: 'lightcoral',
-                            borderWidth: 2,
-                            radius: 6
-                        }
-                    },
-                    tooltips: {
-                        callbacks: {
-                            label: function (tooltipItem, data) {
-                                const dataset = data.datasets[tooltipItem.datasetIndex];
-                                const value = dataset.data[tooltipItem.index];
-                                return `${value.toLocaleString()}`;
-                            }
-                        }
-                    }
-                }
-            };
-            const chart = new Chart(ctx, { ...config, options: { ...config.options, ...chartOptions } });
-            return chart;
-        };
-
-        const createBarChart = (chartId, data) => {
-            const ctx = document.getElementById(chartId).getContext('2d');
-            const colors = [
-                'rgba(255, 99, 132, 0.9)',
-                'rgba(54, 162, 235, 0.9)',
-                'rgba(255, 206, 86, 0.9)',
-                'rgba(75, 192, 192, 0.9)',
-                'rgba(153, 102, 255, 0.9)',
-                'rgba(255, 159, 64, 0.9)',
-                'rgba(201, 203, 207, 0.9)',
-                'rgba(255, 99, 71, 0.9)',
-                'rgba(60, 179, 113, 0.9)',
-                'rgba(106, 90, 205, 0.9)'
-            ];
-            const borderColors = colors.map(color => color.replace('0.9', '0.8'));
-
-            console.log('Creating bar chart with data:', data); // Tambahkan log ini
-
-            const datasets = Object.keys(data.values).map((status, index) => {
-                const colorIndex = index % colors.length;
-                return {
-                    label: status,
-                    data: data.values[status],
-                    backgroundColor: colors[colorIndex],
-                    borderColor: borderColors[colorIndex],
-                    borderWidth: 1,
-                    barThickness: 'flex',
-                    maxBarThickness: 50
-                };
-            });
-
-            const config = {
-                type: 'bar',
-                data: {
-                    labels: data.labels,
-                    datasets: datasets
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    ...getColorSettings(),
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            stacked: false
-                        },
-                        x: {
-                            stacked: false,
-                            barPercentage: 0.5,
-                            categoryPercentage: 0.5
-                        }
-                    },
-                    tooltips: {
-                        callbacks: {
-                            label: function (tooltipItem, data) {
-                                const dataset = data.datasets[tooltipItem.datasetIndex];
-                                const value = dataset.data[tooltipItem.index];
-                                const satuan = dataset.satuan || '';
-                                return `${value.toLocaleString()} ${satuan}`;
-                            }
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            const dataset = data.datasets[tooltipItem.datasetIndex];
+                            const value = dataset.data[tooltipItem.index];
+                            return `${value} ${dataset.satuan}`; //Format tooltipnya
                         }
                     }
                 }
-            };
-            const chart = new Chart(ctx, config);
-            return chart;
+            }
+        };
+        const chart = new Chart(ctx, config);
+        return chart;
+    };
+
+    const createDonutChart = (chartId, data) => {
+        const ctx = document.getElementById(chartId).getContext('2d');
+        const colors = [
+            'rgba(255, 99, 132, 0.9)',
+            'rgba(54, 162, 235, 0.9)',
+            'rgba(255, 206, 86, 0.9)',
+            'rgba(75, 192, 192, 0.9)',
+            'rgba(153, 102, 255, 0.9)',
+            'rgba(255, 159, 64, 0.9)',
+            'rgba(201, 203, 207, 0.9)',
+            'rgba(255, 99, 71, 0.9)',
+            'rgba(60, 179, 113, 0.9)',
+            'rgba(106, 90, 205, 0.9)'
+        ];
+
+        const config = {
+            type: 'doughnut',
+            data: {
+                labels: data.labels.map(label => `${label} (${data.satuan})`),
+                datasets: [{
+                    data: data.values,
+                    backgroundColor: colors,
+                    borderColor: colors.map(color => color.replace('0.9', '0.8')),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'white'
+                        }
+                    }
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            const value = data.datasets[0].data[tooltipItem.index];
+                            return `${value} ${data.satuan}`;
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: false
+                    },
+                    y: {
+                        display: false
+                    }
+                }
+            }
         };
 
-        const createDonutChart = (chartId, data) => {
-            const ctx = document.getElementById(chartId).getContext('2d');
-            const colors = [
-                'rgba(255, 99, 132, 0.9)',
-                'rgba(54, 162, 235, 0.9)',
-                'rgba(255, 206, 86, 0.9)',
-                'rgba(75, 192, 192, 0.9)',
-                'rgba(153, 102, 255, 0.9)',
-                'rgba(255, 159, 64, 0.9)',
-                'rgba(201, 203, 207, 0.9)',
-                'rgba(255, 99, 71, 0.9)',
-                'rgba(60, 179, 113, 0.9)',
-                'rgba(106, 90, 205, 0.9)'
-            ];
+        if (overviewDonutChart) {
+            overviewDonutChart.destroy(); // Hapus grafik sebelumnya
+        }
+        overviewDonutChart = new Chart(ctx, config);
+        return overviewDonutChart;
+    };
 
-            const config = {
-                type: 'doughnut',
-                data: {
-                    labels: data.labels,
-                    datasets: [{
-                        data: data.values,
-                        backgroundColor: colors,
-                        borderColor: colors.map(color => color.replace('0.9', '0.8')),
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    ...getColorSettings(),
-                    tooltips: {
-                        callbacks: {
-                            label: function (tooltipItem, data) {
-                                const value = data.datasets[0].data[tooltipItem.index];
-                                return `${value.toLocaleString()}`;
-                            }
-                        }
-                    }
-                }
-            };
+    const formatValue = (value, unit) => {
+        return unit === "Jam" ? parseFloat(value).toFixed(2) : parseInt(value).toLocaleString();
+    }
 
-            if (overviewDonutChart) {
+    // Untuk mendapatkan data grafik overview berdasarkan tipe laporan
+    const getOverviewChartData = (report, chartType) => {
+        if (!report) {
+            // Clear the chart when the "Select Report" option is selected
+            if (chartType === 'line' && overviewLineChart) {
+                overviewLineChart.destroy();
+            } else if (chartType === 'bar' && overviewBarChart) {
+                overviewBarChart.destroy();
+            } else if (chartType === 'donut' && overviewDonutChart) {
                 overviewDonutChart.destroy();
             }
-            overviewDonutChart = new Chart(ctx, config);
-            return overviewDonutChart;
-        };
+            return;
+        }
 
-        const getOverviewChartData = (report, chartType) => {
-            $.ajax({
-                url: baseUrl + 'welcome/chart_data',
-                dataType: 'json',
-                method: 'get',
-                data: {
-                    report: report
-                },
-                success: response => {
-                    const { data } = response;
-                    console.log('Overview chart data received:', data); // Tambahkan log ini
-                    if (!data || !Array.isArray(data)) {
-                        console.error('Invalid data received:', data);
-                        if (chartType === 'line') {
-                            $('#overviewLineChartContainer').empty();
-                        } else if (chartType === 'bar') {
-                            $('#overviewBarChartContainer').empty();
-                        } else if (chartType === 'donut') {
-                            $('#overviewDonutChartContainer').empty();
-                        }
-                        return;
-                    }
-
-                    if (chartType === 'line') {
-                        const groupedData = data.reduce((acc, curr) => {
-                            if (!acc[curr.periode]) {
-                                acc[curr.periode] = 0;
-                            }
-                            acc[curr.periode] += parseInt(curr.value);
-                            return acc;
-                        }, {});
-
-                        const labels = Object.keys(groupedData).sort();
-                        const values = labels.map(label => groupedData[label]);
-
-                        const chartData = {
-                            labels: labels,
-                            datasets: [{
-                                label: report,
-                                data: values,
-                                backgroundColor: 'transparent',
-                                borderColor: 'lightcoral',
-                                borderWidth: 5,
-                                pointBackgroundColor: 'white',
-                                pointBorderColor: 'lightcoral',
-                                pointBorderWidth: 2,
-                                pointRadius: 6
-                            }]
-                        };
-
-                        if (overviewLineChart) {
-                            overviewLineChart.destroy();
-                        }
-                        overviewLineChart = createChart('line', 'overviewLineChart', chartData);
-                    } else if (chartType === 'bar') {
-                        const latestPeriod = data.reduce((latest, current) => {
-                            return (latest.periode > current.periode) ? latest : current;
-                        }).periode;
-
-                        const latestData = data.filter(item => item.periode === latestPeriod);
-
-                        const statusData = {};
-                        const labels = [...new Set(latestData.map(item => item.sub_report))];
-
-                        latestData.forEach(item => {
-                            if (!statusData[item.status]) {
-                                statusData[item.status] = Array(labels.length).fill(0);
-                            }
-                            const labelIndex = labels.indexOf(item.sub_report);
-                            statusData[item.status][labelIndex] += parseInt(item.value);
-                        });
-
-                        const chartData = {
-                            labels: labels,
-                            values: statusData
-                        };
-
-                        if (overviewBarChart) {
-                            overviewBarChart.destroy();
-                        }
-                        overviewBarChart = createBarChart('overviewBarChart', chartData);
-                    } else if (chartType === 'donut') {
-                        const latestPeriod = data.reduce((latest, current) => {
-                            return (latest.periode > current.periode) ? latest : current;
-                        }).periode;
-
-                        const latestData = data.filter(item => item.periode === latestPeriod);
-
-                        const subReportData = latestData.reduce((acc, curr) => {
-                            if (!acc[curr.sub_report]) {
-                                acc[curr.sub_report] = 0;
-                            }
-                            acc[curr.sub_report] += parseInt(curr.value);
-                            return acc;
-                        }, {});
-
-                        const labels = Object.keys(subReportData);
-                        const values = labels.map(label => subReportData[label]);
-
-                        const chartData = {
-                            labels: labels,
-                            values: values
-                        };
-
-                        if (overviewDonutChart) {
-                            overviewDonutChart.destroy();
-                        }
-                        overviewDonutChart = createDonutChart('overviewDonutChart', chartData);
-                    }
-                },
-                error: (xhr, status, error) => {
-                    console.error('Error fetching data:', error);
+        $.ajax({
+            url: baseUrl + 'welcome/chart_data',
+            dataType: 'json',
+            method: 'get',
+            data: {
+                report: report
+            },
+            success: response => {
+                const { data } = response;
+                if (!data || !Array.isArray(data)) {
+                    console.error('Invalid data received:', data);
                     if (chartType === 'line') {
                         $('#overviewLineChartContainer').empty();
                     } else if (chartType === 'bar') {
@@ -690,137 +643,524 @@
                     } else if (chartType === 'donut') {
                         $('#overviewDonutChartContainer').empty();
                     }
+                    return;
                 }
-            });
-        };
 
-        const getChartData = (report, startDate, endDate, callback) => {
-            $.ajax({
-                url: baseUrl + 'welcome/chart_data',
-                dataType: 'json',
-                method: 'get',
-                data: {
-                    start: startDate,
-                    end: endDate,
-                    report: report
-                },
-                success: response => {
-                    const { data } = response;
-                    console.log('Chart data received:', data); // Tambahkan log ini
-                    if (!data || !Array.isArray(data)) {
-                        console.error('Invalid data received:', data);
-                        $('#chartContainer').empty();
-                        $('#noDataText').show();
-                        return;
-                    }
-
-                    $('#noDataText').hide();
+                if (chartType === 'line') {
                     const groupedData = data.reduce((acc, curr) => {
                         if (!acc[curr.periode]) {
                             acc[curr.periode] = 0;
                         }
-                        acc[curr.periode] += parseInt(curr.value);
+                        acc[curr.periode] += parseFloat(curr.value);
                         return acc;
                     }, {});
 
                     const labels = Object.keys(groupedData).sort();
                     const values = labels.map(label => groupedData[label]);
 
-                    console.log('Processed chart data:', { labels, values }); // Tambahkan log ini
-
-                    if (callback && typeof callback === 'function') {
-                        callback(values);
-                    }
-
-                    const canvasId = `${report}_chart`;
-                    const canvas = document.createElement('canvas');
-                    canvas.id = canvasId;
-                    canvas.height = 100;
-                    $('#chartContainer').empty().append(canvas);
-
                     const chartData = {
-                        labels: labels,
+                        labels: labels.map(label => {
+                            const date = moment(label, 'YYYY-MM-DD');
+                            return date.isValid() ? date.format('YYYY-MM') : label;
+                        }),
                         datasets: [{
-                            label: report,
-                            data: values,
-                            backgroundColor: 'transparent',
-                            borderColor: 'lightcoral',
-                            borderWidth: 5,
-                            pointBackgroundColor: 'white',
-                            pointBorderColor: 'lightcoral',
-                            pointBorderWidth: 2,
-                            pointRadius: 6
+                        label: report, // Nama laporan
+                        data: values, // Nilai data
+                        backgroundColor: 'transparent', // Warna latar
+                        borderColor: 'lightcoral', // Warna garis
+                        borderWidth: 5, // Ketebalan garis
+                        pointBackgroundColor: 'white', // Warna titik
+                        pointBorderColor: 'lightcoral', // Warna border titik
+                        pointBorderWidth: 2, // Ketebalan border titik
+                        pointRadius: 6, // Ukuran radius titik
+                        satuan: data[0]?.satuan || '' // Satuan data
                         }]
                     };
 
-                    $('#chart-title').text(`Grafik Bulanan - ${report}`);
-
-                    if (lineChart) {
-                        lineChart.destroy();
+                    if (overviewLineChart) {
+                        overviewLineChart.destroy();
                     }
-                    lineChart = createChart('line', canvasId, chartData);
-                    lineChart.options.onClick = (event, elements) => handleChartPointClick(event, elements, lineChart);
+                    overviewLineChart = createChart('line', 'overviewLineChart', chartData);
+                    updateChartsForMode(); // Mode gelap terang
+                } else if (chartType === 'bar') {
+                    const latestPeriod = data.reduce((latest, current) => {
+                        return (latest.periode > current.periode) ? latest : current;
+                    }).periode;
 
-                    $('#back-button').show();
-                    $('#back-button').off('click').on('click', function () {
-                        $('#additional-info').slideUp('slow', function () {
-                            $('#username-container').slideDown('slow');
-                            $('#barChartContainer').hide();
-                            if (detailBarChart) {
-                                detailBarChart.destroy();
-                            }
-                            $('#back-button').hide();
-                            $('#datestart').datetimepicker('date', null);
-                            $('#dateend').datetimepicker('date', null);
-                            $('#date-range').text('');
-                        });
-                        $('#noDataText').hide();
+                    const latestData = data.filter(item => item.periode === latestPeriod);
+
+                    const statusData = {};
+                    const labels = [...new Set(latestData.map(item => item.sub_report))];
+
+                    latestData.forEach(item => {
+                        if (!statusData[item.status]) {
+                            statusData[item.status] = Array(labels.length).fill(0);
+                        }
+                        const labelIndex = labels.indexOf(item.sub_report);
+                        statusData[item.status][labelIndex] += parseFloat(item.value);
                     });
-                },
-                error: (xhr, status, error) => {
-                    console.error('Error fetching data:', error);
+
+                    const chartData = {
+                        labels: labels,
+                        values: statusData,
+                        satuan: data[0]?.satuan || ''
+                    };
+
+                    if (overviewBarChart) {
+                        overviewBarChart.destroy();
+                    }
+                    overviewBarChart = createBarChart('overviewBarChart', chartData);
+                    updateChartsForMode();
+                } else if (chartType === 'donut') {
+                    const latestPeriod = data.reduce((latest, current) => {
+                        return (latest.periode > current.periode) ? latest : current;
+                    }).periode;
+
+                    const latestData = data.filter(item => item.periode === latestPeriod);
+
+                    const subReportData = latestData.reduce((acc, curr) => {
+                        if (!acc[curr.sub_report]) {
+                            acc[curr.sub_report] = 0;
+                        }
+                        acc[curr.sub_report] += parseFloat(curr.value);
+                        return acc;
+                    }, {});
+
+                    const labels = Object.keys(subReportData);
+                    const values = labels.map(label => subReportData[label]);
+
+                    const chartData = {
+                        labels: labels.map(label => {
+                            const date = moment(label, 'YYYY-MM-DD');
+                            return date.isValid() ? date.format('YYYY MMMM') : label;
+                        }),
+                        values: values,
+                        satuan: data[0]?.satuan || ''
+                    };
+
+                    if (overviewDonutChart) {
+                        overviewDonutChart.destroy();
+                    }
+                    overviewDonutChart = createDonutChart('overviewDonutChart', chartData);
+                    updateChartsForMode();
+                }
+            },
+            error: (xhr, status, error) => {
+                console.error('Error fetching data:', error);
+                if (chartType === 'line') {
+                    $('#overviewLineChartContainer').empty();
+                } else if (chartType === 'bar') {
+                    $('#overviewBarChartContainer').empty();
+                } else if (chartType === 'donut') {
+                    $('#overviewDonutChartContainer').empty();
+                }
+            }
+        });
+    };
+
+
+    // Yaa gitu
+    const getChartData = (report, startDate, endDate, callback) => {
+        $.ajax({
+            url: baseUrl + 'welcome/chart_data', // Ambil Code
+            dataType: 'json',
+            method: 'get',
+            data: {
+                start: startDate,
+                end: endDate,
+                report: report
+            },
+            success: response => {
+                const { data } = response;
+                if (!data || !Array.isArray(data)) {
+                    console.error('Invalid data received:', data);
                     $('#chartContainer').empty();
+                    $('#noDataText').show();
+                    return;
+                }
+
+                $('#noDataText').hide();
+                const groupedData = data.reduce((acc, curr) => {
+                    if (!acc[curr.periode]) {
+                        acc[curr.periode] = 0;
+                    }
+                    acc[curr.periode] += parseFloat(curr.value);
+                    return acc;
+                }, {});
+
+                const labels = Object.keys(groupedData).sort();
+                const values = labels.map(label => groupedData[label]);
+
+                if (callback && typeof callback === 'function') {
+                    callback(values);
+                }
+
+                const canvasId = `${report}_chart`;
+                const canvas = document.createElement('canvas');
+                canvas.id = canvasId;
+                canvas.height = 100;
+                $('#chartContainer').empty().append(canvas);
+
+                const chartData = {
+                    labels: labels.map(label => {
+                        const date = moment(label, 'YYYY-MM-DD');
+                        return date.isValid() ? date.format('YYYY-MM') : label;
+                    }),
+                    datasets: [{
+                        label: report,
+                        data: values,
+                        backgroundColor: 'transparent',
+                        borderColor: 'lightcoral',
+                        borderWidth: 5,
+                        pointBackgroundColor: 'white',
+                        pointBorderColor: 'lightcoral',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        satuan: data[0]?.satuan || ''
+                    }]
+                };
+
+                $('#chart-title').text(`Grafik Bulanan - ${report}`);
+
+                if (lineChart) {
+                    lineChart.destroy();
+                }
+                lineChart = createChart('line', canvasId, chartData);
+                lineChart.options.onClick = (event, elements) => handleChartPointClick(event, elements, lineChart);
+
+                $('#back-button').show(); // Tampilkan tombol "Back"
+                $('#back-button').off('click').on('click', function () {
+                $('#additional-info').slideUp('slow', function () {
+                    $('#username-container').slideDown('slow'); // Kembalikan tampilan awal
+                    $('#barChartContainer').hide(); // Sembunyikan grafik batang detail
+                    if (detailBarChart) {
+                        detailBarChart.destroy(); // Hapus grafik batang detail jika ada
+                    }
+                    $('#back-button').hide(); // Sembunyikan tombol "Back"
+                    $('#datestart').datetimepicker('date', null); // Reset tanggal mulai
+                    $('#dateend').datetimepicker('date', null); // Reset tanggal akhir
+                    $('#date-range').text(''); // Kosongkan teks rentang tanggal
+                });
+                $('#noDataText').hide(); // Sembunyikan teks "No Data"
+            });
+            updateChartsForMode(); // Perbarui pengaturan mode terang/gelap
+        },
+        error: (xhr, status, error) => {
+            console.error('Error fetching data:', error); // Log error jika terjadi
+            $('#chartContainer').empty(); // Kosongkan kontainer grafik
+            $('#noDataText').show(); // Tampilkan teks "No Data"
+        }
+        });
+    };
+
+    const getDetailData = (report, periode, callback) => {
+    const formattedPeriode = moment(periode, 'YYYY-MM').startOf('month').format('YYYY-MM-DD');
+    $.ajax({
+        url: baseUrl + 'welcome/get_detail_data', // Data code
+        dataType: 'json',
+        method: 'get',
+        data: {
+            report: report,
+            periode: formattedPeriode
+        },
+        success: response => {
+            if (callback && typeof callback === 'function') {
+                callback(response);
+            }
+        },
+        error: (xhr, status, error) => {
+            console.error('Error fetching detail data:', error);
+        }
+    });
+};
+
+
+    // Bagian yang menghandle klik pada chart poin untuk menampilkan detail chart
+    const handleChartPointClick = (event, elements, chart) => {
+        if (elements.length) {
+            const element = elements[0]; // Elemen yang diklik
+            const datasetIndex = element.datasetIndex; // Index dataset
+            const index = element.index; // Index data
+            const report = chart.data.datasets[datasetIndex].label; // Nama laporan
+            const periode = chart.data.labels[index]; // Periode data
+
+            setBarChartDate(periode);
+
+            getDetailData(report, periode, data => {
+                $('#noDataText').hide();
+                if (data && data.length > 0) {
+                    const labels = [];
+                    const values = {};
+                    let satuan = '';
+
+                    data.forEach(item => {
+                        if (!labels.includes(item.sub_report)) {
+                            labels.push(item.sub_report);
+                        }
+                        if (!values[item.status]) {
+                            values[item.status] = Array(labels.length).fill(0);
+                        }
+                        const labelIndex = labels.indexOf(item.sub_report);
+                        values[item.status][labelIndex] = parseFloat(item.value);
+                        satuan = item.satuan;
+                    });
+
+                    $('#chartContainer').fadeOut(500, function () {
+                        $('#barChartContainer').fadeIn(500);
+                        $('#barChartDatePickerContainer').show();
+                        $('#lineChartDatePickers').hide();
+                        $('#back-button').show();
+                        if (detailBarChart) {
+                            detailBarChart.destroy();
+                        }
+                        detailBarChart = createBarChart('detailBarChart', {
+                            labels,
+                            values,
+                            satuan
+                        });
+
+                        // Tambahkan update pengaturan warna untuk mode terang/gelap
+                        updateChartsForMode();
+
+                        $('#back-button').off('click').on('click', function () {
+                            $('#barChartContainer').fadeOut(500, function () {
+                                $('#chartContainer').fadeIn(500);
+                                $('#back-button').show();
+                                if (detailBarChart) {
+                                    detailBarChart.destroy();
+                                }
+                                $('#barChartDatePickerContainer').hide();
+                                $('#lineChartDatePickers').show();
+                                $('#noDataText').hide();
+                                $('#back-button').off('click').on('click', function () {
+                                    $('#additional-info').slideUp('slow', function () {
+                                        $('#username-container').slideDown('slow');
+                                        $('#barChartContainer').hide();
+                                        if (detailBarChart) {
+                                            detailBarChart.destroy();
+                                        }
+                                        $('#back-button').hide();
+                                        $('#datestart').datetimepicker('date', null);
+                                        $('#dateend').datetimepicker('date', null);
+                                        $('#date-range').text('');
+                                        $('#noDataText').hide();
+                                    });
+                                });
+                            });
+                        });
+                    });
+                } else {
+                    $('#barChartContainer').hide();
+                    if (detailBarChart) {
+                        detailBarChart.destroy();
+                    }
                     $('#noDataText').show();
                 }
             });
-        };
+        }
+    };
 
-        const getDetailData = (report, periode, callback) => {
-            const formattedPeriode = moment(periode, 'YYYY-MM').startOf('month').format('YYYY-MM-DD');
-            $.ajax({
-                url: baseUrl + 'welcome/get_detail_data',
-                dataType: 'json',
-                method: 'get',
-                data: {
-                    report: report,
-                    periode: formattedPeriode
-                },
-                success: response => {
-                    console.log('Detail data received:', response); // Tambahkan log ini
-                    if (callback && typeof callback === 'function') {
-                        callback(response);
-                    }
-                },
-                error: (xhr, status, error) => {
-                    console.error('Error fetching detail data:', error);
+
+    const setBarChartDate = (periode) => {
+        const date = moment(periode, 'YYYY-MM').toDate();
+        $('#barchartdate').datetimepicker('date', date);
+    };
+
+    // Fungsi untuk membuat item pada daftar laporan
+const createListItem = (report, totalValue, reportName, satuan, user_sub_department) => {
+    const formattedValue = formatValue(totalValue, satuan); // Format nilai sesuai satuan
+    return `<tr>
+                <td>${reportName}</td> <!-- Nama laporan -->
+                <td>${formattedValue}</td> <!-- Nilai laporan -->
+                <td>${report}</td> <!-- Nama laporan utama -->
+                <td>${satuan}</td> <!-- Satuan laporan -->
+                <td>${user_sub_department}</td> <!-- Sub-departemen -->
+                <td><a href="#" class="more-info" data-report="${report}">More info</a></td> <!-- Tautan detail -->
+            </tr>`;
+};
+
+    const getBoxesData = () => {
+        $.ajax({
+            url: baseUrl + 'welcome/chart_data',
+            dataType: 'json',
+            method: 'get',
+            success: response => {
+                const { boxes } = response;
+
+                if (!boxes || !Array.isArray(boxes)) {
+                    console.error('Invalid boxes data received:', boxes);
+                    return;
                 }
+
+                const groupedBoxes = boxes.reduce((acc, box) => {
+                    if (!acc[box.report]) {
+                        acc[box.report] = [];
+                    }
+                    acc[box.report].push(box);
+                    return acc;
+                }, {});
+
+                const dataList = $('#data-list');
+                dataList.empty();
+
+                Object.keys(groupedBoxes).forEach(reportName => {
+                    const reportBoxes = groupedBoxes[reportName];
+                    reportBoxes.forEach(box => {
+                        const report = box.report;
+                        const satuan = box.satuan;
+                        const totalValue = box.total_value;
+                        const user_sub_department = box.user_sub_department;
+                        dataList.append(createListItem(report, totalValue, reportName, satuan, user_sub_department));
+                    });
+                });
+
+                // Event handler untuk tautan "More info"
+                $(document).on('click', '.more-info', function (event) {
+                    event.preventDefault();
+                    const report = $(this).data('report');
+
+                    $('#username-container').slideUp('slow', function () {
+                        $('#additional-info').slideDown('slow');
+                        getChartData(report, '', '');
+                    });
+                });
+            },
+            error: (xhr, status, error) => {
+                console.error('Error fetching data:', error);
+            }
+        });
+    };
+
+    // Fungsi untuk mengisi dropdown pilihan laporan
+    const populateReportDropdown = () => {
+        $.ajax({
+            url: baseUrl + 'welcome/get_reports',
+            dataType: 'json',
+            method: 'get',
+            success: response => {
+                const { reports } = response;
+                if (!reports || !Array.isArray(reports)) {
+                    console.error('Invalid reports data received:', reports);
+                    return;
+                }
+                const lineChartReportSelect = $('#lineChartReportSelect'); // Dropdown untuk grafik garis
+                const barChartReportSelect = $('#barChartReportSelect'); // Dropdown untuk grafik batang
+                const donutChartReportSelect = $('#donutChartReportSelect'); // Dropdown untuk grafik donat
+
+                lineChartReportSelect.empty(); // Kosongkan dropdown
+                barChartReportSelect.empty(); // Kosongkan dropdown
+                donutChartReportSelect.empty(); // Kosongkan dropdown
+
+                lineChartReportSelect.append('<option value="">Select Report</option>'); // Tambahkan opsi default
+                barChartReportSelect.append('<option value="">Select Report</option>'); // Tambahkan opsi default
+                donutChartReportSelect.append('<option value="">Select Report</option>'); // Tambahkan opsi default
+
+                reports.forEach(report => {
+                    lineChartReportSelect.append(`<option value="${report}">${report}</option>`); // Tambahkan opsi ke dropdown garis
+                    barChartReportSelect.append(`<option value="${report}">${report}</option>`); // Tambahkan opsi ke dropdown batang
+                    donutChartReportSelect.append(`<option value="${report}">${report}</option>`); // Tambahkan opsi ke dropdown donat
             });
-        };
 
-        const handleChartPointClick = (event, elements, chart) => {
-            if (elements.length) {
-                const element = elements[0];
-                const datasetIndex = element.datasetIndex;
-                const index = element.index;
-                const report = chart.data.datasets[datasetIndex].label;
-                const periode = chart.data.labels[index];
+                // Save laporan terkahir yang dipilih
+                const lastSelectedLineReport = localStorage.getItem(`selectedLineReport_${userId}`);
+                const lastSelectedBarReport = localStorage.getItem(`selectedBarReport_${userId}`);
+                const lastSelectedDonutReport = localStorage.getItem(`selectedDonutReport_${userId}`);
 
-                console.log('Clicked point:', { report, periode });
+                if (lastSelectedLineReport) {
+                    lineChartReportSelect.val(lastSelectedLineReport);
+                    getOverviewChartData(lastSelectedLineReport, 'line');
+                }
 
-                setBarChartDate(periode);
+                if (lastSelectedBarReport) {
+                    barChartReportSelect.val(lastSelectedBarReport);
+                    getOverviewChartData(lastSelectedBarReport, 'bar');
+                }
 
-                getDetailData(report, periode, data => {
-                    console.log('Processed data for chart:', data); // Tambahkan log ini
+                if (lastSelectedDonutReport) {
+                    donutChartReportSelect.val(lastSelectedDonutReport);
+                    getOverviewChartData(lastSelectedDonutReport, 'donut');
+                }
+            },
+            error: (xhr, status, error) => {
+                console.error('Error fetching reports:', error);
+            }
+        });
+    };
+
+    // Fungsi untuk mereset tampilan UI ke kondisi awal
+const resetUI = () => {
+    $('#chart-section').show(); // Tampilkan bagian grafik utama
+    $('#additional-chart-section').hide(); // Sembunyikan bagian tambahan
+    $('.form-control-sidebar').val(''); // Kosongkan kolom pencarian
+    $('.btn-sidebar i').removeClass('fa-times').addClass('fa-search'); // Ganti ikon tombol pencarian
+    $('.btn-sidebar').prop('disabled', true); // Nonaktifkan tombol pencarian
+    $('#username-container').show(); // Tampilkan container pengguna
+    $('#additional-info').hide(); // Sembunyikan detail tambahan
+    $('#chartContainer').empty(); // Kosongkan kontainer grafik
+    $('#barChartContainer').hide(); // Sembunyikan grafik batang
+    $('#lineChartDatePickers').show(); // Tampilkan date picker untuk grafik garis
+    $('#barChartDatePickerContainer').hide(); // Sembunyikan date picker grafik batang
+    $('#back-button').hide(); // Sembunyikan tombol "Back"
+    if (lineChart) lineChart.destroy(); // Hapus grafik garis
+    if (detailBarChart) detailBarChart.destroy(); // Hapus grafik batang detail
+
+    $('#data-list tr').show(); // Tampilkan semua baris di daftar
+};
+
+    $(document).ready(function () {
+        $('#lineChartReportSelect').on('change', function () {
+            const selectedReport = $(this).val();
+            localStorage.setItem(`selectedLineReport_${userId}`, selectedReport || '');
+            getOverviewChartData(selectedReport, 'line');
+        });
+
+        $('#barChartReportSelect').on('change', function () {
+            const selectedReport = $(this).val();
+            localStorage.setItem(`selectedBarReport_${userId}`, selectedReport || '');
+            getOverviewChartData(selectedReport, 'bar');
+        });
+
+        $('#donutChartReportSelect').on('change', function () {
+            const selectedReport = $(this).val();
+            localStorage.setItem(`selectedDonutReport_${userId}`, selectedReport || '');
+            getOverviewChartData(selectedReport, 'donut');
+        });
+
+        $('#datestart').datetimepicker({
+            viewMode: 'months',
+            format: 'YYYY-MM'
+        });
+
+        $('#dateend').datetimepicker({
+            viewMode: 'months',
+            format: 'YYYY-MM'
+        });
+
+        $('#barchartdate').datetimepicker({
+            viewMode: 'months',
+            format: 'YYYY-MM'
+        });
+
+        $('#datestart, #dateend').on('change.datetimepicker', function () {
+            const dateStart = $('#datestart').datetimepicker('date') ? $('#datestart').datetimepicker('date').format('YYYY-MM') : '';
+            const dateEnd = $('#dateend').datetimepicker('date') ? $('#dateend').datetimepicker('date').format('YYYY-MM') : '';
+            $('#date-range').text(`${dateStart} - ${dateEnd}`);
+
+            const report = $('#chart-title').text().split(' - ')[1];
+            if (report) {
+                if (dateStart && dateEnd) {
+                    getChartData(report, dateStart, dateEnd);
+                } else {
+                    getChartData(report, '', '');
+                }
+            }
+        });
+
+        $('#barchartdate').on('change.datetimepicker', function () {
+            const selectedMonth = $('#barchartdate').datetimepicker('date') ? $('#barchartdate').datetimepicker('date').format('YYYY-MM') : '';
+            const report = $('#chart-title').text().split(' - ')[1];
+            if (report && selectedMonth) {
+                getDetailData(report, selectedMonth, data => {
                     $('#noDataText').hide();
                     if (data && data.length > 0) {
                         const labels = [];
@@ -835,15 +1175,12 @@
                                 values[item.status] = Array(labels.length).fill(0);
                             }
                             const labelIndex = labels.indexOf(item.sub_report);
-                            values[item.status][labelIndex] = parseInt(item.value);
+                            values[item.status][labelIndex] = parseFloat(item.value);
                             satuan = item.satuan;
                         });
 
                         $('#chartContainer').fadeOut(500, function () {
                             $('#barChartContainer').fadeIn(500);
-                            $('#barChartDatePickerContainer').show();
-                            $('#lineChartDatePickers').hide();
-                            $('#back-button').show();
                             if (detailBarChart) {
                                 detailBarChart.destroy();
                             }
@@ -852,33 +1189,7 @@
                                 values,
                                 satuan
                             });
-
-                            $('#back-button').off('click').on('click', function () {
-                                $('#barChartContainer').fadeOut(500, function () {
-                                    $('#chartContainer').fadeIn(500);
-                                    $('#back-button').show();
-                                    if (detailBarChart) {
-                                        detailBarChart.destroy();
-                                    }
-                                    $('#barChartDatePickerContainer').hide();
-                                    $('#lineChartDatePickers').show();
-                                    $('#noDataText').hide();
-                                    $('#back-button').off('click').on('click', function () {
-                                        $('#additional-info').slideUp('slow', function () {
-                                            $('#username-container').slideDown('slow');
-                                            $('#barChartContainer').hide();
-                                            if (detailBarChart) {
-                                                detailBarChart.destroy();
-                                            }
-                                            $('#back-button').hide();
-                                            $('#datestart').datetimepicker('date', null);
-                                            $('#dateend').datetimepicker('date', null);
-                                            $('#date-range').text('');
-                                            $('#noDataText').hide();
-                                        });
-                                    });
-                                });
-                            });
+                            $('#back-button').show();
                         });
                     } else {
                         $('#barChartContainer').hide();
@@ -889,321 +1200,187 @@
                     }
                 });
             }
-        };
-
-        const setBarChartDate = (periode) => {
-            const date = moment(periode, 'YYYY-MM').toDate();
-            $('#barchartdate').datetimepicker('date', date);
-        };
-
-        const createListItem = (report, totalValue, reportName, satuan, user_sub_department) => {
-            const formattedValue = totalValue.toLocaleString();
-            return `
-                <tr>
-                    <td>${reportName}</td>
-                    <td>${formattedValue}</td>
-                    <td>${report}</td>
-                    <td>${satuan}</td>
-                    <td>${user_sub_department}</td>
-                    <td><a href="#" class="more-info" data-report="${report}">More info</a></td>
-                </tr>
-            `;
-        };
-
-        const getBoxesData = () => {
-            $.ajax({
-                url: baseUrl + 'welcome/chart_data',
-                dataType: 'json',
-                method: 'get',
-                success: response => {
-                    const { boxes } = response;
-
-                    if (!boxes || !Array.isArray(boxes)) {
-                        console.error('Invalid boxes data received:', boxes);
-                        return;
-                    }
-
-                    console.log(boxes); // Tambahkan log ini
-
-                    const groupedBoxes = boxes.reduce((acc, box) => {
-                        if (!acc[box.report]) {
-                            acc[box.report] = [];
-                        }
-                        acc[box.report].push(box);
-                        return acc;
-                    }, {});
-
-                    const dataList = $('#data-list');
-                    dataList.empty();
-
-                    Object.keys(groupedBoxes).forEach(reportName => {
-                        const reportBoxes = groupedBoxes[reportName];
-                        reportBoxes.forEach(box => {
-                            const report = box.report;
-                            const satuan = box.satuan;
-                            const totalValue = box.total_value;
-                            const user_sub_department = box.user_sub_department;
-                            dataList.append(createListItem(report, totalValue, reportName, satuan, user_sub_department));
-                        });
-                    });
-
-                    $(document).on('click', '.more-info', function (event) {
-                        event.preventDefault();
-                        const report = $(this).data('report');
-
-                        $('#username-container').slideUp('slow', function () {
-                            $('#additional-info').slideDown('slow');
-                            getChartData(report, '', '');
-                        });
-                    });
-                },
-                error: (xhr, status, error) => {
-                    console.error('Error fetching data:', error);
-                }
-            });
-        };
-
-        const populateReportDropdown = () => {
-            $.ajax({
-                url: baseUrl + 'welcome/get_reports',
-                dataType: 'json',
-                method: 'get',
-                success: response => {
-                    const { reports } = response;
-                    if (!reports || !Array.isArray(reports)) {
-                        console.error('Invalid reports data received:', reports);
-                        return;
-                    }
-                    const lineChartReportSelect = $('#lineChartReportSelect');
-                    const barChartReportSelect = $('#barChartReportSelect');
-                    const donutChartReportSelect = $('#donutChartReportSelect');
-
-                    lineChartReportSelect.empty();
-                    barChartReportSelect.empty();
-                    donutChartReportSelect.empty();
-
-                    lineChartReportSelect.append('<option value="">Select Report</option>');
-                    barChartReportSelect.append('<option value="">Select Report</option>');
-                    donutChartReportSelect.append('<option value="">Select Report</option>');
-
-                    reports.forEach(report => {
-                        lineChartReportSelect.append(`<option value="${report}">${report}</option>`);
-                        barChartReportSelect.append(`<option value="${report}">${report}</option>`);
-                        donutChartReportSelect.append(`<option value="${report}">${report}</option>`);
-                    });
-
-                    const lastSelectedLineReport = localStorage.getItem(`selectedLineReport_${userId}`);
-                    const lastSelectedBarReport = localStorage.getItem(`selectedBarReport_${userId}`);
-                    const lastSelectedDonutReport = localStorage.getItem(`selectedDonutReport_${userId}`);
-
-                    if (lastSelectedLineReport) {
-                        lineChartReportSelect.val(lastSelectedLineReport);
-                        getOverviewChartData(lastSelectedLineReport, 'line');
-                    }
-
-                    if (lastSelectedBarReport) {
-                        barChartReportSelect.val(lastSelectedBarReport);
-                        getOverviewChartData(lastSelectedBarReport, 'bar');
-                    }
-
-                    if (lastSelectedDonutReport) {
-                        donutChartReportSelect.val(lastSelectedDonutReport);
-                        getOverviewChartData(lastSelectedDonutReport, 'donut');
-                    }
-                },
-                error: (xhr, status, error) => {
-                    console.error('Error fetching reports:', error);
-                }
-            });
-        };
-
-        $(document).ready(function () {
-            $('#lineChartReportSelect').on('change', function () {
-                const selectedReport = $(this).val();
-                if (selectedReport) {
-                    localStorage.setItem(`selectedLineReport_${userId}`, selectedReport);
-                    getOverviewChartData(selectedReport, 'line');
-                }
-            });
-
-            $('#barChartReportSelect').on('change', function () {
-                const selectedReport = $(this).val();
-                if (selectedReport) {
-                    localStorage.setItem(`selectedBarReport_${userId}`, selectedReport);
-                    getOverviewChartData(selectedReport, 'bar');
-                }
-            });
-
-            $('#donutChartReportSelect').on('change', function () {
-                const selectedReport = $(this).val();
-                if (selectedReport) {
-                    localStorage.setItem(`selectedDonutReport_${userId}`, selectedReport);
-                    getOverviewChartData(selectedReport, 'donut');
-                }
-            });
-
-            $('#datestart').datetimepicker({
-                viewMode: 'months',
-                format: 'YYYY-MM'
-            });
-
-            $('#dateend').datetimepicker({
-                viewMode: 'months',
-                format: 'YYYY-MM'
-            });
-
-            $('#barchartdate').datetimepicker({
-                viewMode: 'months',
-                format: 'YYYY-MM'
-            });
-
-            $('#datestart, #dateend').on('change.datetimepicker', function () {
-                const dateStart = $('#datestart').datetimepicker('date') ? $('#datestart').datetimepicker('date').format('YYYY-MM') : '';
-                const dateEnd = $('#dateend').datetimepicker('date') ? $('#dateend').datetimepicker('date').format('YYYY-MM') : '';
-                $('#date-range').text(`${dateStart} - ${dateEnd}`);
-
-                const report = $('#chart-title').text().split(' - ')[1];
-                if (report) {
-                    if (dateStart && dateEnd) {
-                        getChartData(report, dateStart, dateEnd);
-                    } else {
-                        getChartData(report, '', '');
-                    }
-                }
-            });
-
-            $('#barchartdate').on('change.datetimepicker', function () {
-                const selectedMonth = $('#barchartdate').datetimepicker('date') ? $('#barchartdate').datetimepicker('date').format('YYYY-MM') : '';
-                const report = $('#chart-title').text().split(' - ')[1];
-                if (report && selectedMonth) {
-                    getDetailData(report, selectedMonth, data => {
-                        $('#noDataText').hide();
-                        if (data && data.length > 0) {
-                            const labels = [];
-                            const values = {};
-                            let satuan = '';
-
-                            data.forEach(item => {
-                                if (!labels.includes(item.sub_report)) {
-                                    labels.push(item.sub_report);
-                                }
-                                if (!values[item.status]) {
-                                    values[item.status] = Array(labels.length).fill(0);
-                                }
-                                const labelIndex = labels.indexOf(item.sub_report);
-                                values[item.status][labelIndex] = parseInt(item.value);
-                                satuan = item.satuan;
-                            });
-
-                            $('#chartContainer').fadeOut(500, function () {
-                                $('#barChartContainer').fadeIn(500);
-                                if (detailBarChart) {
-                                    detailBarChart.destroy();
-                                }
-                                detailBarChart = createBarChart('detailBarChart', {
-                                    labels,
-                                    values,
-                                    satuan
-                                });
-                                $('#back-button').show();
-                            });
-                        } else {
-                            $('#barChartContainer').hide();
-                            if (detailBarChart) {
-                                detailBarChart.destroy();
-                            }
-                            $('#noDataText').show();
-                        }
-                    });
-                }
-            });
-
-            $('#barChartContainer').hide();
-            $('#back-button').hide();
-
-            // Show the list when clicking in the search bar
-            $('.form-control-sidebar').on('focus', function () {
-                $('#chart-section').hide();
-                $('#additional-chart-section').show();
-                $(this).siblings('.input-group-append').find('.btn-sidebar i').removeClass('fa-search').addClass('fa-times');
-            });
-
-            // Show the chart overview when the clear button is clicked
-            $('.btn-sidebar').on('click', function () {
-                if ($('.form-control-sidebar').val() === '') {
-                    $('#chart-section').show();
-                    $('#additional-chart-section').hide();
-                    $(this).find('i').removeClass('fa-times').addClass('fa-search');
-                } else {
-                    $('.form-control-sidebar').val('');
-                    $('#chart-section').show();
-                    $('#additional-chart-section').hide();
-                    $(this).find('i').removeClass('fa-times').addClass('fa-search');
-                }
-            });
-
-            $('.form-control-sidebar').on('input', function () {
-                const searchTerm = $(this).val().toLowerCase();
-                const rows = $('#data-list tr');
-
-                rows.each(function () {
-                    const row = $(this);
-                    const report = row.find('td:eq(0)').text().toLowerCase();
-                    const subReport = row.find('td:eq(2)').text().toLowerCase();
-                    const unit = row.find('td:eq(3)').text().toLowerCase();
-                    const subDepartment = row.find('td:eq(4)').text().toLowerCase();
-
-                    if (report.includes(searchTerm) || subReport.includes(searchTerm) || unit.includes(searchTerm) || subDepartment.includes(searchTerm)) {
-                        row.show();
-                    } else {
-                        row.hide();
-                    }
-                });
-            });
-
-            getBoxesData();
-            populateReportDropdown();
         });
 
-        if (localStorage.getItem('theme') === 'dark' || localStorage.getItem('theme') === null) {
-            document.body.classList.add('dark-mode');
+        $('#barChartContainer').hide();
+        $('#back-button').hide();
+
+        // Show the list when clicking in the search bar
+        $('.form-control-sidebar').on('focus input', function () {
+            // Jika sedang dalam tampilan chart batang, tekan tombol back otomatis
+            if ($('#barChartContainer').is(':visible')) {
+                $('#back-button').trigger('click');
+            }
+
+            $('#chart-section').hide();
+            $('#additional-chart-section').show();
+            $(this).siblings('.input-group-append').find('.btn-sidebar i').removeClass('fa-search').addClass('fa-times');
+            $('.btn-sidebar').prop('disabled', false); // Enable the search button
+        });
+
+        // Show the chart overview when the clear button is clicked
+        $('.btn-sidebar').on('click', function () {
+            if ($('#barChartContainer').is(':visible')) {
+                // Tekan tombol back, lalu jalankan reset UI setelah animasi selesai
+                $('#back-button').trigger('click');
+                $('#barChartContainer').fadeOut(500, function () {
+                    resetUI();
+                });
+            } else {
+                resetUI();
+            }
+        });
+
+        $('.form-control-sidebar').on('input', function () {
+            const searchTerm = $(this).val().toLowerCase();
+            const rows = $('#data-list tr');
+
+            rows.each(function () {
+                const row = $(this);
+                const report = row.find('td:eq(0)').text().toLowerCase();
+                const subReport = row.find('td:eq(2)').text().toLowerCase();
+                const unit = row.find('td:eq(3)').text().toLowerCase();
+                const subDepartment = row.find('td:eq(4)').text().toLowerCase();
+
+                if (report.includes(searchTerm) || subReport.includes(searchTerm) || unit.includes(searchTerm) || subDepartment.includes(searchTerm)) {
+                    row.show();
+                } else {
+                    row.hide();
+                }
+            });
+
+            // Keep the X icon displayed while typing
+            if (searchTerm) {
+                $('.btn-sidebar').prop('disabled', false);
+                $(this).siblings('.input-group-append').find('.btn-sidebar i').removeClass('fa-search').addClass('fa-times');
+            } else {
+                $('.btn-sidebar').prop('disabled', true);
+                $(this).siblings('.input-group-append').find('.btn-sidebar i').removeClass('fa-times').addClass('fa-search');
+            }
+        });
+
+        getBoxesData();
+        populateReportDropdown();
+    });
+
+    // Fungsi untuk mendapatkan pengaturan warna berdasarkan mode terang/gelap
+    const getColorSettings = (isDarkMode) => {
+        const color = isDarkMode ? 'white' : 'black';
+        return {
+            scales: {
+                y: {
+                    beginAtZero: true, // Memastikan sumbu Y dimulai dari 0
+                    ticks: {
+                        color: color,
+                        callback: function (value) {
+                            if (Number.isInteger(value)) {
+                                return value; // Hanya tampilkan bilangan bulat
+                            }
+                        }
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: color
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: color
+                    }
+                }
+            }
+        };
+    };
+
+    // Update logika untuk mengubah pengaturan chart berdasarkan mode
+    const updateChartsForMode = () => {
+        const isDarkMode = document.body.classList.contains('dark-mode');
+
+        const commonSettings = getColorSettings(isDarkMode);
+
+        if (overviewLineChart) {
+            overviewLineChart.options = { ...overviewLineChart.options, ...commonSettings };
+            overviewLineChart.update();
+        }
+        if (overviewBarChart) {
+            overviewBarChart.options = { ...overviewBarChart.options, ...commonSettings };
+            overviewBarChart.update();
+        }
+        if (overviewDonutChart) {
+            overviewDonutChart.options = {
+                ...overviewDonutChart.options,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: isDarkMode ? 'white' : 'black'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        display: false
+                    },
+                    y: {
+                        display: false
+                    }
+                }
+            };
+            overviewDonutChart.update();
+        }
+        if (lineChart) {
+            lineChart.options = { ...lineChart.options, ...commonSettings };
+            lineChart.update();
+        }
+        if (detailBarChart) {
+            detailBarChart.options = { ...detailBarChart.options, ...commonSettings };
+            detailBarChart.update();
+        }
+    };
+
+    // Inisialisasi mode gelap/terang saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', function () {
+        const isDarkMode = document.body.classList.contains('dark-mode');
+
+        // Set the correct icon for the mode switch
+        if (isDarkMode) {
             document.getElementById('darkModeSwitch').innerHTML = '<i class="fas fa-sun"></i>';
         } else {
-            document.body.classList.remove('dark-mode');
             document.getElementById('darkModeSwitch').innerHTML = '<i class="fas fa-moon"></i>';
         }
 
-        document.getElementById('darkModeSwitch').addEventListener('click', function () {
-            document.body.classList.toggle('dark-mode');
+        // Apply the correct color settings for the initial mode
+        updateChartsForMode();
+    });
 
-            if (document.body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-                document.getElementById('darkModeSwitch').innerHTML = '<i class="fas fa-sun"></i>';
-            } else {
-                localStorage.setItem('theme', 'light');
-                document.getElementById('darkModeSwitch').innerHTML = '<i class="fas fa-moon"></i>';
-            }
-            updateChartsForMode();
-        });
+    if (localStorage.getItem('theme') === 'dark' || localStorage.getItem('theme') === null) {
+        document.body.classList.add('dark-mode');
+        document.getElementById('darkModeSwitch').innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+        document.body.classList.remove('dark-mode');
+        document.getElementById('darkModeSwitch').innerHTML = '<i class="fas fa-moon"></i>';
+    }
 
-        const updateChartsForMode = () => {
-            if (overviewLineChart) overviewLineChart.options = { ...overviewLineChart.options, ...getColorSettings() };
-            if (overviewBarChart) overviewBarChart.options = { ...overviewBarChart.options, ...getColorSettings() };
-            if (overviewDonutChart) overviewDonutChart.options = { ...overviewDonutChart.options, ...getColorSettings() };
-            if (lineChart) lineChart.options = { ...lineChart.options, ...getColorSettings() };
-            if (detailBarChart) detailBarChart.options = { ...detailBarChart.options, ...getColorSettings() };
+    // Update charts color settings on initial load
+    updateChartsForMode();
 
-            if (overviewLineChart) overviewLineChart.update();
-            if (overviewBarChart) overviewBarChart.update();
-            if (overviewDonutChart) overviewDonutChart.update();
-            if (lineChart) lineChart.update();
-            if (detailBarChart) detailBarChart.update();
-        };
+    document.getElementById('darkModeSwitch').addEventListener('click', function () {
+        document.body.classList.toggle('dark-mode');
 
-        document.addEventListener('DOMContentLoaded', function () {
-            updateChartsForMode();
-        });
-    </script>
+        if (document.body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            document.getElementById('darkModeSwitch').innerHTML = '<i class="fas fa-sun"></i>';
+        } else {
+            localStorage.setItem('theme', 'light');
+            document.getElementById('darkModeSwitch').innerHTML = '<i class="fas fa-moon"></i>';
+        }
+        updateChartsForMode();
+    });
+
+</script>
+
 
 </body>
 

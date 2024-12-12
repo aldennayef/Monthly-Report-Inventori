@@ -40,6 +40,7 @@
                                                 <th>Sisa Stok</th>
                                                 <th>Stok Real</th>
                                                 <th>Stok Adjust</th>
+                                                <th>Detail</th>
                                                 <th>Adjust Stok At</th>
                                                 <th>Aksi</th>
                                             </tr>
@@ -81,7 +82,10 @@
                                                 <span class="adjust-stok-text"><?=$matchedAdjustStok['stok_adjust']?></span>
                                             </td>
                                             <td>
-                                            <span class="adjust-at-text"><?=date('d F Y H:i:s', strtotime($matchedAdjustStok['adjust_at']))?></span>
+                                                <span class="deskripsi-text"><?=$matchedAdjustStok['deskripsi']?></span>
+                                            </td>
+                                            <td>
+                                                <span class="adjust-at-text"><?=date('d F Y H:i:s', strtotime($matchedAdjustStok['adjust_at']))?></span>
                                             </td>
                                             <?php } else { ?>
                                             <td>
@@ -90,6 +94,9 @@
                                             </td>
                                             <td>
                                                 <span class="adjust-stok-text">-</span>
+                                            </td>
+                                            <td>
+                                                <span class="deskripsi-text">-</span>
                                             </td>
                                             <td>
                                             <span class="adjust-at-text">-</span>
@@ -221,9 +228,15 @@
                     var kodeItem = row.find('.kode-item').val();
                     var namaItem = row.find('.nama-item').val();
 
-                    // Hitung selisih
+                    // Adjust stok
                     var stokAdjust = updatedRealStok;
                     row.find('.adjust-stok-text').text(stokAdjust); 
+
+                    if(stokAdjust < sisaStok){
+                        var adjustDetail = 'Dikurang';
+                    }else if(stokAdjust > sisaStok){
+                        var adjustDetail = 'Ditambah';
+                    }
 
                     // Kirim data ke server via AJAX
                     $.ajax({
@@ -236,6 +249,7 @@
                             quantity_real: updatedRealStok,
                             sisa_stok: sisaStok,
                             stokAdjust: stokAdjust,
+                            adjustDetail:adjustDetail,
                         },
                         success: function(response) {
                             if (response.status === 'success') {
@@ -248,6 +262,9 @@
                                     icon: 'success',
                                     title: 'Sukses !',
                                     text: response.message,
+                                }).then(function() {
+                                    // Refresh halaman setelah SweetAlert ditutup
+                                    window.location.reload();
                                 });
                             } else {
                                 alert('Update gagal: ' + response.message);

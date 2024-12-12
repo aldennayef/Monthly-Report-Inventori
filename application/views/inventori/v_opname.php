@@ -31,82 +31,87 @@
                                         </button>
                                     </a>
                                     <table id="item" class="table table-bordered table-hover">
-    <thead>
-        <tr>
-            <th>No</th>
-            <th>Kode Item</th>
-            <th>Nama Item</th>
-            <th>Sisa Stok</th>
-            <th>Stok Real</th>
-            <th>Selisih</th>
-            <th>Result</th>
-            <th>Aksi</th>
-        </tr>
-    </thead>
-    <tbody>
-    <?php $i = 1; foreach ($item as $items) { ?>
-    <tr data-clusterid="<?=$items['id_cluster']?>">
-        <td><?=$i++?></td>
-        <td>
-            <span><?=$items['kode_item']?></span>
-            <input type="hidden" class="form-control kode-item" value="<?=$items['kode_item']?>">
-        </td>
-        <td>
-            <span><?=$items['nama']?></span>
-            <input type="hidden" class="form-control nama-item" value="<?=$items['nama']?>">
-        </td>
-        <td>
-            <span><?=$items['quantity_real']?></span>
-            <input type="hidden" class="form-control stok-old" value="<?=$items['quantity_real']?>">
-        </td>
-        
-        <?php
-        // Cari data opname yang sesuai dengan kode_item saat ini
-        $matchedOpname = null;
-        foreach ($dataopname as $dop) {
-            if ($dop['kode_item'] == $items['kode_item']) {
-                $matchedOpname = $dop;
-                break;
-            }
-        }
-        ?>
-        
-        <?php if ($matchedOpname) { ?>
-        <td>
-            <span class="real-stok-text"><?=$matchedOpname['stok_real']?></span>
-            <input type="text" class="form-control real-stok" value="" style="display:none;">
-        </td>
-        <td>
-            <span class="selisih-text"><?=$matchedOpname['selisih']?></span>
-        </td>
-        <td>
-            <button type="button" class="btn result-btn 
-                <?= $matchedOpname['hasil'] === 'OKE' ? 'btn-success' : 'btn-danger' ?>">
-                <?=$matchedOpname['hasil']?>
-            </button>
-        </td>
-        <?php } else { ?>
-        <td>
-            <span class="real-stok-text">-</span>
-            <input type="text" class="form-control real-stok" value="" style="display:none;">
-        </td>
-        <td>
-            <span class="selisih-text">-</span>
-        </td>
-        <td>
-            <button type="button" class="btn result-btn btn-secondary">-</button>
-        </td>
-        <?php } ?>
-        
-        <td>
-            <button class="btn btn-sm btn-primary edit-btn"><i class="fas fa-pen"></i></button>
-            <button class="btn btn-sm btn-success lock-btn" style="display:none;"><img src="<?=base_url('assets/gambar/save.png')?>" alt="save" style="width: 18px; height: 18px;"></button>
-            <button class="btn btn-sm btn-danger cancel-btn" style="display:none;"><i class="fas fa-times"></i></button>
-        </td>
-    </tr>
-    <?php } ?>
-    </tbody>
-</table>
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Kode Item</th>
+                                                <th>Nama Item</th>
+                                                <th>Sisa Stok</th>
+                                                <th>Stok Real</th>
+                                                <th>Selisih</th>
+                                                <th>Result</th>
+                                                <th>Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        <?php $i = 1; foreach ($item as $items) { ?>
+                                        <tr data-clusterid="<?=$items['id_cluster']?>">
+                                            <td><?=$i++?></td>
+                                            <td>
+                                                <span><?=$items['kode_item']?></span>
+                                                <input type="hidden" class="form-control kode-item" value="<?=$items['kode_item']?>">
+                                            </td>
+                                            <td>
+                                                <span><?=$items['nama']?></span>
+                                                <input type="hidden" class="form-control nama-item" value="<?=$items['nama']?>">
+                                            </td>
+                                            <td>
+                                                <?php if($items['quantity_real']!=0){?>
+                                                    <span><?=$items['quantity_real']?></span>
+                                                    <input type="hidden" class="form-control stok-old" value="<?=$items['quantity_real']?>">
+                                                <?php } else {?>
+                                                    <span>0</span>
+                                                    <input type="hidden" class="form-control stok-old" value="0">
+                                                <?php } ?>
+                                            </td>
+                                            
+                                            <?php
+                                            // Cari data opname yang sesuai dengan kode_item saat ini
+                                            $matchedOpname = null;
+                                            foreach ($dataopname as $dop) {
+                                                if ($dop['kode_item'] == $items['kode_item']) {
+                                                    $matchedOpname = $dop;
+                                                    break;
+                                                }
+                                            }
+                                            ?>
+                                            
+                                            <?php if ($matchedOpname) { ?>
+                                            <td>
+                                                <span class="real-stok-text"><?=$matchedOpname['stok_real']?></span>
+                                                <input type="text" class="form-control real-stok" value="" style="display:none;">
+                                            </td>
+                                            <td>
+                                                <span class="selisih-text"><?=$matchedOpname['selisih']?></span>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn result-btn 
+                                                    <?= $matchedOpname['hasil'] === 'OKE' ? 'btn-success' : 'btn-danger' ?>">
+                                                    <?=$matchedOpname['hasil']?>
+                                                </button>
+                                            </td>
+                                            <?php } else { ?>
+                                            <td>
+                                                <span class="real-stok-text">-</span>
+                                                <input type="text" class="form-control real-stok" value="" style="display:none;">
+                                            </td>
+                                            <td>
+                                                <span class="selisih-text">-</span>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn result-btn btn-secondary">-</button>
+                                            </td>
+                                            <?php } ?>
+                                            
+                                            <td>
+                                                <button class="btn btn-sm btn-primary edit-btn"><i class="fas fa-pen"></i></button>
+                                                <button class="btn btn-sm btn-success lock-btn" style="display:none;"><img src="<?=base_url('assets/gambar/save.png')?>" alt="save" style="width: 18px; height: 18px;"></button>
+                                                <button class="btn btn-sm btn-danger cancel-btn" style="display:none;"><i class="fas fa-times"></i></button>
+                                            </td>
+                                        </tr>
+                                        <?php } ?>
+                                        </tbody>
+                                    </table>
 
                                 </div>
                                 <!-- /.card-body -->
@@ -216,66 +221,74 @@
 
                 // Event listener untuk tombol lock
                 $('#item').on('click', '.lock-btn', function() {
-    var row = $(this).closest('tr');
-    var updatedRealStok = row.find('.real-stok').val(); // Ambil nilai dari input stok real
-    var oldRealStok = row.find('.stok-old').val(); // Ambil nilai stok real sebelumnya
-    var sisaStok = parseFloat(row.find('.stok-old').val()) || 0;
-    var clusterId = row.data('clusterid');
-    var kodeItem = row.find('.kode-item').val();
-    var namaItem = row.find('.nama-item').val();
+                    var row = $(this).closest('tr');
+                    var updatedRealStok = row.find('.real-stok').val(); // Ambil nilai dari input stok real
+                    var oldRealStok = row.find('.stok-old').val(); // Ambil nilai stok real sebelumnya
+                    var sisaStok = parseFloat(row.find('.stok-old').val()) || 0;
+                    var clusterId = row.data('clusterid');
+                    var kodeItem = row.find('.kode-item').val();
+                    var namaItem = row.find('.nama-item').val();
 
-    // Hitung selisih
-    var selisih = updatedRealStok - sisaStok;
-    row.find('.selisih-text').text(selisih); // Tampilkan hasil selisih di kolom selisih
+                    // Hitung selisih
+                    var selisih = updatedRealStok - sisaStok;
 
-    // Tentukan hasil (Result) berdasarkan selisih
-    var result = selisih == 0 ? 'OKE' : 'WARNING';
-    
-    // Perbarui tampilan tombol berdasarkan hasil
-    var resultButton = row.find('.result-btn');
-    resultButton.text(result);
-    resultButton.removeClass('btn-success btn-danger btn-secondary');
-    
-    if (result === 'OKE') {
-        resultButton.addClass('btn-success');
-    } else {
-        resultButton.addClass('btn-danger');
-    }
+                    // Tentukan hasil (Result) berdasarkan selisih
+                    var result = selisih == 0 ? 'OKE' : 'WARNING';
+                    
+                    // Perbarui tampilan tombol berdasarkan hasil
+                    var resultButton = row.find('.result-btn');
+                    
+                    if (result === 'OKE') {
+                        resultButton.text(result);
+                        resultButton.removeClass('btn-success btn-danger btn-secondary');
+                        resultButton.addClass('btn-success');
+                        row.find('.selisih-text').text(selisih); // Tampilkan hasil selisih di kolom selisih
+                    }
 
-    // Kirim data ke server via AJAX
-    $.ajax({
-        url: '<?= base_url('akdo') ?>',  // Ganti dengan URL yang sesuai
-        method: 'POST',
-        data: {
-            id_cluster: clusterId,
-            kode_item: kodeItem,
-            nama_item: namaItem,
-            quantity_real: updatedRealStok,
-            sisa_stok: sisaStok,
-            selisih: selisih,
-            result: result,
-        },
-        success: function(response) {
-            if (response.status === 'success') {
-                // Jika berhasil, perbarui tampilan
-                row.find('.real-stok-text').text(updatedRealStok).show();
-                row.find('.real-stok').hide();
-                row.find('.lock-btn, .cancel-btn').hide();
-                row.find('.edit-btn').show();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Sukses !',
-                    text: 'Data Opname Telah Tercatat.',
+                    // Jika selisih tidak sama dengan 0, tampilkan SweetAlert dan hentikan proses
+                    if (selisih != 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Data opname gagal!',
+                            text: 'Silakan lakukan penyesuaian stok sistem di Adjust Stok!',
+                        });
+                        return; // Hentikan proses jika selisih tidak 0
+                    }
+
+                    // Kirim data ke server via AJAX
+                    $.ajax({
+                        url: '<?= base_url('akdo') ?>',  // Ganti dengan URL yang sesuai
+                        method: 'POST',
+                        data: {
+                            id_cluster: clusterId,
+                            kode_item: kodeItem,
+                            nama_item: namaItem,
+                            quantity_real: updatedRealStok,
+                            sisa_stok: sisaStok,
+                            selisih: selisih,
+                            result: result,
+                        },
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                // Jika berhasil, perbarui tampilan
+                                row.find('.real-stok-text').text(updatedRealStok).show();
+                                row.find('.real-stok').hide();
+                                row.find('.lock-btn, .cancel-btn').hide();
+                                row.find('.edit-btn').show();
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Sukses !',
+                                    text: 'Data Opname Telah Tercatat.',
+                                });
+                            } else {
+                                alert('Update gagal: ' + response.message);
+                            }
+                        },
+                        error: function() {
+                            alert('Terjadi kesalahan saat mengirim data.');
+                        }
+                    });
                 });
-            } else {
-                alert('Update gagal: ' + response.message);
-            }
-        },
-        error: function() {
-            alert('Terjadi kesalahan saat mengirim data.');
-        }
-    });
-});
 
 
                 $('#item').on('click', '.cancel-btn', function() {

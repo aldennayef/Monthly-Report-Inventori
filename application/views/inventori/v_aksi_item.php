@@ -29,7 +29,7 @@
                   <div class="col-3">
                     <label class='labelitem'><span class="item-number">1</span>. Kode Item</label>
                     <div class="input-group mb-3">
-                      <input type="text" class="form-control input-check" placeholder="Kode Item" name="kodeitem[]" autocomplete="off">
+                      <input type="text" class="form-control input-check" placeholder="Kode Item" name="kodeitem[]" value="<?=$next_kode_item?>" readonly autocomplete="off">
                     </div>
                   </div>
                   <div class="col-3">
@@ -89,7 +89,7 @@
                       <div class="col-3">
                         <label class='labelitem'><span class="item-number">1</span>. Kode Item</label>
                         <div class="input-group mb-3">
-                          <input type="text" class="form-control input-check" placeholder="Kode Item" name="kodeitem[]" value="<?=$item['ikode_item']?>" autocomplete="off" required>
+                          <input type="text" class="form-control input-check" placeholder="Kode Item" name="kodeitem[]" value="<?=$item['ikode_item']?>" autocomplete="off" readonly required>
                           <input type="hidden" class="form-control input-check" name="oldkodeitem[]" value="<?=$item['ikode_item']?>" autocomplete="off">
                         </div>
                       </div>
@@ -189,8 +189,14 @@
               var lastJenisItemValue = $('.input-row-item').last().find('input[name="jenisitem[]"]').val();
               var noteItemValue = $('.input-row-item').last().find('input[name="note[]"]').val();
 
+              // Ambil nilai kode item terakhir dan tambahkan 1
+              var lastKodeItem = $('.input-row-item').last().find('input[name="kodeitem[]"]').val();
+              var kodeItemParts = lastKodeItem.split('_');
+              var newKodeItem = kodeItemParts.slice(0, -1).join('_') + '_' + (parseInt(kodeItemParts.slice(-1)[0]) + 1);
+
               // Clear all inputs in the cloned row
               newRow.find('input').val(''); 
+              newRow.find('input[name="kodeitem[]"]').val(newKodeItem);
               newRow.find('input[name="note[]"]').val(noteItemValue); // Set default value for Note
               newRow.find('input[name="jenisitem[]"]').val(lastJenisItemValue); // Set nilai "Jenis Item"
 
@@ -210,7 +216,7 @@
 
               $('#itemInputs .input-row-item').each(function(index) {
                 var removeButton = $(this).find('.btn-remove-row-item');
-                if (index === rowCount - 1) {
+                if (index === rowCount - 1 || index === 0) {
                   removeButton.hide(); // Sembunyikan tombol remove pada baris terakhir
                 } else {
                   removeButton.html('<i class="fas fa-trash"></i>').attr('type', 'button').removeClass('btn-primary btn-add-row').addClass('btn-danger').show();
@@ -246,13 +252,36 @@
               }
             });
 
+            function updateKodeItems() {
+    var kodeItemParts = $('#itemInputs .input-row-item').first().find('input[name="kodeitem[]"]').val().split('_');
+    var prefix = kodeItemParts.slice(0, -1).join('_'); // Mengambil prefix sebelum angka
+
+    // Perbarui setiap kode item setelah penghapusan dengan menjaga prefix dan hanya mengubah angka terakhir
+    $('#itemInputs .input-row-item').each(function(index) {
+        var currentIndex = parseInt(kodeItemParts.slice(-1)[0]) + index; // Mengambil angka dari kode item pertama, lalu menambah index
+        $(this).find('input[name="kodeitem[]"]').val(prefix + '_' + currentIndex); // Update kode item berdasarkan urutan
+    });
+}
+
+            function removeItemRow(row) {
+                var rowCount = $('#itemInputs .input-row-item').length;
+
+                if (rowCount > 1) {
+                    // Hapus baris yang tombol remove-nya diklik
+                    row.remove();
+
+                    updateItemNumbers();
+                    updateKodeItems(); // Update kode item setelah menghapus baris
+                    checkRemoveButtonVisibility(); // Periksa visibilitas tombol remove setelah baris dihapus
+                }
+            }
+
             // Bind event listener to the delete button
             $('#itemInputs').on('click', '.btn-remove-row-item', function() {
               var rowCount = $('#itemInputs .input-row-item').length;
               if (rowCount > 1) {
-                $(this).closest('.input-row-item').remove();
-                updateItemNumbers();
-                checkRemoveButtonVisibility(); // Periksa visibilitas tombol remove setelah baris dihapus
+                var row = $(this).closest('.input-row-item');
+                removeItemRow(row);
               } else {
                 if (aksi !== 'edit') {  // Hanya jalankan addNewItemRow jika bukan dalam mode edit
                   addNewItemRow();

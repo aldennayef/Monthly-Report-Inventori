@@ -101,7 +101,7 @@ class Inventori extends CI_Model{
         FROM public.user u
         JOIN public.user_department ud ON u.department_id = ud.id
         JOIN public.user_sub_department usd ON u.sub_department_id = usd.id
-        LEFT JOIN dblink('dbname=inventori user=postgres password=password port=9603', 
+        LEFT JOIN dblink('dbname=inventori user=postgres password=password port=5555', 
                          'SELECT DISTINCT u.nik, u.id_cluster, c.nama_cluster 
                           FROM public.user u 
                           JOIN public.cluster c ON u.id_cluster = c.id_cluster') 
@@ -183,26 +183,52 @@ class Inventori extends CI_Model{
         return $this->db_inv->update($tabel, $data, ['id_stock'=>$where]);
     }
 
-    public function count_kode_beli($kodePrefix) {
-        $this->db_inv->select_max('kode_beli', 'max_kode');
-        $this->db_inv->like('kode_beli', $kodePrefix, 'after');
-        $result = $this->db_inv->get('pembelian')->row();
+    // public function count_kode_beli($kodePrefix) {
+    //     $this->db_inv->select_max('kode_beli', 'max_kode');
+    //     $this->db_inv->like('kode_beli', $kodePrefix, 'after');
+    //     $result = $this->db_inv->get('pembelian')->row();
     
+    //     if ($result && isset($result->max_kode)) {
+    //         $lastKode = intval(str_replace($kodePrefix, '', $result->max_kode));
+    //         return $lastKode;
+    //     }
+    //     return 0;
+    // }
+    
+    // public function count_no_po($kodePrefix) {
+    //     $this->db_inv->select_max('no_po', 'max_po');
+    //     $this->db_inv->like('no_po', $kodePrefix, 'after');
+    //     $result = $this->db_inv->get('pembelian')->row();
+    
+    //     if ($result && isset($result->max_po)) {
+    //         $lastPO = intval(str_replace($kodePrefix, '', $result->max_po));
+    //         return $lastPO;
+    //     }
+    //     return 0;
+    // }
+
+    public function count_kode_beli($kodePrefix) {
+        $this->db_inv->select("MAX(CAST(SUBSTRING(kode_beli FROM LENGTH('$kodePrefix')+1) AS INTEGER)) AS max_kode", false);
+        $this->db_inv->where("kode_beli LIKE '$kodePrefix%'");
+        $query = $this->db_inv->get('pembelian');
+        
+        $result = $query->row();
+        
         if ($result && isset($result->max_kode)) {
-            $lastKode = intval(str_replace($kodePrefix, '', $result->max_kode));
-            return $lastKode;
+            return (int)$result->max_kode;
         }
         return 0;
     }
-    
+
     public function count_no_po($kodePrefix) {
-        $this->db_inv->select_max('no_po', 'max_po');
-        $this->db_inv->like('no_po', $kodePrefix, 'after');
-        $result = $this->db_inv->get('pembelian')->row();
-    
-        if ($result && isset($result->max_po)) {
-            $lastPO = intval(str_replace($kodePrefix, '', $result->max_po));
-            return $lastPO;
+        $this->db_inv->select("MAX(CAST(SUBSTRING(no_po FROM LENGTH('$kodePrefix')+1) AS INTEGER)) AS max_kode", false);
+        $this->db_inv->where("no_po LIKE '$kodePrefix%'");
+        $query = $this->db_inv->get('pembelian');
+        
+        $result = $query->row();
+        
+        if ($result && isset($result->max_kode)) {
+            return (int)$result->max_kode;
         }
         return 0;
     }
@@ -402,78 +428,192 @@ class Inventori extends CI_Model{
         return $this->db_inv->get_where('opname',['id_cluster'=>$idcluster])->result_array();
     }
     
-    // Fungsi untuk mengambil data list chart
+    // Fungsi untuk mengambil data list chart dengan filter jenis
     public function list_chart() {
-        // Fetch data from the cluster, items, and stok tables
+        $user_id_cluster = $this->session->userdata('id_cluster');  // Ambil id_cluster dari sesi
+        $user_role = $this->session->userdata('role_id');
+        $department_id = $this->session->userdata('department_id'); // Ambil department_id dari sesi
+    
         $this->db_inv->select('cluster.nama_cluster, cluster.kode_cluster, items.jenis, items.kode_item, items.nama, SUM(stok.quantity_real) as total_items, stok.harga_satuan');
         $this->db_inv->from('cluster');
-        $this->db_inv->join('items', 'items.id_cluster = cluster.id_cluster'); // Join tables cluster and items
-        $this->db_inv->join('stok', 'stok.kode_item = items.kode_item'); // Join with stok table to get total quantity and price
-        $this->db_inv->group_by('cluster.nama_cluster, cluster.kode_cluster, items.jenis, items.kode_item, items.nama, stok.harga_satuan'); // Group by to include all selected columns
+        $this->db_inv->join('items', 'items.id_cluster = cluster.id_cluster');
+        $this->db_inv->join('stok', 'stok.kode_item = items.kode_item');
+    
+        if ($user_role == 3) { // Jika role karyawan
+            $this->db_inv->where('cluster.id_cluster', $user_id_cluster);  // Filter berdasarkan id_cluster
+        } elseif ($user_role == 2) { // Jika role manager
+            $this->db_inv->join('user', 'user.nik = items.nik');
+            $this->db_inv->where('user.department_id', $department_id); // Filter berdasarkan department_id
+        }
+    
+        $this->db_inv->group_by('cluster.nama_cluster, cluster.kode_cluster, items.jenis, items.kode_item, items.nama, stok.harga_satuan');
         $query = $this->db_inv->get();
+    
         return $query->result_array();
     }
-
-    public function get_monthly_stock_data($kode_item) {
-        $this->db_inv->select("TO_CHAR(stok.exp_date, 'YYYY-MM') as month, SUM(stok.quantity_real) as total_quantity, items.nama as item_name");
-        $this->db_inv->from('stok');
-        $this->db_inv->join('items', 'items.kode_item = stok.kode_item');
-        $this->db_inv->where('stok.kode_item', $kode_item);
-        $this->db_inv->group_by("TO_CHAR(stok.exp_date, 'YYYY-MM'), items.nama");
+    
+    // Fungsi untuk mendapatkan jenis-jenis yang ada di dashboard list
+    public function get_jenis_items_from_dashboard($dashboard_data) {
+        $jenis_items = [];
+        foreach ($dashboard_data as $data) {
+            if (!in_array($data['jenis'], $jenis_items)) {
+                $jenis_items[] = $data['jenis'];
+            }
+        }
+        return $jenis_items;
+    }
+        
+    public function get_monthly_stock_data_filtered($kode_item, $start_date = null, $end_date = null) {
+        // Mengambil data stok tanpa filter tanggal jika start_date atau end_date kosong
+        $this->db_inv->select("TO_CHAR(opname.waktu, 'YYYY-MM') as month, SUM(opname.stok_real) as total_quantity");
+        $this->db_inv->from('opname');
+        $this->db_inv->where('opname.kode_item', $kode_item);
+    
+        // Jika ada filter tanggal, tambahkan ke query
+        if (!empty($start_date) && !empty($end_date)) {
+            $this->db_inv->where("TO_CHAR(opname.waktu, 'YYYY-MM') >=", $start_date);
+            $this->db_inv->where("TO_CHAR(opname.waktu, 'YYYY-MM') <=", $end_date);
+        }
+    
+        $this->db_inv->group_by("TO_CHAR(opname.waktu, 'YYYY-MM')");
         $this->db_inv->order_by("month", "ASC");
-        
+    
         $query = $this->db_inv->get();
-        
+    
         if (!$query) {
-            $error = $this->db_inv->error(); // Get the error details
+            $error = $this->db_inv->error();
             throw new Exception("Database query failed: " . $error['message']);
         }
     
-        // Debugging: Log the query result
-        log_message('debug', 'get_monthly_stock_data result: ' . json_encode($query->result_array()));
-        
         return $query->result_array();
     }
     
-
-    // Fungsi untuk mengambil data pembelian bulanan
-    public function get_monthly_purchase_data($kode_item) {
-        // Select month and total purchased quantity
+    
+    public function get_monthly_purchase_data($kode_item, $month = null) {
         $this->db_inv->select("TO_CHAR(pembelian.realisasi_at, 'YYYY-MM') as month, SUM(pembelian.quantity) as total_quantity");
         $this->db_inv->from('pembelian');
         $this->db_inv->where('pembelian.kode_item', $kode_item);
+        if ($month) {
+            $this->db_inv->where("TO_CHAR(pembelian.realisasi_at, 'YYYY-MM') =", $month);
+        }
         $this->db_inv->group_by("TO_CHAR(pembelian.realisasi_at, 'YYYY-MM')");
         $this->db_inv->order_by("month", "ASC");
-        
+    
         $query = $this->db_inv->get();
-        
+    
         if (!$query) {
-            $error = $this->db_inv->error(); // Get the error details
+            $error = $this->db_inv->error();
             throw new Exception("Database query failed: " . $error['message']);
         }
-        
+    
         return $query->result_array();
     }
-
-    // Fungsi untuk mengambil data pemakaian bulanan
-    public function get_monthly_usage_data($kode_item) {
-        // Select month and total used quantity
+    
+    public function get_monthly_usage_data($kode_item, $month = null) {
         $this->db_inv->select("TO_CHAR(pemakaian.waktu, 'YYYY-MM') as month, SUM(pemakaian.jml_pakai) as total_quantity");
         $this->db_inv->from('pemakaian');
-        $this->db_inv->join('stok', 'stok.id_stock = pemakaian.id_stock'); // Join stok with pemakaian to match items
+        $this->db_inv->join('stok', 'stok.id_stock = pemakaian.id_stock');
         $this->db_inv->where('stok.kode_item', $kode_item);
+        if ($month) {
+            $this->db_inv->where("TO_CHAR(pemakaian.waktu, 'YYYY-MM') =", $month);
+        }
         $this->db_inv->group_by("TO_CHAR(pemakaian.waktu, 'YYYY-MM')");
         $this->db_inv->order_by("month", "ASC");
-        
+    
         $query = $this->db_inv->get();
-        
+    
         if (!$query) {
-            $error = $this->db_inv->error(); // Get the error details
+            $error = $this->db_inv->error();
             throw new Exception("Database query failed: " . $error['message']);
         }
-        
+    
         return $query->result_array();
     }
+    
+    
+        public function get_user_clusters($nik) {
+            // Fetch all cluster IDs the user has access to based on their NIK
+            $this->db_inv->select('id_cluster');
+            $this->db_inv->from('user');
+            $this->db_inv->where('nik', $nik);
+            
+            $query = $this->db_inv->get();
+            
+            if (!$query) {
+                $error = $this->db_inv->error();
+                throw new Exception("Database query failed: " . $error['message']);
+            }
+        
+            $result = $query->result_array();
+            return array_column($result, 'id_cluster'); // Return an array of cluster IDs
+        }
+        
+        public function get_item_data($kode_item) {
+            // Fetch the item data based on the item code, including cluster ID
+            $this->db_inv->select('id_cluster, nama as item_name');
+            $this->db_inv->from('items');
+            $this->db_inv->where('kode_item', $kode_item);
+            
+            $query = $this->db_inv->get();
+            
+            if (!$query) {
+                $error = $this->db_inv->error();
+                throw new Exception("Database query failed: " . $error['message']);
+            }
+        
+            return $query->row_array();
+        }
+    
+        public function get_jenis_items_by_user_clusters($user_clusters) {
+            if (empty($user_clusters)) {
+                return [];
+            }
+        
+            $this->db_inv->select('DISTINCT items.jenis', false);
+            $this->db_inv->from('items');
+            $this->db_inv->where_in('items.id_cluster', $user_clusters); 
+            $query = $this->db_inv->get();
+        
+            if (!$query) {
+                $error = $this->db_inv->error();
+                throw new Exception("Database query failed: " . $error['message']);
+            }
+        
+            return $query->result_array();
+        }
+        
+        public function get_dashboard_data($user_clusters = null, $department_id = null, $jenis_filter = null) {
+            $this->db_inv->select('cluster.nama_cluster, cluster.kode_cluster, items.jenis, items.kode_item, items.nama, SUM(stok.quantity_real) as total_items, stok.harga_satuan');
+            $this->db_inv->from('cluster');
+            $this->db_inv->join('items', 'items.id_cluster = cluster.id_cluster');
+            $this->db_inv->join('stok', 'stok.kode_item = items.kode_item');
+        
+            if ($this->session->userdata('role_id') == 3) {
+                if (!empty($user_clusters)) {
+                    $this->db_inv->where_in('cluster.id_cluster', $user_clusters);
+                }
+            } elseif ($this->session->userdata('role_id') == 2) {
+                if (!empty($department_id)) {
+                    $this->db_inv->join('user', 'user.nik = items.nik');
+                    $this->db_inv->where('user.department_id', $department_id);
+                }
+            }
+        
+            if (!empty($jenis_filter)) {
+                $this->db_inv->where('items.jenis', $jenis_filter); // Filter by jenis
+            }
+        
+            $this->db_inv->group_by('cluster.nama_cluster, cluster.kode_cluster, items.jenis, items.kode_item, items.nama, stok.harga_satuan');
+            $query = $this->db_inv->get();
+        
+            if (!$query) {
+                $error = $this->db_inv->error();
+                throw new Exception("Database query failed: " . $error['message']);
+            }
+        
+            return $query->result_array();
+        }
+            
 
     // MANAGER
     public function get_data_item_by_department($department_id) {
@@ -493,7 +633,7 @@ class Inventori extends CI_Model{
             JOIN public.user inv_user ON i.id_cluster = inv_user.id_cluster 
             LEFT JOIN stok s ON s.kode_item = i.kode_item
             JOIN dblink(
-                'dbname=monthly_report user=postgres password=password port=9603', 
+                'dbname=monthly_report user=postgres password=password port=5555', 
                 'SELECT nik, nama, \"department_id\", role_id FROM public.user'
             ) AS mr_user(nik VARCHAR, nama VARCHAR, department_id INTEGER, role_id INTEGER)
             ON inv_user.nik = mr_user.nik
@@ -513,7 +653,7 @@ class Inventori extends CI_Model{
             FROM jenis_item j
             JOIN public.user inv_user ON j.id_cluster = inv_user.id_cluster 
             JOIN dblink(
-                'dbname=monthly_report user=postgres password=password port=9603', 
+                'dbname=monthly_report user=postgres password=password port=5555', 
                 'SELECT nik, nama, \"department_id\", role_id FROM public.user'
             ) AS mr_user(nik VARCHAR, nama VARCHAR, department_id INTEGER, role_id INTEGER)
             ON inv_user.nik = mr_user.nik
@@ -560,7 +700,7 @@ class Inventori extends CI_Model{
             ->group_by('kode_item')
             ->get_compiled_select();
     
-        $this->db_inv->select('sa.id_cluster, sa.kode_item, sa.stok_real, sa.stok_adjust, sa.adjust_at');
+        $this->db_inv->select('sa.id_cluster, sa.kode_item, sa.stok_real, sa.stok_adjust, sa.adjust_at, sa.deskripsi');
         $this->db_inv->from('stok_adjust sa');
         $this->db_inv->join("($subquery) as latest", 'sa.kode_item = latest.kode_item AND sa.adjust_at = latest.max_adjust_at', 'inner');
         $this->db_inv->where('sa.id_cluster', $idcluster);
@@ -575,5 +715,56 @@ class Inventori extends CI_Model{
         $this->db_inv->where('stok_adjust.id_cluster', $idcluster);
         return $this->db_inv->get()->result_array();
     }
+
+    // baru
+    public function get_info_staging_stok($kodebeli,$kodeitem) {
+        return $this->db_inv->get_where('staging_stok',['kode_beli'=>$kodebeli, 'kode_item'=>$kodeitem])->row_array();
+    }
+
+    public function update_staging_stok($data,$where){
+        return $this->db_inv->update('staging_stok',$data,$where);
+    }
+
+    public function get_kode_cluster($idcluster){
+        return $this->db_inv->get_where('cluster',['id_cluster'=>$idcluster])->row_array();
+    }
+
+    public function count_kode_item($kodePrefix) {
+        $this->db_inv->select("MAX(CAST(SUBSTRING(kode_item FROM LENGTH('$kodePrefix')+1) AS INTEGER)) AS max_kode", false);
+        $this->db_inv->where("kode_item LIKE '$kodePrefix%'");
+        $query = $this->db_inv->get('items');
+        
+        $result = $query->row();
+        
+        if ($result && isset($result->max_kode)) {
+            return (int)$result->max_kode;
+        }
+        return 0;
+    }
+    
+
+    public function get_nik_by_department($user_department) {
+        // Query ke database inventori untuk mendapatkan nik
+        $query = $this->db_inv->query("
+            SELECT inv_user.nik, inv_user.id_cluster
+            FROM public.user inv_user
+            JOIN dblink('dbname=monthly_report user=postgres password=password port=5555', 
+                'SELECT nik, \"department_id\", role_id FROM public.user WHERE role_id = 3') 
+                AS mr_user(nik VARCHAR, department_id INTEGER, role_id INTEGER)
+            ON inv_user.nik = mr_user.nik
+            WHERE mr_user.department_id = {$user_department}
+        ");
+        
+        return $query->result_array();  // Mengembalikan array nik dan id_cluster
+    }
+    
+
+    public function get_table_data_by_nik($tableName, $idcluster, $nik) {
+        $this->db_inv->where('id_cluster', $idcluster);
+        $this->db_inv->where('nik', $nik);
+        $query = $this->db_inv->get($tableName);
+        return $query->result_array();
+    }
+    
 
 }

@@ -34,6 +34,7 @@
                                                 <th>Sisa Stok</th>
                                                 <th>Stok Real</th>
                                                 <th>Stok Adjust</th>
+                                                <th>Detail</th>
                                                 <th>Waktu Opname</th>
                                             </tr>
                                         </thead>
@@ -55,6 +56,9 @@
                                             </td>
                                             <td>
                                                 <span class="stokadjust-text"><?=$dajs['stok_adjust']?></span>
+                                            </td>
+                                            <td>
+                                                <span class="deskripsi-text"><?=$dajs['deskripsi']?></span>
                                             </td>
                                             <td>
                                                 <span><?=date('d F Y H:i:s', strtotime($dajs['adjust_at']))?></span>

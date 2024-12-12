@@ -29,6 +29,8 @@
     </ul>
   </nav>
   <!-- /.navbar -->
+  <!-- SweetAlert2 -->
+  <script src="<?=base_url('assets/plugins/sweetalert2/sweetalertnotif2.min.js')?>"></script>
 
   <script>
     function performBackup() {
@@ -37,6 +39,7 @@
         method: 'POST',
         dataType: 'json',
         success: function(response) {
+            console.log(response); // Log response untuk memastikan JSON diterima
             if (response.status === 'success') {
                 Swal.fire({
                     icon: 'success',
@@ -53,6 +56,7 @@
                 });
             }
         },
+
         error: function() {
             Swal.fire({
                 icon: 'error',

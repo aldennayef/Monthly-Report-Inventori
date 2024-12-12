@@ -24,7 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 
-$config['base_url'] = 'http://localhost/magang/github/inventory/';
+$config['base_url'] = 'http://localhost:2024/magang/project/inventori/';
 
 
 /*

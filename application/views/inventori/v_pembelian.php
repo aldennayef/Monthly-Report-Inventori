@@ -368,6 +368,7 @@
                       updateQuantity: updateQuantity,
                       updateQtyPembelian: quantityupdate,
                       updateSatuan: satuan,
+                      qtyUpdateStaging:quantityupdate, // baru
                       type: "update",
                   },
                   success: function(response) {
@@ -382,7 +383,7 @@
                           Swal.fire({
                               icon: 'success',
                               title: 'Sukses !',
-                              text: 'Quantity Diupdate !',
+                              text: 'Quantity PO Diupdate !',
                           });
                       } else {
                           alert('Update gagal: ' + response.message);

@@ -77,7 +77,7 @@ $db['default'] = array(
 	'dsn'	=> '',
 	'hostname' => 'localhost',
 	'username' => 'postgres',
-	'password' => 'password',
+	'password' => '12345',
 	'database' => 'monthly_report',
 	'dbdriver' => 'postgre',
 	'dbprefix' => '',
@@ -93,14 +93,14 @@ $db['default'] = array(
 	'stricton' => FALSE,
 	'failover' => array(),
 	'save_queries' => TRUE,
-	'port' => 9603
+	'port' => 5555
 );
 
 $db['inventori'] = array(
 	'dsn'	=> '',
 	'hostname' => 'localhost',
 	'username' => 'postgres',
-	'password' => 'password',
+	'password' => '12345',
 	'database' => 'inventori',
 	'dbdriver' => 'postgre',
 	'dbprefix' => '',
@@ -116,14 +116,14 @@ $db['inventori'] = array(
 	'stricton' => FALSE,
 	'failover' => array(),
 	'save_queries' => TRUE,
-	'port' => 9603
+	'port' => 5555
 );
 
 $db['db_user'] = array(
 	'dsn'	=> '',
 	'hostname' => 'localhost',
 	'username' => 'postgres',
-	'password' => 'password',
+	'password' => '12345',
 	'database' => 'user',
 	'dbdriver' => 'postgre',
 	'dbprefix' => '',
@@ -139,14 +139,14 @@ $db['db_user'] = array(
 	'stricton' => FALSE,
 	'failover' => array(),
 	'save_queries' => TRUE,
-	'port' => 9603
+	'port' => 5555
 );
 
 $db['database3'] = array(
 	'dsn'	=> '',
 	'hostname' => 'localhost',
 	'username' => 'postgres',
-	'password' => 'password',
+	'password' => '12345',
 	'database' => 'modul',
 	'dbdriver' => 'postgre',
 	'dbprefix' => '',
@@ -162,5 +162,5 @@ $db['database3'] = array(
 	'stricton' => FALSE,
 	'failover' => array(),
 	'save_queries' => TRUE,
-	'port' => 9603
+	'port' => 5555
 );
